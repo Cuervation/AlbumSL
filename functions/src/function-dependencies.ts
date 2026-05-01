@@ -1,4 +1,4 @@
-import { randomUUID } from "node:crypto";
+import { randomInt, randomUUID, webcrypto } from "node:crypto";
 
 import type { Clock, IdGenerator, RandomGenerator } from "@albumsl/application";
 import { FirestoreTransactionRunner } from "@albumsl/infra-firebase";
@@ -6,6 +6,8 @@ import { getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
 import { FirestorePackClaimRepository } from "@albumsl/infra-firebase";
+
+import { createFirestoreAdminDashboardDataSource } from "./admin-dashboard-firestore.js";
 
 function getDb() {
   const app = getApps()[0] ?? initializeApp();
@@ -20,7 +22,8 @@ export function createFunctionDependencies() {
     transactionRunner: new FirestoreTransactionRunner(db),
     clock: createSystemClock(),
     idGenerator: createRandomIdGenerator(),
-    randomGenerator: createMathRandomGenerator(),
+    randomGenerator: createCryptoRandomGenerator(),
+    adminDashboardDataSource: createFirestoreAdminDashboardDataSource(db),
   };
 }
 
@@ -36,10 +39,15 @@ function createRandomIdGenerator(): IdGenerator {
   };
 }
 
-function createMathRandomGenerator(): RandomGenerator {
+function createCryptoRandomGenerator(): RandomGenerator {
   return {
-    nextFloat: () => Math.random(),
-    nextInt: (minInclusive, maxExclusive) =>
-      Math.floor(Math.random() * (maxExclusive - minInclusive)) + minInclusive,
+    nextFloat: () => {
+      const randomValues = new Uint32Array(1);
+      webcrypto.getRandomValues(randomValues);
+      const randomValue = randomValues[0] ?? 0;
+
+      return randomValue / 2 ** 32;
+    },
+    nextInt: (minInclusive, maxExclusive) => randomInt(minInclusive, maxExclusive),
   };
 }

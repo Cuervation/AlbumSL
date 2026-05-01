@@ -57,6 +57,7 @@
 - Toda apertura valida nace en backend.
 - El frontend solo puede solicitar la apertura.
 - El frontend debe enviar `source` y `claimId`, nunca stickers elegidas.
+- La seleccion real de figuritas usa random server-side basado en `node:crypto`.
 - Cada apertura debe estar asociada a un usuario autenticado.
 - El claim debe pertenecer al usuario autenticado.
 - El claim debe estar `AVAILABLE`, no expirado y no consumido.
@@ -125,6 +126,15 @@
 - Admins pueden leer mas informacion donde la regla lo permite.
 - Escrituras administrativas sensibles deben seguir pasando por backend/Admin SDK.
 - No asumir rol admin por flags locales en frontend.
+- El admin MVP usa callable `adminGetDashboard` y valida `request.auth.token.admin == true`.
+- `users/{uid}.role` puede usarse solo para UI; no es fuente de autorizacion real.
+- El panel admin MVP es solo lectura y no expone emails.
+
+## Hardening QA actual
+
+- Las escrituras cliente a `stickers`, `userStickers`, `userAlbums`, `packClaims`, `packOpenings` y `auditLogs` siguen bloqueadas por Rules.
+- La UI del album solo lee inventario/resumen/aperturas y usa callable para `pasteSticker`.
+- Los tests criticos cubren claim ajeno, claim consumido, consumo de claim, repetidas, pegado sin cantidad e idempotencia diaria.
 
 ## Auth frontend
 

@@ -387,6 +387,14 @@ Archivos esperados:
 - `apps/web/src/features/admin/`
 - `functions/src/routes/admin/`
 
+Estado implementado inicial:
+
+- panel `/admin` solo lectura
+- callable `adminGetDashboard`
+- acceso backend por custom claim `admin == true`
+- métricas generales, últimas aperturas y últimos claims
+- sin edición, borrado, geocerca, promociones ni acciones destructivas
+
 ## audit-log
 
 Objetivo: registrar eventos críticos.

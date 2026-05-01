@@ -127,3 +127,8 @@ npm run validate
 - Las Cloud Functions deben actuar como adaptadores delgados.
 - Las operaciones sensibles deben pasar por backend.
 - El frontend no debe asignar figuritas ni escribir datos sensibles directamente.
+
+## Admin MVP
+
+Ver [docs/ADMIN.md](docs/ADMIN.md) para el panel admin solo lectura protegido por custom claim
+`admin == true`.

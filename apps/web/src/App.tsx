@@ -1,7 +1,9 @@
 import { Route, Routes } from "react-router-dom";
 
 import { AppLayout } from "./components/AppLayout";
+import { AdminGuard } from "./components/AdminGuard";
 import { AuthGuard } from "./components/AuthGuard";
+import { AdminDashboardPage } from "./pages/AdminDashboardPage";
 import { AlbumPage } from "./pages/AlbumPage";
 import { CatalogPage } from "./pages/CatalogPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -24,6 +26,16 @@ export function App(): React.JSX.Element {
           element={
             <AuthGuard>
               <DashboardPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="admin"
+          element={
+            <AuthGuard>
+              <AdminGuard>
+                <AdminDashboardPage />
+              </AdminGuard>
             </AuthGuard>
           }
         />

@@ -41,6 +41,7 @@ una vez.
 - La apertura debe ser auditable.
 - El inventario y los contadores son datos sensibles.
 - Firestore Rules bloquean escrituras directas a claims, openings, userStickers, userAlbums y auditLogs.
+- La seleccion de sobres usa random server-side con `node:crypto`, no `Math.random`.
 
 ## Estructura De Claims
 
@@ -108,6 +109,7 @@ Luego puede migrarse a `system/config` y leerse desde infraestructura sin cambia
 - `openPack` consume el claim dentro de una transaccion.
 - Un claim `CONSUMED` devuelve error `CLAIM_ALREADY_CONSUMED`.
 - Un claim expirado devuelve `CLAIM_EXPIRED`.
+- Tests unitarios con fakes cubren que el claim diario no se duplique el mismo dia.
 
 ## Auditoria
 

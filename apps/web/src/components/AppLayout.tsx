@@ -4,7 +4,8 @@ import { useAuth } from "../features/auth/useAuth";
 import { SignOutButton } from "./SignOutButton";
 
 export function AppLayout(): React.JSX.Element {
-  const { user } = useAuth();
+  const { currentUserProfile, user } = useAuth();
+  const showAdminLink = currentUserProfile?.role === "ADMIN";
 
   return (
     <div className="app-frame">
@@ -21,6 +22,7 @@ export function AppLayout(): React.JSX.Element {
               <NavLink to="/duplicates">Repetidas</NavLink>
               <NavLink to="/catalog">Catalogo</NavLink>
               <NavLink to="/open-pack">Sobres</NavLink>
+              {showAdminLink ? <NavLink to="/admin">Admin</NavLink> : null}
             </>
           ) : (
             <NavLink to="/login">Login</NavLink>

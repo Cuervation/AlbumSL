@@ -1,3 +1,4 @@
+export * from "./admin.js";
 export * from "./album.js";
 export * from "./auth.js";
 export * from "./errors.js";

@@ -49,6 +49,7 @@ Seguridad:
 
 - no confiar en `uid` enviado por cliente sin compararlo con `request.auth.uid`
 - `role` nunca debe ser elevable desde cliente
+- `role` no reemplaza custom claims para autorizacion admin real
 
 ## stickers/{stickerId}
 
@@ -362,6 +363,7 @@ Seguridad:
 
 - usuarios normales no leen auditoria tecnica
 - clientes no escriben auditoria
+- el admin MVP no expone `auditLogs` desde frontend
 
 ## system/config
 

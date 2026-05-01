@@ -1,4 +1,6 @@
 import type {
+  AdminDashboardRequestDto,
+  AdminDashboardResponseDto,
   ClaimDailyPackRequestDto,
   ClaimDailyPackResponseDto,
   OpenPackRequestDto,
@@ -17,6 +19,7 @@ import { createFirebaseInfrastructure } from "@albumsl/infra-firebase";
 import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
 
 import { createFunctionDependencies } from "./function-dependencies.js";
+import { getAdminDashboard } from "./admin-dashboard.js";
 import { toHttpsError } from "./https-errors.js";
 
 const infrastructure = createFirebaseInfrastructure();
@@ -136,6 +139,28 @@ export const pasteSticker = onCall<PasteStickerRequestDto>(
           completionPercentage: result.albumProgress.completionPercentage,
         },
       };
+    } catch (error) {
+      throw toHttpsError(error);
+    }
+  },
+);
+
+export const adminGetDashboard = onCall<AdminDashboardRequestDto>(
+  async (request): Promise<AdminDashboardResponseDto> => {
+    try {
+      const dependencies = createFunctionDependencies();
+
+      return await getAdminDashboard(
+        request.auth
+          ? {
+              uid: request.auth.uid,
+              token: {
+                admin: request.auth.token.admin,
+              },
+            }
+          : undefined,
+        dependencies.adminDashboardDataSource,
+      );
     } catch (error) {
       throw toHttpsError(error);
     }
