@@ -1,17 +1,20 @@
 # Product Spec
 
 ## Objetivo del producto
+
 Crear un álbum virtual de figuritas de San Lorenzo de Almagro donde los usuarios puedan registrarse, abrir sobres, coleccionar figuritas, pegarlas en su álbum, ver repetidas y, en una etapa futura, intercambiar figuritas con otros usuarios.
 
 El producto debe sentirse como un álbum digital coleccionable, auditable y extensible, con lógica de negocio independiente de Firebase.
 
 ## Usuarios principales
+
 - Hinchas y coleccionistas que quieren completar el álbum.
 - Usuarios casuales que abren sobres diarios o por promociones.
 - Usuarios que visitan el estadio y pueden obtener beneficios geolocalizados.
 - Administradores que más adelante gestionarán catálogo, campañas y auditoría.
 
 ## Funcionalidades MVP
+
 - Registro e inicio de sesión.
 - Perfil básico de usuario.
 - Catálogo de figuritas.
@@ -25,6 +28,7 @@ El producto debe sentirse como un álbum digital coleccionable, auditable y exte
 - Progreso básico del álbum.
 
 ## Funcionalidades futuras
+
 - Intercambio entre usuarios.
 - Sobres por promociones.
 - Sobres por eventos.
@@ -37,6 +41,7 @@ El producto debe sentirse como un álbum digital coleccionable, auditable y exte
 - Social features y ranking.
 
 ## Reglas de negocio iniciales
+
 - El álbum tendrá por lo menos 600 figuritas.
 - Aproximadamente 30% serán de 1990 para atrás.
 - Aproximadamente 70% serán de 1990 en adelante.
@@ -49,6 +54,7 @@ El producto debe sentirse como un álbum digital coleccionable, auditable y exte
 - En el futuro podrá haber sobres por promociones, eventos, geocerca del estadio y admins.
 
 ## Definición de éxito del MVP
+
 - Un usuario puede registrarse, iniciar sesión y abrir su sobre diario.
 - El sistema asigna figuritas desde backend de forma auditable.
 - El usuario ve su colección, su progreso y sus repetidas.
@@ -57,6 +63,7 @@ El producto debe sentirse como un álbum digital coleccionable, auditable y exte
 - La base documental y técnica permite extender el sistema sin rediseñar el dominio.
 
 ## Cosas que NO se harán en la primera versión
+
 - Intercambio entre usuarios.
 - Mercado, trading o subastas.
 - Recompensas complejas o gamificación avanzada.
@@ -69,6 +76,7 @@ El producto debe sentirse como un álbum digital coleccionable, auditable y exte
 - Observabilidad completa de producción desde el día 1.
 
 ## Supuestos iniciales
+
 - Firebase será la infraestructura inicial.
 - El dominio debe poder migrar en el futuro.
 - El usuario autenticado es el actor principal del MVP.
@@ -77,10 +85,10 @@ El producto debe sentirse como un álbum digital coleccionable, auditable y exte
 - El álbum y el catálogo tendrán esquema suficientemente estable para empezar.
 
 ## Riesgos del producto
+
 - Los usuarios pueden intentar manipular el cliente.
 - El catálogo y las reglas pueden crecer más rápido que la arquitectura inicial.
 - El sobre diario puede ser abusado si la lógica no está bien protegida.
 - La geolocalización puede ser falsificada.
 - El intercambio entre usuarios introduce fraude y complejidad futura.
 - La separación entre dominio e infraestructura puede romperse si no se disciplina el diseño.
-

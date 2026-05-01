@@ -1,6 +1,7 @@
 # Tech Spec
 
 ## Stack elegido
+
 - Frontend: React + TypeScript + Vite.
 - Backend inicial: Firebase Cloud Functions.
 - Auth: Firebase Auth.
@@ -11,7 +12,9 @@
 - Tipado: TypeScript estricto.
 
 ## Arquitectura general
+
 El sistema se organiza como monorepo con capas separadas por responsabilidad:
+
 - `packages/domain`: reglas puras del negocio.
 - `packages/application`: casos de uso.
 - `packages/contracts`: DTOs, tipos compartidos y errores compartidos.
@@ -22,6 +25,7 @@ El sistema se organiza como monorepo con capas separadas por responsabilidad:
 La idea central es que el dominio y los casos de uso no dependan de Firebase. Firebase es un detalle de infraestructura reemplazable.
 
 ## Estructura de carpetas propuesta
+
 - `apps/web/`
 - `functions/`
 - `packages/domain/`
@@ -31,6 +35,7 @@ La idea central es que el dominio y los casos de uso no dependan de Firebase. Fi
 - `docs/`
 
 Estructura interna sugerida:
+
 - `packages/domain/src/entities/`
 - `packages/domain/src/value-objects/`
 - `packages/domain/src/services/`
@@ -49,6 +54,7 @@ Estructura interna sugerida:
 - `apps/web/src/features/`
 
 ## Responsabilidades del frontend
+
 - Renderizar UI y estados.
 - Autenticación de usuario.
 - Consumir contratos tipados.
@@ -58,6 +64,7 @@ Estructura interna sugerida:
 - Nunca escribir directamente datos sensibles.
 
 ## Responsabilidades de Cloud Functions
+
 - Recibir requests.
 - Validar auth básica.
 - Validar permisos y contexto.
@@ -67,6 +74,7 @@ Estructura interna sugerida:
 - Mantener auditoría de operaciones críticas.
 
 ## Responsabilidades de packages/domain
+
 - Modelar entidades del álbum.
 - Definir reglas puras del negocio.
 - Validar invariantes del dominio.
@@ -74,6 +82,7 @@ Estructura interna sugerida:
 - No importar Firebase ni SDKs de infraestructura.
 
 ## Responsabilidades de packages/application
+
 - Orquestar casos de uso.
 - Definir puertos de entrada y salida.
 - Coordinar transacciones lógicas.
@@ -82,6 +91,7 @@ Estructura interna sugerida:
 - No importar Firebase directamente.
 
 ## Responsabilidades de packages/contracts
+
 - Definir DTOs y comandos.
 - Definir respuestas de casos de uso.
 - Definir errores compartidos.
@@ -89,6 +99,7 @@ Estructura interna sugerida:
 - Servir de frontera estable entre frontend y backend.
 
 ## Responsabilidades de packages/infra-firebase
+
 - Implementar repositorios.
 - Implementar acceso a Firestore.
 - Implementar integración con Firebase Auth.
@@ -96,6 +107,7 @@ Estructura interna sugerida:
 - Adaptarse a puertos definidos por `packages/application`.
 
 ## Estrategia de ambientes dev/prod
+
 - `dev`: emuladores o proyectos de desarrollo separados.
 - `prod`: proyecto Firebase productivo con reglas y funciones desplegadas.
 - Variables de entorno separadas por app y por función.
@@ -103,7 +115,9 @@ Estructura interna sugerida:
 - Datos de prueba no deben mezclarse con producción.
 
 ## Comandos esperados
+
 Los comandos finales del repo deberían cubrir como mínimo:
+
 - instalar dependencias
 - levantar frontend en modo desarrollo
 - levantar funciones localmente
@@ -114,6 +128,7 @@ Los comandos finales del repo deberían cubrir como mínimo:
 - deploy de hosting y functions
 
 ## Estrategia para no acoplar el dominio a Firebase
+
 - El dominio no conoce Firestore, Auth ni Admin SDK.
 - Los casos de uso dependen de interfaces, no de implementaciones.
 - La persistencia se inyecta por puertos.
@@ -121,10 +136,10 @@ Los comandos finales del repo deberían cubrir como mínimo:
 - Las funciones serverless actúan como adaptadores.
 
 ## Estrategia futura para migrar backend
+
 - Mantener contratos estables entre frontend y backend.
 - Mantener casos de uso independientes del transporte.
 - Reemplazar `functions` por otra capa adaptadora sin tocar dominio ni aplicación.
 - Reimplementar `packages/infra-firebase` por otra infraestructura, o crear una nueva infraestructura paralela.
 - Migrar endpoint por endpoint, conservando contratos y tests de casos de uso.
 - Si se migra a PostgreSQL, Supabase, MongoDB, Cloud Run, AWS, Railway o Render, el cambio debería afectar infraestructura y adaptadores, no reglas del álbum.
-

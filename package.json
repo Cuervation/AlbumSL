@@ -1,0 +1,41 @@
+{
+  "name": "albumsl",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "functions",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm --workspace @albumsl/web run dev",
+    "build": "npm run build:packages && npm run build:functions && npm run build:web",
+    "build:packages": "npm --workspace @albumsl/domain run build && npm --workspace @albumsl/contracts run build && npm --workspace @albumsl/application run build && npm --workspace @albumsl/infra-firebase run build",
+    "build:functions": "npm --workspace @albumsl/functions run build",
+    "build:web": "npm --workspace @albumsl/web run build",
+    "lint": "eslint .",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "npm run typecheck:packages && npm --workspace @albumsl/functions run typecheck && npm --workspace @albumsl/web run typecheck",
+    "typecheck:packages": "npm run build:packages",
+    "validate": "npm run typecheck && npm run lint && npm run test && npm run build && npm run format:check",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.25.1",
+    "@types/node": "^22.15.3",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "@vitejs/plugin-react": "^4.4.1",
+    "eslint": "^9.25.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.0.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.31.0",
+    "vite": "^6.3.4",
+    "vitest": "^3.1.2"
+  }
+}

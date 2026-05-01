@@ -1,6 +1,7 @@
 # Roadmap
 
 ## MVP 0
+
 - Definir base técnica y documental.
 - Levantar monorepo.
 - Establecer contratos y dominio mínimo.
@@ -8,6 +9,7 @@
 - Crear reglas base de seguridad.
 
 ## MVP 1
+
 - Auth y perfil básico.
 - Catálogo de figuritas.
 - Álbum y progreso.
@@ -16,6 +18,7 @@
 - Auditoría de eventos críticos.
 
 ## Post-MVP
+
 - Repetidas con mayor detalle.
 - Sobre por estadio.
 - Admin básico.
@@ -23,6 +26,7 @@
 - CI/CD.
 
 ## Funcionalidades futuras
+
 - Intercambio entre usuarios.
 - Sobres por promociones.
 - Sobres por eventos.
@@ -33,6 +37,7 @@
 - Ranking y logros.
 
 ## Orden recomendado de implementación
+
 1. Base DevOps del repo.
 2. Dominio y contratos.
 3. Firebase schema y security rules.
@@ -49,7 +54,7 @@
 14. Hardening final.
 
 ## Notas de priorización
+
 - Todo lo sensible debe pasar por backend desde el principio.
 - La UI puede avanzar en paralelo si consume contratos estables.
 - Las features futuras deben entrar como slices independientes, no como código mezclado en el núcleo.
-
