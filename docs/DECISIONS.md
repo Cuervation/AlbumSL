@@ -99,3 +99,13 @@ Motivo: Permite validar el monorepo desde el inicio con herramientas livianas y 
 Alternativas consideradas: Jest, configuraciones ESLint legacy o dejar formato manual.
 Impacto: El repo queda con comandos consistentes de typecheck, lint, test, build y validate.
 Riesgos: La configuracion puede necesitar ajustes cuando crezcan reglas especificas de React, Firebase o testing.
+
+## DEC-011 - Validar distribucion del catalogo con tolerancia inicial
+
+Fecha: 2026-04-30
+Estado: Aprobada
+Decision: Usar una tolerancia inicial de 5 puntos porcentuales para validar la distribucion 30% `PRE_1990` y 70% `POST_1990`.
+Motivo: La regla de producto habla de una distribucion aproximada, no exacta.
+Alternativas consideradas: Exigir 30/70 exacto o no validar distribucion hasta cargar el catalogo real.
+Impacto: El dominio puede detectar catalogos claramente desviados sin bloquear pequenas variaciones editoriales.
+Riesgos: La tolerancia puede necesitar ajuste cuando exista el catalogo curado definitivo.

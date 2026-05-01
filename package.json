@@ -15,7 +15,7 @@
     "build:functions": "npm --workspace @albumsl/functions run build",
     "build:web": "npm --workspace @albumsl/web run build",
     "lint": "eslint .",
-    "test": "vitest run --passWithNoTests",
+    "test": "npm run build:packages && vitest run --passWithNoTests",
     "typecheck": "npm run typecheck:packages && npm --workspace @albumsl/functions run typecheck && npm --workspace @albumsl/web run typecheck",
     "typecheck:packages": "npm run build:packages",
     "validate": "npm run typecheck && npm run lint && npm run test && npm run build && npm run format:check",
