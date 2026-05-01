@@ -1,13 +1,15 @@
 import {
   canPasteSticker,
+  calculateAlbumProgress,
   pasteSticker,
+  type AlbumProgress,
   type StickerId,
   type UserSticker,
   validateUserSticker,
 } from "@albumsl/domain";
 
 import { ApplicationError } from "../errors.js";
-import type { UserStickerRepository } from "../ports.js";
+import type { Clock, TransactionRunner } from "../ports.js";
 
 export interface PasteStickerInput {
   readonly userId: string;
@@ -15,36 +17,92 @@ export interface PasteStickerInput {
 }
 
 export interface PasteStickerDependencies {
-  readonly userStickerRepository: Pick<UserStickerRepository, "findByUserIdAndStickerId" | "save">;
+  readonly transactionRunner: TransactionRunner;
+  readonly clock: Clock;
+}
+
+export interface PasteStickerResult {
+  readonly userSticker: UserSticker;
+  readonly albumProgress: AlbumProgress;
 }
 
 export async function pasteStickerUseCase(
   input: PasteStickerInput,
   dependencies: PasteStickerDependencies,
-): Promise<UserSticker> {
-  const userSticker = await dependencies.userStickerRepository.findByUserIdAndStickerId(
-    input.userId,
-    input.stickerId,
-  );
+): Promise<PasteStickerResult> {
+  const userId = input.userId.trim();
+  const stickerId = input.stickerId.trim();
 
-  if (!userSticker) {
-    throw new ApplicationError("STICKER_NOT_FOUND", "Sticker was not found in user collection");
+  if (userId.length === 0 || stickerId.length === 0) {
+    throw new ApplicationError("INVALID_ARGUMENT", "userId and stickerId are required");
   }
 
-  const validation = validateUserSticker(userSticker);
-
-  if (!validation.isValid) {
-    throw new ApplicationError("INVALID_ARGUMENT", "User sticker is invalid", validation.errors);
-  }
-
-  if (!canPasteSticker(userSticker)) {
-    throw new ApplicationError(
-      "INSUFFICIENT_QUANTITY",
-      "User does not have an available sticker to paste",
+  return dependencies.transactionRunner.run(async (repositories) => {
+    const now = dependencies.clock.now();
+    const userSticker = await repositories.userStickerRepository.findByUserIdAndStickerId(
+      userId,
+      stickerId,
     );
-  }
 
-  const updatedUserSticker = pasteSticker(userSticker);
+    if (!userSticker) {
+      throw new ApplicationError(
+        "INSUFFICIENT_QUANTITY",
+        "User does not have this sticker available to paste",
+      );
+    }
 
-  return dependencies.userStickerRepository.save(input.userId, updatedUserSticker);
+    const validation = validateUserSticker(userSticker);
+
+    if (!validation.isValid) {
+      throw new ApplicationError("INVALID_ARGUMENT", "User sticker is invalid", validation.errors);
+    }
+
+    if (!canPasteSticker(userSticker)) {
+      throw new ApplicationError(
+        "INSUFFICIENT_QUANTITY",
+        "User does not have an available sticker to paste",
+      );
+    }
+
+    const [userStickers, totalStickers, existingSummary] = await Promise.all([
+      repositories.userStickerRepository.findByUserId(userId),
+      repositories.stickerCatalogRepository.count(),
+      repositories.userAlbumRepository.findByUserId(userId),
+    ]);
+    const updatedUserSticker = {
+      ...pasteSticker(userSticker),
+      updatedAt: now,
+    };
+    const updatedUserStickers = replaceUserSticker(userStickers, updatedUserSticker);
+    const albumProgress = calculateAlbumProgress(updatedUserStickers, totalStickers);
+
+    await repositories.userStickerRepository.save(userId, updatedUserSticker);
+    await repositories.userAlbumRepository.save({
+      userId,
+      totalStickers: albumProgress.totalStickers,
+      collectedCount: albumProgress.collectedStickers,
+      pastedCount: albumProgress.pastedStickers,
+      repeatedCount: albumProgress.repeatedStickers,
+      completionPercentage: albumProgress.completionPercentage,
+      createdAt: existingSummary?.createdAt ?? now,
+      updatedAt: now,
+    });
+
+    return {
+      userSticker: updatedUserSticker,
+      albumProgress,
+    };
+  });
+}
+
+function replaceUserSticker(
+  userStickers: readonly UserSticker[],
+  updatedUserSticker: UserSticker,
+): readonly UserSticker[] {
+  const userStickersById = new Map(
+    userStickers.map((userSticker) => [userSticker.stickerId, userSticker]),
+  );
+  userStickersById.set(updatedUserSticker.stickerId, updatedUserSticker);
+
+  return [...userStickersById.values()];
 }

@@ -30,6 +30,26 @@ npm.cmd install
 - `packages/infra-firebase`: implementaciones concretas con Firebase Admin SDK y Firestore.
 - `docs`: documentacion tecnica y de producto.
 
+## Agentes operativos
+
+`AGENTS.md` es el indice general de roles especializados para trabajar en el proyecto sin perder
+reglas de arquitectura, seguridad y producto.
+
+Los agentes especificos viven en `docs/agents/`:
+
+- Product / Spec Agent
+- Architect / DevOps Agent
+- Frontend Agent
+- Backend / Firebase Functions Agent
+- Domain / Application Agent
+- QA Agent
+- Security / Ciberseguridad Agent
+- Data / Content Agent
+- Release / Operations Agent
+
+En proximos prompts, se puede pedir que Codex actue como uno o varios agentes segun la tarea. No
+hace falta activar todos siempre; elegir el conjunto minimo suficiente.
+
 ## Comandos principales
 
 ```bash

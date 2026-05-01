@@ -3,6 +3,7 @@ export * from "./entities.js";
 export * from "./enums.js";
 export * from "./errors.js";
 export * from "./helpers/album-progress.js";
+export * from "./helpers/album-view.js";
 export * from "./helpers/catalog-validation.js";
 export * from "./helpers/pack-selection.js";
 export * from "./helpers/user-stickers.js";

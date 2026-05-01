@@ -71,7 +71,10 @@ export interface RandomGenerator {
 
 export interface PackOpenRepositories {
   readonly stickerCatalogRepository: Pick<StickerCatalogRepository, "count" | "getActiveStickers">;
-  readonly userStickerRepository: Pick<UserStickerRepository, "findByUserId" | "saveMany">;
+  readonly userStickerRepository: Pick<
+    UserStickerRepository,
+    "findByUserId" | "findByUserIdAndStickerId" | "save" | "saveMany"
+  >;
   readonly packClaimRepository: Pick<PackClaimRepository, "findById" | "save">;
   readonly packOpeningRepository: Pick<PackOpeningRepository, "save">;
   readonly userAlbumRepository: Pick<UserAlbumRepository, "findByUserId" | "save">;

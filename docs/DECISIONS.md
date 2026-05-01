@@ -179,3 +179,33 @@ Motivo: Permite validar el flujo sin introducir administracion dinamica prematur
 Alternativas consideradas: Leer pesos desde `system/config` desde el primer cambio.
 Impacto: La configuracion es testeable y portable, y luego puede migrar a Firestore.
 Riesgos: Cambios de pesos requieren deploy hasta implementar config dinamica.
+
+## DEC-019 - Construir vista de album como helper puro
+
+Fecha: 2026-05-01
+Estado: Aprobada
+Decision: Implementar `buildAlbumView` en `packages/domain` para combinar catalogo e inventario.
+Motivo: La combinacion de slots es regla pura reutilizable y no debe depender de React ni Firebase.
+Alternativas consideradas: Resolver la combinacion dentro de componentes React.
+Impacto: La UI queda mas delgada y la logica se puede testear sin navegador ni infraestructura.
+Riesgos: El dominio expone un modelo cercano a UI; debe mantenerse libre de detalles visuales.
+
+## DEC-020 - Pegar figuritas mediante callable transaccional
+
+Fecha: 2026-05-01
+Estado: Aprobada
+Decision: Exponer `pasteSticker` como Cloud Function callable que llama `pasteStickerUseCase`.
+Motivo: Pegar cambia inventario y contadores sensibles, por lo que no debe hacerse con escrituras cliente.
+Alternativas consideradas: Permitir update directo de `pastedQuantity` desde frontend con Rules complejas.
+Impacto: Mantiene seguridad y consistencia del resumen del album.
+Riesgos: Requiere emuladores o proyecto Firebase configurado para probar el flujo completo localmente.
+
+## DEC-021 - Usar AGENTS.md como indice operativo de agentes
+
+Fecha: 2026-05-01
+Estado: Aprobada
+Decision: Usar `AGENTS.md` como indice general y `docs/agents/*.md` como documentacion separada de agentes especializados.
+Motivo: El proyecto ya tiene varias capas y necesita reglas operativas claras para que futuros prompts o agentes trabajen sin romper arquitectura, seguridad ni producto.
+Alternativas consideradas: Mantener instrucciones de agentes mezcladas en README o en documentos de feature.
+Impacto: Facilita elegir roles por tarea, evita activar todos los agentes innecesariamente y centraliza reglas globales.
+Riesgos: La documentacion de agentes debe mantenerse actualizada cuando cambien reglas o responsabilidades.

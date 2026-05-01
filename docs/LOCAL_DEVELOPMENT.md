@@ -26,6 +26,23 @@ npm run validate
 
 `npm run validate` ejecuta typecheck, lint, tests, build y chequeo de formato.
 
+## Flujo de trabajo con agentes
+
+Antes de pedir o implementar cambios, revisar `AGENTS.md` y elegir solo los roles necesarios para
+la tarea.
+
+Los agentes especificos estan en `docs/agents/`.
+
+Ejemplos:
+
+- UI no sensible: Frontend Agent + QA Agent.
+- Operacion sensible: Domain / Application Agent + Backend / Firebase Functions Agent + Security / Ciberseguridad Agent + QA Agent.
+- Catalogo o seed: Data / Content Agent + Domain / Application Agent + QA Agent.
+- Deploy: Release / Operations Agent + Architect / DevOps Agent + Security / Ciberseguridad Agent.
+
+Aunque la tarea sea solo documental, cerrar con `npm run validate` para verificar que el repo sigue
+consistente.
+
 ## Correr el frontend
 
 ```bash
@@ -137,6 +154,29 @@ Para usar emuladores desde el frontend, configurar:
 ```bash
 VITE_USE_FIREBASE_EMULATORS=true
 ```
+
+## Probar UI del album
+
+Con el frontend corriendo:
+
+```bash
+npm run dev
+```
+
+Rutas protegidas principales:
+
+- `/album`: album, progreso, filtros y busqueda
+- `/album/:stickerId`: detalle de figurita y boton para pegar si hay cantidad disponible
+- `/duplicates`: copias disponibles/repetidas
+
+Para que haya datos utiles:
+
+- autenticar con Google o emulador de Auth
+- cargar catalogo con `npm run seed:stickers`
+- reclamar y abrir un sobre desde `/open-pack`
+
+La accion de pegar llama la callable `pasteSticker`. El frontend no escribe directo en
+`userStickers` ni en `userAlbums`.
 
 ## Tests futuros de Firestore Rules
 

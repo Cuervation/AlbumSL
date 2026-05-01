@@ -17,6 +17,8 @@ export function AppLayout(): React.JSX.Element {
           {user ? (
             <>
               <NavLink to="/dashboard">Dashboard</NavLink>
+              <NavLink to="/album">Mi Album</NavLink>
+              <NavLink to="/duplicates">Repetidas</NavLink>
               <NavLink to="/catalog">Catalogo</NavLink>
               <NavLink to="/open-pack">Sobres</NavLink>
             </>

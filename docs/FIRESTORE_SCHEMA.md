@@ -144,6 +144,7 @@ Seguridad:
 
 - los contadores son sensibles y no se aceptan updates desde cliente
 - la apertura de sobres recalcula el resumen desde el inventario actualizado
+- `pasteSticker` tambien recalcula el resumen desde backend despues de incrementar `pastedQuantity`
 
 ## userStickers/{userId}/items/{stickerId}
 
@@ -186,6 +187,7 @@ Seguridad:
 
 - el cliente no puede crear items ni incrementar `quantity`
 - el pegado debe pasar por Cloud Function
+- el cliente no puede incrementar `pastedQuantity` directamente
 
 ## packClaims/{claimId}
 

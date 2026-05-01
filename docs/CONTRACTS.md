@@ -28,8 +28,12 @@ esperados.
 ## DTOs de album
 
 - `AlbumProgressDto`
+- `UserAlbumSummaryDto`
 - `PasteStickerRequestDto`
 - `PasteStickerResponseDto`
+
+`PasteStickerResponseDto` devuelve `stickerId`, `quantity`, `pastedQuantity`,
+`repeatedQuantity` y `albumProgress`.
 
 ## DTOs de sobres
 

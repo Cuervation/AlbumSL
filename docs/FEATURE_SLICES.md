@@ -177,6 +177,16 @@ Archivos esperados:
 - `packages/application/src/use-cases/stick-sticker.ts`
 - `apps/web/src/features/album/`
 
+Estado implementado inicial:
+
+- pantalla protegida `/album` con resumen, grilla, busqueda y filtros
+- pantalla `/album/:stickerId` con detalle y accion segura para pegar
+- helper puro `buildAlbumView` en `packages/domain`
+- `pasteStickerUseCase` en `packages/application`
+- callable `pasteSticker` en `functions`
+- lectura frontend encapsulada en `apps/web/src/features/album`
+- escrituras directas a inventario y resumen siguen bloqueadas al frontend
+
 ## pack-opening
 
 Objetivo: abrir sobres y recibir figuritas.
@@ -334,6 +344,14 @@ Archivos esperados:
 
 - `packages/domain/src/entities/inventory.ts`
 - `apps/web/src/features/duplicates/`
+
+Estado implementado inicial:
+
+- pantalla protegida `/duplicates`
+- reutiliza `useAlbumData`
+- muestra slots con `repeatedQuantity > 0`
+- no implementa intercambio entre usuarios
+- no permite modificar cantidades desde frontend
 
 ## admin futuro
 

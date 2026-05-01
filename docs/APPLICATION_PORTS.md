@@ -48,6 +48,7 @@ La infraestructura concreta debe entrar por puertos.
 
 - `run`
 - inyecta repositorios transaccionales para apertura de sobres
+- tambien se usa para pegar figuritas y mantener inventario/resumen consistentes
 
 Servicios:
 
@@ -71,6 +72,8 @@ Servicios:
 - valida estado con dominio
 - pega una unidad con `pasteSticker`
 - persiste via `UserStickerRepository`
+- recalcula progreso con `StickerCatalogRepository` y `UserAlbumRepository`
+- debe ejecutarse dentro de `TransactionRunner`
 
 `claimDailyPackUseCase`:
 

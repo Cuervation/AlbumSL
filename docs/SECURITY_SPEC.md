@@ -74,6 +74,18 @@
 - El frontend no puede modificar `userAlbums`.
 - Las Cloud Functions deben rechazar payloads con figuritas elegidas por el cliente.
 
+## Reglas para pegado de figuritas
+
+- El pegado se ejecuta mediante callable `pasteSticker`.
+- El frontend solo envia `stickerId`.
+- La identidad confiable sale de `request.auth.uid`, no del payload.
+- El backend lee `userStickers/{uid}/items/{stickerId}` dentro de una transaccion.
+- Si la figurita no existe para el usuario, devuelve `INSUFFICIENT_QUANTITY`.
+- Si `pastedQuantity >= quantity`, devuelve `INSUFFICIENT_QUANTITY`.
+- Si el estado es invalido, devuelve `INVALID_ARGUMENT`.
+- El backend incrementa `pastedQuantity` y recalcula `userAlbums/{uid}`.
+- El frontend no puede pegar escribiendo directo en Firestore.
+
 ## Catalogo y seed
 
 - El frontend solo lee `stickers` activos.

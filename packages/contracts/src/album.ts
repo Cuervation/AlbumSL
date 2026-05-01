@@ -1,5 +1,3 @@
-import type { UserStickerDto } from "./stickers.js";
-
 export interface AlbumProgressDto {
   readonly totalStickers: number;
   readonly collectedStickers: number;
@@ -13,6 +11,20 @@ export interface PasteStickerRequestDto {
 }
 
 export interface PasteStickerResponseDto {
-  readonly userSticker: UserStickerDto;
-  readonly progress: AlbumProgressDto;
+  readonly stickerId: string;
+  readonly quantity: number;
+  readonly pastedQuantity: number;
+  readonly repeatedQuantity: number;
+  readonly albumProgress: AlbumProgressDto;
+}
+
+export interface UserAlbumSummaryDto {
+  readonly userId: string;
+  readonly totalStickers: number;
+  readonly collectedCount: number;
+  readonly pastedCount: number;
+  readonly repeatedCount: number;
+  readonly completionPercentage: number;
+  readonly createdAt: string;
+  readonly updatedAt: string;
 }

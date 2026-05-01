@@ -158,6 +158,14 @@ class InMemoryRepositories implements PackOpenRepositories {
 
   public readonly userStickerRepository = {
     findByUserId: async (): Promise<readonly UserSticker[]> => [...this.userStickers.values()],
+    findByUserIdAndStickerId: async (
+      _userId: string,
+      stickerId: string,
+    ): Promise<UserSticker | null> => this.userStickers.get(stickerId) ?? null,
+    save: async (_userId: string, userSticker: UserSticker): Promise<UserSticker> => {
+      this.userStickers.set(userSticker.stickerId, userSticker);
+      return userSticker;
+    },
     saveMany: async (
       _userId: string,
       userStickers: readonly UserSticker[],

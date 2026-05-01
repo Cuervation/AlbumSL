@@ -4,11 +4,14 @@ import type {
   OpenPackRequestDto,
   OpenPackResponseDto,
   PackSourceDto,
+  PasteStickerRequestDto,
+  PasteStickerResponseDto,
 } from "@albumsl/contracts";
 import {
   claimDailyPackUseCase,
   createApplicationContext,
   openPackUseCase,
+  pasteStickerUseCase,
 } from "@albumsl/application";
 import { createFirebaseInfrastructure } from "@albumsl/infra-firebase";
 import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
@@ -100,6 +103,45 @@ export const openPack = onCall<OpenPackRequestDto>(
   },
 );
 
+export const pasteSticker = onCall<PasteStickerRequestDto>(
+  async (request): Promise<PasteStickerResponseDto> => {
+    try {
+      const userId = getAuthenticatedUserId(request.auth?.uid);
+      const stickerId = parseStickerId(request.data?.stickerId);
+      const dependencies = createFunctionDependencies();
+      const result = await pasteStickerUseCase(
+        {
+          userId,
+          stickerId,
+        },
+        {
+          transactionRunner: dependencies.transactionRunner,
+          clock: dependencies.clock,
+        },
+      );
+
+      return {
+        stickerId: result.userSticker.stickerId,
+        quantity: result.userSticker.quantity,
+        pastedQuantity: result.userSticker.pastedQuantity,
+        repeatedQuantity: Math.max(
+          result.userSticker.quantity - result.userSticker.pastedQuantity,
+          0,
+        ),
+        albumProgress: {
+          totalStickers: result.albumProgress.totalStickers,
+          collectedStickers: result.albumProgress.collectedStickers,
+          pastedStickers: result.albumProgress.pastedStickers,
+          repeatedStickers: result.albumProgress.repeatedStickers,
+          completionPercentage: result.albumProgress.completionPercentage,
+        },
+      };
+    } catch (error) {
+      throw toHttpsError(error);
+    }
+  },
+);
+
 const PACK_SOURCES: readonly PackSourceDto[] = ["DAILY", "STADIUM", "PROMO", "ADMIN"];
 
 function getAuthenticatedUserId(userId: string | undefined): string {
@@ -120,4 +162,14 @@ function parsePackSource(source: unknown): PackSourceDto {
   }
 
   return source as PackSourceDto;
+}
+
+function parseStickerId(stickerId: unknown): string {
+  if (typeof stickerId !== "string" || stickerId.trim().length === 0) {
+    throw new HttpsError("invalid-argument", "Invalid sticker id", {
+      code: "INVALID_ARGUMENT",
+    });
+  }
+
+  return stickerId.trim();
 }

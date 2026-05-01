@@ -101,6 +101,8 @@ El dominio vive en `packages/domain`.
 - `calculatePackResult(previousUserStickers, pickedStickers)`
 - `calculateUpdatedUserStickers(previousUserStickers, pickedStickers)`
 - `validatePackConfig(config)`
+- `buildAlbumView(stickers, userStickers)`
+- `getStickerUserStatus(userSticker)`
 
 ## Validaciones
 
@@ -116,3 +118,7 @@ placeholder y distribucion esperada, sin tocar infraestructura ni persistencia.
 
 Los helpers de sobres no usan `Math.random` directamente. Reciben un random inyectado para que la
 seleccion sea testeable y portable.
+
+`buildAlbumView` combina catalogo e inventario para construir slots de UI sin depender de React ni
+Firebase. Ordena por `sortOrder` y `number`, expone estado visual y mantiene la regla existente de
+`repeatedQuantity`.
