@@ -2,3 +2,4 @@ export const MIN_STICKER_CATALOG_SIZE = 600;
 export const PRE_1990_TARGET_RATIO = 0.3;
 export const POST_1990_TARGET_RATIO = 0.7;
 export const STICKER_CATALOG_DISTRIBUTION_TOLERANCE = 0.05;
+export const DEFAULT_PACK_SIZE = 5;

@@ -1,4 +1,4 @@
-import type { UserStickerDto } from "./stickers";
+import type { UserStickerDto } from "./stickers.js";
 
 export interface AlbumProgressDto {
   readonly totalStickers: number;

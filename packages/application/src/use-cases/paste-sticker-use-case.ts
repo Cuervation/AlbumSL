@@ -6,8 +6,8 @@ import {
   validateUserSticker,
 } from "@albumsl/domain";
 
-import { ApplicationError } from "../errors";
-import type { UserStickerRepository } from "../ports";
+import { ApplicationError } from "../errors.js";
+import type { UserStickerRepository } from "../ports.js";
 
 export interface PasteStickerInput {
   readonly userId: string;

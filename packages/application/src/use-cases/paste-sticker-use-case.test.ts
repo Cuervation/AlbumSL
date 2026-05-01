@@ -10,6 +10,7 @@ function createRepository(userSticker: UserSticker | null): UserStickerRepositor
     findByUserId: async () => (userSticker ? [userSticker] : []),
     findByUserIdAndStickerId: async () => userSticker,
     save: async (_userId, updatedUserSticker) => updatedUserSticker,
+    saveMany: async (_userId, userStickers) => userStickers,
   };
 }
 

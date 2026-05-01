@@ -1,5 +1,5 @@
-import type { AlbumProgress, UserSticker } from "../entities";
-import { getRepeatedQuantity, isStickerCollected, isStickerPasted } from "./user-stickers";
+import type { AlbumProgress, UserSticker } from "../entities.js";
+import { getRepeatedQuantity, isStickerCollected, isStickerPasted } from "./user-stickers.js";
 
 export function countCollectedStickers(userStickers: readonly UserSticker[]): number {
   return userStickers.filter(isStickerCollected).length;

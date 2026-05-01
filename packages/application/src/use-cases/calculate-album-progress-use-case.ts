@@ -1,6 +1,6 @@
 import { calculateAlbumProgress, type AlbumProgress } from "@albumsl/domain";
 
-import type { StickerCatalogRepository, UserStickerRepository } from "../ports";
+import type { StickerCatalogRepository, UserStickerRepository } from "../ports.js";
 
 export interface CalculateAlbumProgressInput {
   readonly userId: string;

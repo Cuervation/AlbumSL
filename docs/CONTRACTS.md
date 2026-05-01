@@ -15,6 +15,16 @@ esperados.
 - `StickerEraDto`
 - `StickerRarityDto`
 
+`StickerDto` incluye `id`, `number`, `title`, `description`, `category`, `era`, `rarity`,
+`imageUrl`, `tags`, `sortOrder`, `active`, `createdAt` y `updatedAt`.
+
+## DTOs de auth y perfil
+
+- `AuthenticatedUserDto`
+- `UserProfileDto`
+- `UserProfileUpdateDto`
+- `UserRole`
+
 ## DTOs de album
 
 - `AlbumProgressDto`
@@ -25,12 +35,16 @@ esperados.
 
 - `OpenPackRequestDto`
 - `OpenPackResponseDto`
+- `PackStickerResultDto`
 - `ClaimDailyPackRequestDto`
 - `ClaimDailyPackResponseDto`
 - `ClaimStadiumPackRequestDto`
 - `ClaimStadiumPackResponseDto`
 - `PackSourceDto`
 - `ClaimStatusDto`
+
+`OpenPackResponseDto` devuelve `packOpeningId`, `source`, `stickers`, `newCount`,
+`repeatedCount` y `createdAt`. Cada sticker incluye `isNew` y `quantityAfter`.
 
 ## Errores API
 
@@ -41,7 +55,10 @@ esperados.
 - `INVALID_ARGUMENT`
 - `ALREADY_CLAIMED`
 - `INVALID_CLAIM`
+- `CLAIM_EXPIRED`
+- `CLAIM_ALREADY_CONSUMED`
 - `PACK_NOT_AVAILABLE`
+- `NO_ACTIVE_STICKERS`
 - `STICKER_NOT_FOUND`
 - `INSUFFICIENT_QUANTITY`
 - `INTERNAL_ERROR`

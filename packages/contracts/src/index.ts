@@ -1,7 +1,8 @@
-export * from "./album";
-export * from "./errors";
-export * from "./packs";
-export * from "./stickers";
+export * from "./album.js";
+export * from "./auth.js";
+export * from "./errors.js";
+export * from "./packs.js";
+export * from "./stickers.js";
 
 export interface HealthResponseDto {
   readonly ok: true;

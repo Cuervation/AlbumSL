@@ -87,8 +87,20 @@ El dominio vive en `packages/domain`.
 - `countCollectedStickers(userStickers)`
 - `countPastedStickers(userStickers)`
 - `countRepeatedStickers(userStickers)`
+- `validateStickerCatalog(stickers, options)`
+- `assertUniqueStickerNumbers(stickers)`
+- `assertUniqueStickerIds(stickers)`
+- `getStickerCatalogStats(stickers)`
+- `getStickerCatalogDistribution(stickers)`
 - `validateStickerCatalogDistribution(stickers)`
 - `validateUserSticker(userSticker)`
+- `getRarityWeight(rarity, weights)`
+- `groupStickersByRarity(stickers)`
+- `pickStickerByWeightedRarity(stickers, weights, random)`
+- `pickPackStickers(stickers, config, random)`
+- `calculatePackResult(previousUserStickers, pickedStickers)`
+- `calculateUpdatedUserStickers(previousUserStickers, pickedStickers)`
+- `validatePackConfig(config)`
 
 ## Validaciones
 
@@ -97,5 +109,10 @@ El dominio vive en `packages/domain`.
 `pasteSticker` lanza `DomainValidationError` cuando el estado es invalido o no hay cantidad
 disponible para pegar.
 
-`validateStickerCatalogDistribution` devuelve conteos, ratios y errores, sin tocar
-infraestructura ni persistencia.
+`validateStickerCatalog` verifica ids, numeros, campos requeridos, enums, orden, imagenes
+placeholder y distribucion esperada, sin tocar infraestructura ni persistencia.
+
+`validateStickerCatalogDistribution` devuelve conteos, ratios y errores por era.
+
+Los helpers de sobres no usan `Math.random` directamente. Reciben un random inyectado para que la
+seleccion sea testeable y portable.

@@ -11,6 +11,9 @@ La infraestructura concreta debe entrar por puertos.
 `StickerCatalogRepository`:
 
 - `count`
+- `getActiveStickers`
+- `getStickerById`
+- `getStickersByIds`
 - `findAll`
 - `findById`
 
@@ -19,9 +22,11 @@ La infraestructura concreta debe entrar por puertos.
 - `findByUserId`
 - `findByUserIdAndStickerId`
 - `save`
+- `saveMany`
 
 `PackClaimRepository`:
 
+- `findById`
 - `findLatestByUserAndSource`
 - `save`
 
@@ -33,6 +38,16 @@ La infraestructura concreta debe entrar por puertos.
 `AuditLogRepository`:
 
 - `record`
+
+`UserAlbumRepository`:
+
+- `findByUserId`
+- `save`
+
+`TransactionRunner`:
+
+- `run`
+- inyecta repositorios transaccionales para apertura de sobres
 
 Servicios:
 
@@ -56,6 +71,20 @@ Servicios:
 - valida estado con dominio
 - pega una unidad con `pasteSticker`
 - persiste via `UserStickerRepository`
+
+`claimDailyPackUseCase`:
+
+- recibe `userId`
+- calcula fecha diaria con reloj server-side
+- crea o devuelve claim `DAILY` existente
+- no abre el sobre
+
+`openPackUseCase`:
+
+- recibe `userId`, `source` y `claimId`
+- valida ownership, status y expiracion del claim
+- elige figuritas con dominio y random inyectado
+- actualiza inventario, opening, claim, album y audit log dentro de `TransactionRunner`
 
 ## Reglas de acoplamiento
 

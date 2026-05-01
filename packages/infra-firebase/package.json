@@ -12,11 +12,14 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "eslint .",
+    "seed:stickers": "tsx --conditions=source src/seed/seed-stickers.ts",
+    "seed:stickers:dry-run": "tsx --conditions=source src/seed/seed-stickers.ts --dry-run",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@albumsl/application": "0.0.0",
+    "@albumsl/domain": "0.0.0",
     "firebase-admin": "^13.3.0"
   },
   "devDependencies": {}

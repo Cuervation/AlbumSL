@@ -109,3 +109,73 @@ Motivo: La regla de producto habla de una distribucion aproximada, no exacta.
 Alternativas consideradas: Exigir 30/70 exacto o no validar distribucion hasta cargar el catalogo real.
 Impacto: El dominio puede detectar catalogos claramente desviados sin bloquear pequenas variaciones editoriales.
 Riesgos: La tolerancia puede necesitar ajuste cuando exista el catalogo curado definitivo.
+
+## DEC-012 - Bloquear escrituras sensibles desde Firestore client SDK
+
+Fecha: 2026-04-30
+Estado: Aprobada
+Decision: Denegar escrituras cliente a catalogo, inventario, contadores, claims, aperturas, auditoria, eventos y configuracion.
+Motivo: El frontend no debe poder autoasignarse figuritas, crear aperturas validas ni modificar reglas del sistema.
+Alternativas consideradas: Permitir escrituras cliente parciales con validaciones complejas en Rules.
+Impacto: Las operaciones sensibles deberan pasar por Cloud Functions o procesos backend con Admin SDK.
+Riesgos: Requiere implementar endpoints backend antes de que ciertas acciones sean usables desde la UI.
+
+## DEC-013 - Usar subcoleccion por usuario para inventario de figuritas
+
+Fecha: 2026-04-30
+Estado: Aprobada
+Decision: Modelar inventario como `userStickers/{userId}/items/{stickerId}`.
+Motivo: Hace evidente el ownership por path y simplifica lecturas del inventario propio.
+Alternativas consideradas: Coleccion plana `userStickers` con `userId` y `stickerId`.
+Impacto: Las consultas principales del usuario no requieren indice compuesto inicial.
+Riesgos: Consultas globales o analytics futuras requeriran collection group queries e indices especificos.
+
+## DEC-014 - Usar Firebase Auth Client SDK en el frontend para login inicial
+
+Fecha: 2026-04-30
+Estado: Aprobada
+Decision: Implementar login con Google desde `apps/web` usando Firebase Auth Client SDK y crear el perfil inicial en `users/{uid}` cuando no exista.
+Motivo: Firebase Auth es parte del stack inicial y permite habilitar acceso rapido sin introducir backend propio antes de tiempo.
+Alternativas consideradas: Crear perfil solo desde Cloud Functions o esperar a un backend dedicado.
+Impacto: El frontend puede autenticar y crear el perfil minimo, mientras Firestore Rules bloquean elevacion de rol y escrituras sensibles.
+Riesgos: La seguridad del perfil inicial depende de que las Rules se mantengan restrictivas y testeadas con Emulator.
+
+## DEC-015 - Mantener el seed inicial de catalogo como dato puro
+
+Fecha: 2026-04-30
+Estado: Aprobada
+Decision: Ubicar el dataset inicial de stickers en `packages/domain/src/seed/` y ejecutar la escritura a Firestore desde `packages/infra-firebase`.
+Motivo: El catalogo de ejemplo debe poder validarse sin Firebase, mientras la persistencia concreta queda en infraestructura.
+Alternativas consideradas: Guardar el seed solo en un script Firebase o cargarlo desde el frontend.
+Impacto: El dominio conserva portabilidad y el seed real queda controlado por Admin SDK.
+Riesgos: El seed de dominio no debe transformarse en logica de infraestructura ni incluir assets con copyright.
+
+## DEC-016 - Usar claim diario deterministico
+
+Fecha: 2026-05-01
+Estado: Aprobada
+Decision: Generar el claim diario con ID deterministico por usuario y fecha UTC.
+Motivo: Evita duplicados diarios y simplifica idempotencia inicial sin depender del cliente.
+Alternativas consideradas: Crear IDs aleatorios y buscar claims por query diaria.
+Impacto: `claimDailyPack` puede crear o devolver el mismo claim de forma estable.
+Riesgos: La regla de dia UTC puede requerir ajuste si producto define dia local Argentina.
+
+## DEC-017 - Abrir sobres dentro de TransactionRunner
+
+Fecha: 2026-05-01
+Estado: Aprobada
+Decision: Orquestar `openPackUseCase` con `TransactionRunner` para claim, inventario, opening, album y audit log.
+Motivo: Evita doble consumo accidental del mismo claim y agrupa escrituras sensibles.
+Alternativas consideradas: Escrituras Firestore independientes desde la function.
+Impacto: La consistencia queda en infraestructura sin acoplar application a Firebase.
+Riesgos: Las lecturas transaccionales deben ocurrir antes de las escrituras y requieren cuidado al ampliar el flujo.
+
+## DEC-018 - Mantener configuracion inicial de sobres en codigo
+
+Fecha: 2026-05-01
+Estado: Aprobada
+Decision: Definir `packSize` y `rarityWeights` iniciales en dominio como configuracion por defecto.
+Motivo: Permite validar el flujo sin introducir administracion dinamica prematura.
+Alternativas consideradas: Leer pesos desde `system/config` desde el primer cambio.
+Impacto: La configuracion es testeable y portable, y luego puede migrar a Firestore.
+Riesgos: Cambios de pesos requieren deploy hasta implementar config dinamica.

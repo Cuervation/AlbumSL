@@ -1,5 +1,5 @@
-import type { UserSticker } from "../entities";
-import { DomainValidationError, type DomainValidationResult } from "../errors";
+import type { UserSticker } from "../entities.js";
+import { DomainValidationError, type DomainValidationResult } from "../errors.js";
 
 export function validateUserSticker(userSticker: UserSticker): DomainValidationResult {
   const errors: string[] = [];

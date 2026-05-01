@@ -41,6 +41,8 @@ npm run typecheck
 npm run validate
 npm run format
 npm run format:check
+npm run seed:stickers:dry-run
+npm run seed:stickers
 ```
 
 ## Correr frontend
@@ -49,11 +51,25 @@ npm run format:check
 npm run dev
 ```
 
+Antes de levantar el frontend, crear `.env` local a partir de `.env.example` con las variables
+`VITE_FIREBASE_*` del proyecto Firebase. Para emuladores, usar
+`VITE_USE_FIREBASE_EMULATORS=true`.
+
 ## Compilar functions
 
 ```bash
 npm run build:functions
 ```
+
+## Seed del catalogo
+
+```bash
+npm run seed:stickers:dry-run
+npm run seed:stickers
+```
+
+El seed usa Firebase Admin SDK desde `packages/infra-firebase`. Para proyecto real, configurar
+`FIREBASE_PROJECT_ID` y credenciales Admin SDK. Para emulador, usar `FIRESTORE_EMULATOR_HOST`.
 
 ## Validar todo
 
@@ -67,7 +83,8 @@ npm run validate
 2. Completar `.env` a partir de `.env.example`.
 3. Configurar `.firebaserc` localmente o en CI.
 4. Revisar `firebase.json`, `firestore.rules` y `firestore.indexes.json`.
-5. Usar emuladores antes de desplegar cambios sensibles.
+5. Habilitar Google como provider en Firebase Auth.
+6. Usar emuladores antes de desplegar cambios sensibles.
 
 ## Notas de arquitectura
 

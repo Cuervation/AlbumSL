@@ -17,11 +17,16 @@ export interface StickerDto {
   readonly id: string;
   readonly number: number;
   readonly title: string;
+  readonly description: string;
   readonly category: StickerCategoryDto;
   readonly era: StickerEraDto;
   readonly rarity: StickerRarityDto;
+  readonly imageUrl: string;
   readonly tags: readonly string[];
-  readonly description?: string;
+  readonly sortOrder: number;
+  readonly active: boolean;
+  readonly createdAt: string;
+  readonly updatedAt: string;
 }
 
 export interface UserStickerDto {

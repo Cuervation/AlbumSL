@@ -38,6 +38,14 @@ Archivos esperados:
 - `functions/src/routes/auth/`
 - `packages/contracts/src/dtos/auth/`
 
+Estado implementado inicial:
+
+- login con Google en `apps/web`
+- `AuthProvider` y `useAuth`
+- rutas publicas y privadas
+- logout desde frontend
+- operaciones sensibles del album fuera de la UI
+
 ## user-profile
 
 Objetivo: mostrar y mantener perfil básico del usuario.
@@ -74,6 +82,13 @@ Archivos esperados:
 
 - `apps/web/src/features/user-profile/`
 - `packages/application/src/use-cases/initialize-user-profile.ts`
+
+Estado implementado inicial:
+
+- lectura de `users/{uid}`
+- creacion inicial restrictiva si el perfil no existe
+- `role` fijo como `USER` desde frontend
+- updates futuros limitados por Firestore Rules
 
 ## sticker-catalog
 
@@ -112,6 +127,16 @@ Archivos esperados:
 - `packages/domain/src/entities/sticker.ts`
 - `packages/contracts/src/dtos/sticker/`
 - `apps/web/src/features/sticker-catalog/`
+
+Estado implementado inicial:
+
+- entidad `Sticker` con campos completos de catalogo
+- validaciones puras de catalogo en `packages/domain`
+- seed inicial de 50 figuritas en `packages/domain/src/seed/`
+- script idempotente de seed con Admin SDK en `packages/infra-firebase`
+- repositorio `FirestoreStickerCatalogRepository`
+- pantalla protegida `/catalog` para leer figuritas activas
+- escrituras de catalogo denegadas al frontend por Firestore Rules
 
 ## album
 
@@ -191,6 +216,15 @@ Archivos esperados:
 - `packages/application/src/use-cases/open-pack.ts`
 - `functions/src/routes/packs/`
 
+Estado implementado inicial:
+
+- helpers puros de seleccion ponderada en `packages/domain`
+- `openPackUseCase` en `packages/application`
+- repositorios Firestore/Admin SDK en `packages/infra-firebase`
+- callable `openPack` en `functions`
+- pantalla protegida `/open-pack` en `apps/web`
+- consumo transaccional del claim y auditoria de apertura
+
 ## daily-pack
 
 Objetivo: permitir reclamar el sobre diario.
@@ -226,6 +260,13 @@ Archivos esperados:
 
 - `packages/application/src/use-cases/claim-daily-pack.ts`
 - `functions/src/routes/daily-pack/`
+
+Estado implementado inicial:
+
+- `claimDailyPackUseCase` crea o devuelve claim diario existente
+- claim diario con ID deterministico por usuario y fecha UTC
+- callable `claimDailyPack` en `functions`
+- UI minima para reclamar y abrir desde `/open-pack`
 
 ## stadium-pack
 

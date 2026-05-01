@@ -2,6 +2,133 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Base auth helpers. Admin support is prepared for future custom claims.
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function onlyAllowedKeys(keys) {
+      return request.resource.data.keys().hasOnly(keys);
+    }
+
+    function onlyChangedKeys(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    function optionalString(field) {
+      return !(field in request.resource.data)
+        || request.resource.data[field] == null
+        || request.resource.data[field] is string;
+    }
+
+    function isValidUserProfileCreate(userId) {
+      return isOwner(userId)
+        && request.resource.data.keys().hasAll(["uid", "createdAt", "updatedAt", "role"])
+        && onlyAllowedKeys([
+          "uid",
+          "displayName",
+          "email",
+          "photoURL",
+          "createdAt",
+          "updatedAt",
+          "role"
+        ])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.role == "USER"
+        && request.resource.data.createdAt is timestamp
+        && request.resource.data.updatedAt is timestamp
+        && optionalString("displayName")
+        && optionalString("email")
+        && optionalString("photoURL");
+    }
+
+    function isValidUserProfileUpdate(userId) {
+      return isOwner(userId)
+        && onlyAllowedKeys([
+          "uid",
+          "displayName",
+          "email",
+          "photoURL",
+          "createdAt",
+          "updatedAt",
+          "role"
+        ])
+        && onlyChangedKeys(["displayName", "photoURL", "updatedAt"])
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.email == resource.data.email
+        && request.resource.data.role == resource.data.role
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt is timestamp
+        && optionalString("displayName")
+        && optionalString("photoURL");
+    }
+
+    // users/{userId}: users can read/create/update only their own safe profile fields.
+    match /users/{userId} {
+      allow get, list: if isOwner(userId) || isAdmin();
+      allow create: if isValidUserProfileCreate(userId);
+      allow update: if isValidUserProfileUpdate(userId);
+      allow delete: if false;
+    }
+
+    // stickers/{stickerId}: global catalog. Client writes are blocked.
+    match /stickers/{stickerId} {
+      allow get, list: if isAdmin() || (isSignedIn() && resource.data.active == true);
+      allow create, update, delete: if false;
+    }
+
+    // userAlbums/{userId}: counters are sensitive and updated by backend only.
+    match /userAlbums/{userId} {
+      allow get, list: if isOwner(userId) || isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // userStickers/{userId}/items/{stickerId}: ownership and quantities are backend-owned.
+    match /userStickers/{userId}/items/{stickerId} {
+      allow get, list: if isOwner(userId) || isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // packClaims/{claimId}: users can read their claims; creation/consumption is backend-only.
+    match /packClaims/{claimId} {
+      allow get, list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create, update, delete: if false;
+    }
+
+    // packOpenings/{openingId}: immutable audit trail of pack openings.
+    match /packOpenings/{openingId} {
+      allow get, list: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow create, update, delete: if false;
+    }
+
+    // stadiumEvents/{eventId}: clients can read active geofence events only.
+    match /stadiumEvents/{eventId} {
+      allow get, list: if isAdmin() || (isSignedIn() && resource.data.active == true);
+      allow create, update, delete: if false;
+    }
+
+    // auditLogs/{auditLogId}: not readable by normal clients and never client-writable.
+    match /auditLogs/{auditLogId} {
+      allow get, list: if isAdmin();
+      allow create, update, delete: if false;
+    }
+
+    // system/config: public runtime flags for signed-in clients; writes are backend-only.
+    match /system/{documentId} {
+      allow get, list: if documentId == "config" && isSignedIn();
+      allow create, update, delete: if false;
+    }
+
+    // Default deny: any unmodeled path is private.
     match /{document=**} {
       allow read, write: if false;
     }

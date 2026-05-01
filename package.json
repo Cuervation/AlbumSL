@@ -9,7 +9,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "npm --workspace @albumsl/web run dev",
+    "dev": "npm run build:packages && npm --workspace @albumsl/web run dev",
     "build": "npm run build:packages && npm run build:functions && npm run build:web",
     "build:packages": "npm --workspace @albumsl/domain run build && npm --workspace @albumsl/contracts run build && npm --workspace @albumsl/application run build && npm --workspace @albumsl/infra-firebase run build",
     "build:functions": "npm --workspace @albumsl/functions run build",
@@ -20,7 +20,9 @@
     "typecheck:packages": "npm run build:packages",
     "validate": "npm run typecheck && npm run lint && npm run test && npm run build && npm run format:check",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "seed:stickers": "npm --workspace @albumsl/infra-firebase run seed:stickers",
+    "seed:stickers:dry-run": "npm --workspace @albumsl/infra-firebase run seed:stickers:dry-run"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",
@@ -34,6 +36,7 @@
     "globals": "^16.0.0",
     "prettier": "^3.5.3",
     "typescript": "^5.8.3",
+    "tsx": "^4.21.0",
     "typescript-eslint": "^8.31.0",
     "vite": "^6.3.4",
     "vitest": "^3.1.2"

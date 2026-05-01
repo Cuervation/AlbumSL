@@ -1,0 +1,50 @@
+import { useStickerCatalog } from "../features/sticker-catalog/useStickerCatalog";
+
+export function CatalogPage(): React.JSX.Element {
+  const { stickers, loading, error, refresh } = useStickerCatalog();
+
+  return (
+    <main className="page catalog-page">
+      <section className="catalog-header">
+        <div>
+          <p className="eyebrow">Catalogo</p>
+          <h1>Figuritas activas</h1>
+          <p>Vista temporal para validar la lectura del catalogo global desde Firestore.</p>
+        </div>
+        <button className="ghost-button" type="button" onClick={() => void refresh()}>
+          Actualizar
+        </button>
+      </section>
+
+      {loading ? <p className="state-message">Cargando figuritas...</p> : null}
+      {error ? <p className="error-message">{error}</p> : null}
+      {!loading && !error && stickers.length === 0 ? (
+        <p className="state-message">Todavia no hay figuritas activas para mostrar.</p>
+      ) : null}
+
+      <section className="catalog-grid" aria-label="Catalogo de figuritas">
+        {stickers.map((sticker) => (
+          <article className="sticker-card" key={sticker.id}>
+            <span className="sticker-number">#{sticker.number}</span>
+            <h2>{sticker.title}</h2>
+            <p>{sticker.description}</p>
+            <dl>
+              <div>
+                <dt>Categoria</dt>
+                <dd>{sticker.category}</dd>
+              </div>
+              <div>
+                <dt>Epoca</dt>
+                <dd>{sticker.era}</dd>
+              </div>
+              <div>
+                <dt>Rareza</dt>
+                <dd>{sticker.rarity}</dd>
+              </div>
+            </dl>
+          </article>
+        ))}
+      </section>
+    </main>
+  );
+}

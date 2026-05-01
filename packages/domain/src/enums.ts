@@ -39,6 +39,9 @@ export const PackSource = {
 export type PackSource = (typeof PackSource)[keyof typeof PackSource];
 
 export const ClaimStatus = {
+  AVAILABLE: "AVAILABLE",
+  CONSUMED: "CONSUMED",
+  EXPIRED: "EXPIRED",
   PENDING: "PENDING",
   APPROVED: "APPROVED",
   REJECTED: "REJECTED",
