@@ -34,6 +34,25 @@ los agentes necesarios para la tarea.
 - `docs/agents/data-content-agent.md`
 - `docs/agents/release-operations-agent.md`
 
+## Skills locales
+
+Las skills locales viven en `.codex/skills/` y sirven para ahorrar tokens y estandarizar tareas
+repetidas del proyecto.
+
+- `albumsl-compact-prompt`: usar para respuestas breves sin perder precision tecnica.
+- `albumsl-feature-slice`: usar al implementar features por capas.
+- `albumsl-security-review`: usar para revisar permisos, Rules, Functions y abuso del cliente.
+- `albumsl-qa-check`: usar antes de commit o handoff para validar calidad.
+- `albumsl-firebase-backend`: usar en Cloud Functions, Admin SDK e `infra-firebase`.
+- `albumsl-frontend-ui`: usar en pantallas, rutas, hooks, services y UX React.
+
+Ejemplos:
+
+- "Usa `albumsl-compact-prompt` y revisa este diff".
+- "Usa `albumsl-feature-slice` para implementar daily-pack".
+- "Usa `albumsl-security-review` sobre Firestore Rules y functions".
+- "Usa `albumsl-qa-check` antes de commitear".
+
 ## Cuando usar cada agente
 
 - Usar Product / Spec Agent cuando cambie alcance, reglas, MVP, roadmap o criterios de aceptacion.

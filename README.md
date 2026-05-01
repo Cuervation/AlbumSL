@@ -50,6 +50,19 @@ Los agentes especificos viven en `docs/agents/`:
 En proximos prompts, se puede pedir que Codex actue como uno o varios agentes segun la tarea. No
 hace falta activar todos siempre; elegir el conjunto minimo suficiente.
 
+## Skills locales del proyecto
+
+Las skills locales viven en `.codex/skills/` y resumen flujos repetidos de trabajo.
+
+- `albumsl-compact-prompt`: respuestas compactas.
+- `albumsl-feature-slice`: features por capas.
+- `albumsl-security-review`: revision de seguridad.
+- `albumsl-qa-check`: validacion antes de commit.
+- `albumsl-firebase-backend`: Functions e infraestructura Firebase.
+- `albumsl-frontend-ui`: UI React mobile-first.
+
+En proximos prompts se pueden invocar por nombre, por ejemplo: "usa `albumsl-qa-check`".
+
 ## Comandos principales
 
 ```bash

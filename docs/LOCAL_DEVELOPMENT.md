@@ -33,6 +33,10 @@ la tarea.
 
 Los agentes especificos estan en `docs/agents/`.
 
+Las skills locales estan en `.codex/skills/` y se pueden invocar por nombre para ahorrar contexto:
+`albumsl-compact-prompt`, `albumsl-feature-slice`, `albumsl-security-review`,
+`albumsl-qa-check`, `albumsl-firebase-backend` y `albumsl-frontend-ui`.
+
 Ejemplos:
 
 - UI no sensible: Frontend Agent + QA Agent.
