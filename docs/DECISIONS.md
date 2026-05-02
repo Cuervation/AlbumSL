@@ -209,3 +209,13 @@ Motivo: El proyecto ya tiene varias capas y necesita reglas operativas claras pa
 Alternativas consideradas: Mantener instrucciones de agentes mezcladas en README o en documentos de feature.
 Impacto: Facilita elegir roles por tarea, evita activar todos los agentes innecesariamente y centraliza reglas globales.
 Riesgos: La documentacion de agentes debe mantenerse actualizada cuando cambien reglas o responsabilidades.
+
+## DEC-022 - Usar GitHub Actions para validacion automatica
+
+Fecha: 2026-05-02
+Estado: Aprobada
+Decision: Agregar un workflow de GitHub Actions que ejecuta `npm ci` y `npm run validate` en push y pull request a `master`, sin deploy automatico.
+Motivo: Detectar errores de typecheck, lint, tests, build y formato antes de integrar cambios.
+Alternativas consideradas: Validacion solo local o configurar CI con deploy desde el inicio.
+Impacto: Mejora la calidad automatizada del repo manteniendo despliegues manuales.
+Riesgos: El CI puede requerir ajuste futuro si se agregan servicios externos o emuladores obligatorios.

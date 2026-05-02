@@ -26,6 +26,12 @@ npm run validate
 
 `npm run validate` ejecuta typecheck, lint, tests, build y chequeo de formato.
 
+## CI
+
+- Validacion local: `npm run validate`.
+- Validacion CI: GitHub Actions ejecuta `npm ci` y `npm run validate` en push/PR a `master`.
+- El CI no despliega a produccion.
+
 ## Flujo de trabajo con agentes
 
 Antes de pedir o implementar cambios, revisar `AGENTS.md` y elegir solo los roles necesarios para

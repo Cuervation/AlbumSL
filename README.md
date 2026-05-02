@@ -110,6 +110,11 @@ El seed usa Firebase Admin SDK desde `packages/infra-firebase`. Para proyecto re
 npm run validate
 ```
 
+## CI
+
+GitHub Actions ejecuta `npm ci` y `npm run validate` en cada push o pull request a `master`.
+El workflow valida typecheck, lint, tests, build y formato. No despliega a produccion.
+
 ## Configurar Firebase mas adelante
 
 1. Crear proyectos Firebase separados para dev y prod.
