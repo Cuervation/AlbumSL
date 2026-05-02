@@ -4,8 +4,27 @@ import { collection, getDocs, orderBy, query, Timestamp, where } from "firebase/
 import { firestoreDb } from "../../lib/firebase";
 
 const STICKERS_COLLECTION = "stickers";
+let activeStickersCache: readonly StickerDto[] | null = null;
+let activeStickersRequest: Promise<readonly StickerDto[]> | null = null;
 
 export async function getActiveStickers(): Promise<readonly StickerDto[]> {
+  if (activeStickersCache) {
+    return activeStickersCache;
+  }
+
+  activeStickersRequest ??= fetchActiveStickers();
+  activeStickersCache = await activeStickersRequest;
+  activeStickersRequest = null;
+
+  return activeStickersCache;
+}
+
+export function clearActiveStickersCache(): void {
+  activeStickersCache = null;
+  activeStickersRequest = null;
+}
+
+async function fetchActiveStickers(): Promise<readonly StickerDto[]> {
   const snapshot = await getDocs(
     query(
       collection(firestoreDb, STICKERS_COLLECTION),

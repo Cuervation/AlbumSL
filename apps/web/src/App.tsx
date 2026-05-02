@@ -1,19 +1,40 @@
+import { lazy, Suspense, type ReactNode } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import { AppLayout } from "./components/AppLayout";
 import { AdminGuard } from "./components/AdminGuard";
 import { AuthGuard } from "./components/AuthGuard";
-import { AdminDashboardPage } from "./pages/AdminDashboardPage";
-import { AlbumPage } from "./pages/AlbumPage";
-import { CatalogPage } from "./pages/CatalogPage";
-import { DashboardPage } from "./pages/DashboardPage";
-import { DuplicatesPage } from "./pages/DuplicatesPage";
+import { LoadingScreen } from "./components/LoadingScreen";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
-import { OpenPackPage } from "./pages/OpenPackPage";
-import { StickerDetailPage } from "./pages/StickerDetailPage";
 import "./styles.css";
+
+const AdminDashboardPage = lazy(() =>
+  import("./pages/AdminDashboardPage").then((module) => ({
+    default: module.AdminDashboardPage,
+  })),
+);
+const AlbumPage = lazy(() =>
+  import("./pages/AlbumPage").then((module) => ({ default: module.AlbumPage })),
+);
+const CatalogPage = lazy(() =>
+  import("./pages/CatalogPage").then((module) => ({ default: module.CatalogPage })),
+);
+const DashboardPage = lazy(() =>
+  import("./pages/DashboardPage").then((module) => ({ default: module.DashboardPage })),
+);
+const DuplicatesPage = lazy(() =>
+  import("./pages/DuplicatesPage").then((module) => ({ default: module.DuplicatesPage })),
+);
+const OpenPackPage = lazy(() =>
+  import("./pages/OpenPackPage").then((module) => ({ default: module.OpenPackPage })),
+);
+const StickerDetailPage = lazy(() =>
+  import("./pages/StickerDetailPage").then((module) => ({
+    default: module.StickerDetailPage,
+  })),
+);
 
 export function App(): React.JSX.Element {
   return (
@@ -25,7 +46,9 @@ export function App(): React.JSX.Element {
           path="dashboard"
           element={
             <AuthGuard>
-              <DashboardPage />
+              <LazyRoute>
+                <DashboardPage />
+              </LazyRoute>
             </AuthGuard>
           }
         />
@@ -34,7 +57,9 @@ export function App(): React.JSX.Element {
           element={
             <AuthGuard>
               <AdminGuard>
-                <AdminDashboardPage />
+                <LazyRoute>
+                  <AdminDashboardPage />
+                </LazyRoute>
               </AdminGuard>
             </AuthGuard>
           }
@@ -43,7 +68,9 @@ export function App(): React.JSX.Element {
           path="catalog"
           element={
             <AuthGuard>
-              <CatalogPage />
+              <LazyRoute>
+                <CatalogPage />
+              </LazyRoute>
             </AuthGuard>
           }
         />
@@ -51,7 +78,9 @@ export function App(): React.JSX.Element {
           path="album"
           element={
             <AuthGuard>
-              <AlbumPage />
+              <LazyRoute>
+                <AlbumPage />
+              </LazyRoute>
             </AuthGuard>
           }
         />
@@ -59,7 +88,9 @@ export function App(): React.JSX.Element {
           path="album/:stickerId"
           element={
             <AuthGuard>
-              <StickerDetailPage />
+              <LazyRoute>
+                <StickerDetailPage />
+              </LazyRoute>
             </AuthGuard>
           }
         />
@@ -67,7 +98,9 @@ export function App(): React.JSX.Element {
           path="duplicates"
           element={
             <AuthGuard>
-              <DuplicatesPage />
+              <LazyRoute>
+                <DuplicatesPage />
+              </LazyRoute>
             </AuthGuard>
           }
         />
@@ -75,7 +108,9 @@ export function App(): React.JSX.Element {
           path="open-pack"
           element={
             <AuthGuard>
-              <OpenPackPage />
+              <LazyRoute>
+                <OpenPackPage />
+              </LazyRoute>
             </AuthGuard>
           }
         />
@@ -83,4 +118,8 @@ export function App(): React.JSX.Element {
       </Route>
     </Routes>
   );
+}
+
+function LazyRoute({ children }: { readonly children: ReactNode }): React.JSX.Element {
+  return <Suspense fallback={<LoadingScreen />}>{children}</Suspense>;
 }

@@ -132,6 +132,24 @@ ejemplo con `GOOGLE_APPLICATION_CREDENTIALS`.
 El seed valida el catalogo antes de escribir, es idempotente y no borra figuritas que no esten en
 el dataset.
 
+## Admin custom claims
+
+Dry-run:
+
+```bash
+npm run admin:claim:dry-run -- --uid USER_UID --admin true
+```
+
+Cambio real con confirmacion:
+
+```bash
+npm run admin:claim -- --uid USER_UID --admin true --confirm
+npm run admin:claim -- --uid USER_UID --admin false --confirm
+```
+
+Requiere `FIREBASE_PROJECT_ID` o `GCLOUD_PROJECT` y credenciales Admin SDK, por ejemplo
+`GOOGLE_APPLICATION_CREDENTIALS`. Ver `docs/ADMIN_CLAIMS.md`.
+
 ## Firebase local futuro
 
 Cuando Firebase quede configurado:

@@ -138,7 +138,15 @@ El workflow valida typecheck, lint, tests, build y formato. No despliega a produ
 Ver [docs/ADMIN.md](docs/ADMIN.md) para el panel admin solo lectura protegido por custom claim
 `admin == true`.
 
+Para asignar o quitar custom claims admin de forma operativa, ver
+[docs/ADMIN_CLAIMS.md](docs/ADMIN_CLAIMS.md).
+
 ## Operaciones
 
 Ver [docs/OPERATIONS.md](docs/OPERATIONS.md) para logs seguros, eventos observados y
 troubleshooting basico de Cloud Functions.
+
+## Performance
+
+Ver [docs/PERFORMANCE.md](docs/PERFORMANCE.md) para lazy routes, lecturas Firestore y cache inicial
+del catalogo.

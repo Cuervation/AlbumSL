@@ -239,3 +239,23 @@ Motivo: Verificar ownership, permisos admin, default deny y bloqueo de escritura
 Alternativas consideradas: Revisar Rules manualmente o postergar tests hasta produccion.
 Impacto: `npm run test` y `npm run validate` ejecutan tambien la suite de Rules mediante emulador.
 Riesgos: Los tests requieren Java/Firebase Emulator disponible en entornos locales y CI.
+
+## DEC-025 - Gestionar admin con custom claims y CLI seguro
+
+Fecha: 2026-05-02
+Estado: Aprobada
+Decision: Agregar un script backend/Admin SDK para asignar o quitar `admin` custom claim con dry-run por defecto y `--confirm` obligatorio.
+Motivo: El panel admin requiere una operacion segura y trazable que no dependa de `users/{uid}.role` ni del frontend.
+Alternativas consideradas: Editar claims manualmente siempre desde consola o usar `users/{uid}.role` como autorizacion.
+Impacto: Mejora la operacion de admins sin agregar UI ni abrir permisos cliente.
+Riesgos: Ejecutar el script sobre el usuario equivocado puede otorgar permisos administrativos; produccion requiere aprobacion manual.
+
+## DEC-026 - Lazy loading de rutas y cache en memoria del catalogo
+
+Fecha: 2026-05-02
+Estado: Aprobada
+Decision: Cargar rutas principales protegidas con `React.lazy`/`Suspense` y cachear en memoria solo el catalogo activo.
+Motivo: Reducir carga inicial del frontend y evitar lecturas repetidas obvias de `stickers` activos.
+Alternativas consideradas: Mantener todas las paginas eager o cachear tambien datos del usuario.
+Impacto: Menor bundle inicial y menos lecturas duplicadas de catalogo sin tocar datos sensibles.
+Riesgos: El bundle puede seguir requiriendo `manualChunks`; el cache de catalogo no tiene invalidacion en tiempo real.

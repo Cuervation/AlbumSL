@@ -10,6 +10,7 @@ edicion, borrado ni acciones destructivas.
 - La seguridad real usa Firebase custom claim `admin == true`.
 - `users/{uid}.role` puede ayudar a mostrar links en la UI, pero no autoriza operaciones.
 - La callable `adminGetDashboard` rechaza usuarios no autenticados o sin custom claim admin.
+- El alta/baja operativa de admins esta documentada en `docs/ADMIN_CLAIMS.md`.
 
 ## Pantallas
 
@@ -47,5 +48,4 @@ No se muestran emails ni datos personales innecesarios en esta etapa.
 
 ## Riesgos pendientes
 
-- Falta flujo operativo documentado para asignar custom claims admin.
 - Las metricas de conteo pueden requerir cache si el volumen crece.

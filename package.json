@@ -16,7 +16,7 @@
     "build:web": "npm --workspace @albumsl/web run build",
     "lint": "eslint .",
     "test": "npm run test:unit && npm run test:rules",
-    "test:unit": "npm run build:packages && vitest run --passWithNoTests packages functions apps",
+    "test:unit": "npm run build:packages && vitest run --passWithNoTests packages functions apps scripts",
     "test:rules": "firebase emulators:exec --project albumsl-test --only firestore \"vitest run tests/firestore/firestore.rules.test.ts\"",
     "test:rules:watch": "firebase emulators:exec --project albumsl-test --only firestore \"vitest --watch tests/firestore/firestore.rules.test.ts\"",
     "typecheck": "npm run typecheck:packages && npm --workspace @albumsl/functions run typecheck && npm --workspace @albumsl/web run typecheck",
@@ -24,6 +24,8 @@
     "validate": "npm run typecheck && npm run lint && npm run test && npm run build && npm run format:check",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
+    "admin:claim:dry-run": "tsx scripts/admin/set-admin-claim.ts --dry-run",
+    "admin:claim": "tsx scripts/admin/set-admin-claim.ts",
     "seed:stickers": "npm --workspace @albumsl/infra-firebase run seed:stickers",
     "seed:stickers:dry-run": "npm --workspace @albumsl/infra-firebase run seed:stickers:dry-run"
   },

@@ -129,6 +129,7 @@
 - El admin MVP usa callable `adminGetDashboard` y valida `request.auth.token.admin == true`.
 - `users/{uid}.role` puede usarse solo para UI; no es fuente de autorizacion real.
 - El panel admin MVP es solo lectura y no expone emails.
+- La asignacion o remocion de custom claim admin se realiza con script backend/Admin SDK, dry-run por defecto y `--confirm` obligatorio para cambios reales.
 
 ## Hardening QA actual
 
