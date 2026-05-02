@@ -259,3 +259,13 @@ Motivo: Reducir carga inicial del frontend y evitar lecturas repetidas obvias de
 Alternativas consideradas: Mantener todas las paginas eager o cachear tambien datos del usuario.
 Impacto: Menor bundle inicial y menos lecturas duplicadas de catalogo sin tocar datos sensibles.
 Riesgos: El bundle puede seguir requiriendo `manualChunks`; el cache de catalogo no tiene invalidacion en tiempo real.
+
+## DEC-027 - Deploy Firebase manual dev/prod sin CD automatico
+
+Fecha: 2026-05-02
+Estado: Aprobada
+Decision: Preparar scripts y documentacion para deploy manual a aliases Firebase `dev` y `prod`, sin deploy automatico desde CI.
+Motivo: Separar validacion automatica de despliegues reales y exigir aprobacion humana para produccion.
+Alternativas consideradas: Configurar CD automatico o usar un solo proyecto Firebase.
+Impacto: El repo queda listo para operar dev/prod con Firebase CLI sin commitear IDs ni credenciales reales.
+Riesgos: Requiere disciplina operativa para configurar aliases correctos y validar antes de ejecutar deploy prod.

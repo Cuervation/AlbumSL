@@ -184,3 +184,12 @@
 - Registrar eventos criticos.
 - Mantener handlers delgados.
 - Mover logica a `packages/application`.
+
+## Deploy manual seguro
+
+- CI solo valida; no despliega.
+- Deploy dev/prod se ejecuta manualmente con Firebase CLI.
+- Produccion requiere aprobacion humana.
+- No commitear service accounts, `.env` ni credenciales.
+- `GOOGLE_APPLICATION_CREDENTIALS` debe apuntar a archivo fuera del repo.
+- Custom claims admin se gestionan con script backend/Admin SDK existente.

@@ -115,6 +115,11 @@ npm run validate
 GitHub Actions ejecuta `npm ci` y `npm run validate` en cada push o pull request a `master`.
 El workflow valida typecheck, lint, tests, build y formato. No despliega a produccion.
 
+## Deploy Manual
+
+Ver [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) para deploy manual Firebase dev/prod. No hay deploy
+automatico desde CI.
+
 ## Configurar Firebase mas adelante
 
 1. Crear proyectos Firebase separados para dev y prod.

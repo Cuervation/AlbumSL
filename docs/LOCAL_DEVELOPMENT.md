@@ -52,6 +52,13 @@ Cubre:
 - Validacion CI: GitHub Actions ejecuta `npm ci` y `npm run validate` en push/PR a `master`.
 - El CI no despliega a produccion.
 
+## Deploy manual
+
+Ver `docs/DEPLOYMENT.md` para deploy manual Firebase dev/prod.
+
+Los scripts usan aliases `dev` y `prod` de Firebase CLI. No commitear `.firebaserc` con IDs reales
+sin decision explicita.
+
 ## Flujo de trabajo con agentes
 
 Antes de pedir o implementar cambios, revisar `AGENTS.md` y elegir solo los roles necesarios para
