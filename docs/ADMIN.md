@@ -47,6 +47,5 @@ No se muestran emails ni datos personales innecesarios en esta etapa.
 
 ## Riesgos pendientes
 
-- Falta test automatizado de Firestore Rules con Emulator.
 - Falta flujo operativo documentado para asignar custom claims admin.
 - Las metricas de conteo pueden requerir cache si el volumen crece.

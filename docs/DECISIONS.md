@@ -229,3 +229,13 @@ Motivo: Mejorar troubleshooting de operaciones sensibles sin exponer emails, tok
 Alternativas consideradas: Logs libres por funcion o no agregar observabilidad hasta produccion.
 Impacto: Facilita diagnostico de claims, aperturas, pegado y admin manteniendo privacidad.
 Riesgos: La observabilidad sigue siendo basica y puede requerir metricas/alertas cuando haya trafico real.
+
+## DEC-024 - Testear Firestore Rules con Emulator
+
+Fecha: 2026-05-02
+Estado: Aprobada
+Decision: Agregar tests automatizados de `firestore.rules` usando Firestore Emulator y `@firebase/rules-unit-testing`.
+Motivo: Verificar ownership, permisos admin, default deny y bloqueo de escrituras sensibles antes de integrar cambios.
+Alternativas consideradas: Revisar Rules manualmente o postergar tests hasta produccion.
+Impacto: `npm run test` y `npm run validate` ejecutan tambien la suite de Rules mediante emulador.
+Riesgos: Los tests requieren Java/Firebase Emulator disponible en entornos locales y CI.

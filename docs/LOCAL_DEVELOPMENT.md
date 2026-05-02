@@ -20,11 +20,31 @@ npm.cmd install
 npm run typecheck
 npm run lint
 npm run test
+npm run test:rules
 npm run build
 npm run validate
 ```
 
 `npm run validate` ejecuta typecheck, lint, tests, build y chequeo de formato.
+
+## Tests de Firestore Rules
+
+```bash
+npm run test:rules
+```
+
+El comando usa `firebase emulators:exec` con Firestore Emulator y
+`@firebase/rules-unit-testing`. No requiere secretos reales ni proyecto Firebase productivo.
+
+Cubre:
+
+- ownership de `users`, `userAlbums`, `userStickers`, `packClaims` y `packOpenings`
+- lectura admin con custom claim `admin == true`
+- lectura de stickers activos e inactivos segun permisos
+- bloqueo de escrituras cliente sobre datos sensibles
+- lectura/escritura de `auditLogs`
+- lectura de `system/config`
+- default deny para paths no modelados
 
 ## CI
 
@@ -187,18 +207,6 @@ Para que haya datos utiles:
 
 La accion de pegar llama la callable `pasteSticker`. El frontend no escribe directo en
 `userStickers` ni en `userAlbums`.
-
-## Tests futuros de Firestore Rules
-
-Todavia no hay setup automatizado para testear `firestore.rules`.
-
-TODO:
-
-- instalar y configurar `@firebase/rules-unit-testing`
-- levantar Firebase Emulator Suite en CI
-- cubrir lectura/escritura de `users`, `stickers`, `userStickers`, `packClaims`, `packOpenings`, `auditLogs` y `system/config`
-- probar que un usuario no puede leer ni escribir datos de otro usuario
-- probar que escrituras sensibles quedan denegadas desde cliente
 
 ## Variables de entorno
 

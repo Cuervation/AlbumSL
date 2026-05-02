@@ -135,6 +135,7 @@
 - Las escrituras cliente a `stickers`, `userStickers`, `userAlbums`, `packClaims`, `packOpenings` y `auditLogs` siguen bloqueadas por Rules.
 - La UI del album solo lee inventario/resumen/aperturas y usa callable para `pasteSticker`.
 - Los tests criticos cubren claim ajeno, claim consumido, consumo de claim, repetidas, pegado sin cantidad e idempotencia diaria.
+- Firestore Rules tienen tests automatizados con Firestore Emulator y `@firebase/rules-unit-testing`.
 
 ## Auth frontend
 
@@ -148,7 +149,6 @@
 
 - GPS falseado para sobre de estadio.
 - Sin panel admin completo.
-- Sin tests automatizados de Firestore Rules todavia.
 - Observabilidad limitada.
 - Perfil inicial creado desde cliente, protegido por Rules.
 
@@ -172,7 +172,7 @@
 - No deben calcular asignacion aleatoria de figuritas.
 - No validan de forma robusta geolocalizacion.
 - No protegen operaciones hechas con credenciales Admin SDK mal usadas.
-- Requieren tests con Emulator antes de produccion.
+- Requieren mantener actualizados los tests con Emulator antes de produccion.
 
 ## Lineamientos para Cloud Functions
 
