@@ -137,3 +137,8 @@ El workflow valida typecheck, lint, tests, build y formato. No despliega a produ
 
 Ver [docs/ADMIN.md](docs/ADMIN.md) para el panel admin solo lectura protegido por custom claim
 `admin == true`.
+
+## Operaciones
+
+Ver [docs/OPERATIONS.md](docs/OPERATIONS.md) para logs seguros, eventos observados y
+troubleshooting basico de Cloud Functions.

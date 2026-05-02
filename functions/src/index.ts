@@ -21,6 +21,7 @@ import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
 import { createFunctionDependencies } from "./function-dependencies.js";
 import { getAdminDashboard } from "./admin-dashboard.js";
 import { toHttpsError } from "./https-errors.js";
+import { logError, logInfo, logWarning } from "./logger.js";
 
 const infrastructure = createFirebaseInfrastructure();
 const application = createApplicationContext({ infrastructure });
@@ -34,12 +35,16 @@ export const health = onRequest((_request, response) => {
 
 export const claimDailyPack = onCall<ClaimDailyPackRequestDto>(
   async (request): Promise<ClaimDailyPackResponseDto> => {
+    const functionName = "claimDailyPack";
+    const userId = request.auth?.uid;
+    logInfo("function_start", { functionName, userId, source: "DAILY" });
+
     try {
-      const userId = getAuthenticatedUserId(request.auth?.uid);
+      const authenticatedUserId = getAuthenticatedUserId(userId);
       const dependencies = createFunctionDependencies();
       const claim = await claimDailyPackUseCase(
         {
-          userId,
+          userId: authenticatedUserId,
           clientRequestId: request.data?.clientRequestId,
         },
         {
@@ -48,6 +53,13 @@ export const claimDailyPack = onCall<ClaimDailyPackRequestDto>(
         },
       );
 
+      logInfo("function_success", {
+        functionName,
+        userId: authenticatedUserId,
+        source: claim.source,
+        claimId: claim.id,
+      });
+
       return {
         claimId: claim.id,
         source: claim.source,
@@ -55,15 +67,28 @@ export const claimDailyPack = onCall<ClaimDailyPackRequestDto>(
         expiresAt: claim.expiresAt?.toISOString(),
       };
     } catch (error) {
-      throw toHttpsError(error);
+      const httpsError = toHttpsError(error);
+      logControlledError(functionName, httpsError.details, { userId, source: "DAILY" });
+      throw httpsError;
     }
   },
 );
 
 export const openPack = onCall<OpenPackRequestDto>(
   async (request): Promise<OpenPackResponseDto> => {
+    const functionName = "openPack";
+    const userId = request.auth?.uid;
+    const rawSource = typeof request.data?.source === "string" ? request.data.source : undefined;
+    const rawClaimId = typeof request.data?.claimId === "string" ? request.data.claimId : undefined;
+    logInfo("function_start", {
+      functionName,
+      userId,
+      source: rawSource,
+      claimId: rawClaimId,
+    });
+
     try {
-      const userId = getAuthenticatedUserId(request.auth?.uid);
+      const authenticatedUserId = getAuthenticatedUserId(userId);
       const data = request.data;
       const source = parsePackSource(data?.source);
       const claimId = typeof data?.claimId === "string" ? data.claimId : "";
@@ -71,7 +96,7 @@ export const openPack = onCall<OpenPackRequestDto>(
       const dependencies = createFunctionDependencies();
       const result = await openPackUseCase(
         {
-          userId,
+          userId: authenticatedUserId,
           source,
           claimId,
         },
@@ -82,6 +107,14 @@ export const openPack = onCall<OpenPackRequestDto>(
           randomGenerator: dependencies.randomGenerator,
         },
       );
+
+      logInfo("function_success", {
+        functionName,
+        userId: authenticatedUserId,
+        source: result.source,
+        claimId,
+        packOpeningId: result.packOpeningId,
+      });
 
       return {
         packOpeningId: result.packOpeningId,
@@ -101,20 +134,32 @@ export const openPack = onCall<OpenPackRequestDto>(
         createdAt: result.createdAt.toISOString(),
       };
     } catch (error) {
-      throw toHttpsError(error);
+      const httpsError = toHttpsError(error);
+      logControlledError(functionName, httpsError.details, {
+        userId,
+        source: rawSource,
+        claimId: rawClaimId,
+      });
+      throw httpsError;
     }
   },
 );
 
 export const pasteSticker = onCall<PasteStickerRequestDto>(
   async (request): Promise<PasteStickerResponseDto> => {
+    const functionName = "pasteSticker";
+    const userId = request.auth?.uid;
+    const rawStickerId =
+      typeof request.data?.stickerId === "string" ? request.data.stickerId : undefined;
+    logInfo("function_start", { functionName, userId, stickerId: rawStickerId });
+
     try {
-      const userId = getAuthenticatedUserId(request.auth?.uid);
+      const authenticatedUserId = getAuthenticatedUserId(userId);
       const stickerId = parseStickerId(request.data?.stickerId);
       const dependencies = createFunctionDependencies();
       const result = await pasteStickerUseCase(
         {
-          userId,
+          userId: authenticatedUserId,
           stickerId,
         },
         {
@@ -122,6 +167,12 @@ export const pasteSticker = onCall<PasteStickerRequestDto>(
           clock: dependencies.clock,
         },
       );
+
+      logInfo("function_success", {
+        functionName,
+        userId: authenticatedUserId,
+        stickerId,
+      });
 
       return {
         stickerId: result.userSticker.stickerId,
@@ -140,17 +191,27 @@ export const pasteSticker = onCall<PasteStickerRequestDto>(
         },
       };
     } catch (error) {
-      throw toHttpsError(error);
+      const httpsError = toHttpsError(error);
+      logControlledError(functionName, httpsError.details, {
+        userId,
+        stickerId: rawStickerId,
+      });
+      throw httpsError;
     }
   },
 );
 
 export const adminGetDashboard = onCall<AdminDashboardRequestDto>(
   async (request): Promise<AdminDashboardResponseDto> => {
+    const functionName = "adminGetDashboard";
+    const userId = request.auth?.uid;
+    const admin = request.auth?.token.admin === true;
+    logInfo("function_start", { functionName, userId, admin });
+
     try {
       const dependencies = createFunctionDependencies();
 
-      return await getAdminDashboard(
+      const result = await getAdminDashboard(
         request.auth
           ? {
               uid: request.auth.uid,
@@ -161,8 +222,14 @@ export const adminGetDashboard = onCall<AdminDashboardRequestDto>(
           : undefined,
         dependencies.adminDashboardDataSource,
       );
+
+      logInfo("function_success", { functionName, userId: request.auth?.uid, admin });
+
+      return result;
     } catch (error) {
-      throw toHttpsError(error);
+      const httpsError = toHttpsError(error);
+      logControlledError(functionName, httpsError.details, { userId, admin });
+      throw httpsError;
     }
   },
 );
@@ -197,4 +264,43 @@ function parseStickerId(stickerId: unknown): string {
   }
 
   return stickerId.trim();
+}
+
+function logControlledError(
+  functionName: string,
+  details: unknown,
+  metadata: {
+    readonly userId?: string;
+    readonly source?: string;
+    readonly claimId?: string;
+    readonly stickerId?: string;
+    readonly admin?: boolean;
+  },
+): void {
+  const errorCode = getErrorCode(details);
+  const logMetadata = {
+    functionName,
+    userId: metadata.userId,
+    source: metadata.source,
+    claimId: metadata.claimId,
+    stickerId: metadata.stickerId,
+    errorCode,
+    admin: metadata.admin,
+  };
+
+  if (errorCode === "INTERNAL_ERROR") {
+    logError("function_error", logMetadata);
+    return;
+  }
+
+  logWarning("function_error", logMetadata);
+}
+
+function getErrorCode(details: unknown): string {
+  if (details && typeof details === "object" && "code" in details) {
+    const code = (details as { readonly code?: unknown }).code;
+    return typeof code === "string" ? code : "INTERNAL_ERROR";
+  }
+
+  return "INTERNAL_ERROR";
 }

@@ -219,3 +219,13 @@ Motivo: Detectar errores de typecheck, lint, tests, build y formato antes de int
 Alternativas consideradas: Validacion solo local o configurar CI con deploy desde el inicio.
 Impacto: Mejora la calidad automatizada del repo manteniendo despliegues manuales.
 Riesgos: El CI puede requerir ajuste futuro si se agregan servicios externos o emuladores obligatorios.
+
+## DEC-023 - Logs estructurados minimos sin datos sensibles
+
+Fecha: 2026-05-02
+Estado: Aprobada
+Decision: Instrumentar Cloud Functions con logs estructurados minimos y metadata permitida por allowlist.
+Motivo: Mejorar troubleshooting de operaciones sensibles sin exponer emails, tokens, payloads completos ni stack traces.
+Alternativas consideradas: Logs libres por funcion o no agregar observabilidad hasta produccion.
+Impacto: Facilita diagnostico de claims, aperturas, pegado y admin manteniendo privacidad.
+Riesgos: La observabilidad sigue siendo basica y puede requerir metricas/alertas cuando haya trafico real.
