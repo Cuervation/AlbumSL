@@ -33,16 +33,10 @@ export function CatalogPage(): React.JSX.Element {
               )}
             </div>
             <span className="sticker-number">#{sticker.number}</span>
-            <h2>{sticker.title}</h2>
-            <p>{sticker.description}</p>
             <dl>
               <div>
-                <dt>Categoria</dt>
-                <dd>{sticker.category}</dd>
-              </div>
-              <div>
                 <dt>Epoca</dt>
-                <dd>{sticker.era}</dd>
+                <dd>{getCatalogEraLabel(sticker.imageUrl, sticker.era)}</dd>
               </div>
               <div>
                 <dt>Rareza</dt>
@@ -54,4 +48,12 @@ export function CatalogPage(): React.JSX.Element {
       </section>
     </main>
   );
+}
+
+function getCatalogEraLabel(imageUrl: string, era: string): string {
+  if (imageUrl.includes("/Libertadores_2014/")) {
+    return "Libertadores 2014";
+  }
+
+  return era;
 }
