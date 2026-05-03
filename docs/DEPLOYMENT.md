@@ -5,6 +5,8 @@
 Preparar deploy manual a Firebase para ambientes `dev` y `prod`.
 
 No hay CD automatico. CI solo valida. Produccion requiere aprobacion humana.
+Este repo queda en Firebase Spark-only para deploy real: hosting + Firestore Rules/Indexes.
+Cloud Functions quedan fuera del deploy real porque requieren Blaze.
 
 ## Proyectos Firebase Recomendados
 
@@ -104,10 +106,16 @@ Validar primero:
 npm run validate
 ```
 
-Deploy completo:
+Deploy Spark-safe:
 
 ```bash
 npm run deploy:dev
+```
+
+Equivale a:
+
+```bash
+npm run deploy:dev:spark
 ```
 
 Solo hosting:
@@ -122,6 +130,8 @@ Solo functions:
 npm run deploy:dev:functions
 ```
 
+No usar en Spark-only. Este script requiere Blaze y no es parte del flujo de deploy real del repo.
+
 Solo Firestore Rules/Indexes:
 
 ```bash
@@ -131,6 +141,7 @@ npm run deploy:dev:rules
 ## Deploy Manual A Prod
 
 Requiere aprobacion humana antes de correr.
+En este repo, no usar deploy prod salvo decision manual explicita fuera del flujo Spark-only.
 
 Checklist minimo:
 

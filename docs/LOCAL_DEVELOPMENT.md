@@ -59,6 +59,15 @@ Ver `docs/DEPLOYMENT.md` para deploy manual Firebase dev/prod.
 Los scripts usan aliases `dev` y `prod` de Firebase CLI. No commitear `.firebaserc` con IDs reales
 sin decision explicita.
 
+Flujo Spark-only recomendado:
+
+- `npm run deploy:dev` o `npm run deploy:dev:spark`
+- `npm run deploy:dev:rules`
+- `npm run deploy:dev:hosting`
+
+No usar `npm run deploy:dev:functions` en Spark-only. Ese flujo queda para emulator local o para un
+escenario Blaze que este repo no usa.
+
 ## Flujo de trabajo con agentes
 
 Antes de pedir o implementar cambios, revisar `AGENTS.md` y elegir solo los roles necesarios para
@@ -110,6 +119,7 @@ npm run build:functions
 
 Las functions viven en `functions/` y deben mantenerse como adapters delgados que llaman a
 `packages/application`.
+En Spark-only, `functions` se compila localmente pero no se despliega a Firebase real.
 
 ## Seed del catalogo de figuritas
 
