@@ -146,6 +146,21 @@ describe("catalog validation", () => {
     });
   });
 
+  it("allows empty descriptions for curated seed stickers", () => {
+    const validation = validateStickerCatalog([
+      createSticker({ id: "seed-1", number: 1, description: "", era: StickerEra.POST_1990 }),
+      ...Array.from({ length: 599 }, (_, index) =>
+        createSticker({
+          id: `seed-${index + 2}`,
+          number: index + 2,
+          era: index < 179 ? StickerEra.PRE_1990 : StickerEra.POST_1990,
+        }),
+      ),
+    ]);
+
+    expect(validation.isValid).toBe(true);
+  });
+
   it("validates the initial sticker seed with a configurable minimum", () => {
     const validation = validateStickerCatalog(initialStickerSeed, {
       minExpectedStickers: INITIAL_STICKER_SEED_MIN_EXPECTED,

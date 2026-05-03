@@ -167,10 +167,6 @@ function validateStickerFields(sticker: Sticker): readonly string[] {
     errors.push(`sticker ${sticker.id} title is required`);
   }
 
-  if (sticker.description.trim().length === 0) {
-    errors.push(`sticker ${sticker.id} description is required`);
-  }
-
   if (!isEnumValue(StickerCategory, sticker.category)) {
     errors.push(`sticker ${sticker.id} category is invalid`);
   }

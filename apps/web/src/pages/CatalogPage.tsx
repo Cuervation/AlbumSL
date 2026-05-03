@@ -36,7 +36,7 @@ export function CatalogPage(): React.JSX.Element {
             <dl>
               <div>
                 <dt>Epoca</dt>
-                <dd>{getCatalogEraLabel(sticker.imageUrl, sticker.era)}</dd>
+                <dd>{getCatalogEraLabel(sticker.tags, sticker.imageUrl, sticker.era)}</dd>
               </div>
               <div>
                 <dt>Rareza</dt>
@@ -50,7 +50,11 @@ export function CatalogPage(): React.JSX.Element {
   );
 }
 
-function getCatalogEraLabel(imageUrl: string, era: string): string {
+function getCatalogEraLabel(tags: readonly string[], imageUrl: string, era: string): string {
+  if (tags.includes("libertadores-2014")) {
+    return "Libertadores 2014";
+  }
+
   if (imageUrl.includes("/Libertadores_2014/")) {
     return "Libertadores 2014";
   }

@@ -15,12 +15,12 @@ Cada figurita usa estos campos:
 - `id`: identificador estable del documento y de dominio.
 - `number`: numero unico visible en el album.
 - `title`: nombre de la figurita.
-- `description`: descripcion breve.
+- `description`: descripcion breve; puede quedar vacia en seeds curatorados.
 - `category`: categoria editorial.
 - `era`: `PRE_1990` o `POST_1990`.
 - `rarity`: rareza para futuras reglas de sobres.
 - `imageUrl`: placeholder o URL controlada.
-- `tags`: etiquetas editoriales.
+- `tags`: etiquetas editoriales, incluyendo marcadores de serie como `libertadores-2014`.
 - `sortOrder`: orden de renderizado del album.
 - `active`: permite ocultar sin borrar.
 - `createdAt`: fecha de creacion.

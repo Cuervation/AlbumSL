@@ -3,6 +3,7 @@ import { StickerCategory, StickerEra, StickerRarity } from "../enums.js";
 
 export const INITIAL_STICKER_SEED_MIN_EXPECTED = 50;
 const SEED_TIMESTAMP = new Date("2026-01-01T00:00:00.000Z");
+const LIBERTADORES_2014_TAG = "libertadores-2014";
 const LIBERTADORES_2014_IMAGE_URLS = [
   "/stickers/Libertadores_2014/libertadores_1.png",
   "/stickers/Libertadores_2014/libertadores_2.png",
@@ -40,300 +41,267 @@ const LIBERTADORES_2014_IMAGE_URLS = [
 ] as const;
 
 export const initialStickerSeed: readonly Sticker[] = [
-  sticker(
+  libertadoresSticker(
     1,
     "sl-001",
     "Viejo Gasometro",
     StickerCategory.STADIUM,
-    StickerEra.PRE_1990,
     StickerRarity.LEGENDARY,
     ["boedo", "estadio", "historia"],
   ),
-  sticker(
+  libertadoresSticker(
     2,
     "sl-002",
     "Capitan de los Matadores",
     StickerCategory.PLAYER,
-    StickerEra.PRE_1990,
     StickerRarity.EPIC,
     ["jugador", "matadores"],
   ),
-  sticker(
+  libertadoresSticker(
     3,
     "sl-003",
     "Goleador azulgrana 40s",
     StickerCategory.PLAYER,
-    StickerEra.PRE_1990,
     StickerRarity.COMMON,
     ["jugador", "goleador"],
   ),
-  sticker(
+  libertadoresSticker(
     4,
     "sl-004",
     "Arquero historico",
     StickerCategory.PLAYER,
-    StickerEra.PRE_1990,
     StickerRarity.COMMON,
     ["jugador", "arquero"],
   ),
-  sticker(
+  libertadoresSticker(
     5,
     "sl-005",
     "Director tecnico clasico",
     StickerCategory.COACH,
-    StickerEra.PRE_1990,
     StickerRarity.COMMON,
     ["tecnico", "historia"],
   ),
-  sticker(
+  libertadoresSticker(
     6,
     "sl-006",
     "Campeonato invicto",
     StickerCategory.CHAMPIONSHIP,
-    StickerEra.PRE_1990,
     StickerRarity.RARE,
     ["campeonato", "invicto"],
   ),
-  sticker(
+  libertadoresSticker(
     7,
     "sl-007",
     "Tarde de Boedo",
     StickerCategory.HISTORIC_MOMENT,
-    StickerEra.PRE_1990,
     StickerRarity.UNCOMMON,
     ["momento", "boedo"],
   ),
-  sticker(
+  libertadoresSticker(
     8,
     "sl-008",
     "Camiseta bastones clasica",
     StickerCategory.JERSEY,
-    StickerEra.PRE_1990,
     StickerRarity.COMMON,
     ["camiseta", "clasica"],
   ),
-  sticker(
+  libertadoresSticker(
     9,
     "sl-009",
     "Hinchas en avenida La Plata",
     StickerCategory.FANS,
-    StickerEra.PRE_1990,
     StickerRarity.COMMON,
     ["hinchada", "boedo"],
   ),
-  sticker(
+  libertadoresSticker(
     10,
     "sl-010",
     "Clasico de barrio historico",
     StickerCategory.CLASSIC_MATCH,
-    StickerEra.PRE_1990,
     StickerRarity.RARE,
     ["clasico", "historia"],
   ),
-  sticker(
+  libertadoresSticker(
     11,
     "sl-011",
     "Defensor de otra epoca",
     StickerCategory.PLAYER,
-    StickerEra.PRE_1990,
     StickerRarity.COMMON,
     ["jugador", "defensor"],
   ),
-  sticker(
+  libertadoresSticker(
     12,
     "sl-012",
     "Mediocampista del ciclon",
     StickerCategory.PLAYER,
-    StickerEra.PRE_1990,
     StickerRarity.COMMON,
     ["jugador", "mediocampo"],
   ),
-  sticker(
+  libertadoresSticker(
     13,
     "sl-013",
     "La vuelta olimpica antigua",
     StickerCategory.HISTORIC_MOMENT,
-    StickerEra.PRE_1990,
     StickerRarity.COMMON,
     ["momento", "vuelta-olimpica"],
   ),
-  sticker(
+  libertadoresSticker(
     14,
     "sl-014",
     "Escudo de coleccion",
     StickerCategory.SPECIAL,
-    StickerEra.PRE_1990,
     StickerRarity.EPIC,
     ["especial", "escudo"],
   ),
-  sticker(
+  libertadoresSticker(
     15,
     "sl-015",
     "Campeon azulgrana de los 70",
     StickerCategory.CHAMPIONSHIP,
-    StickerEra.PRE_1990,
     StickerRarity.COMMON,
     ["campeonato", "historia"],
   ),
-  sticker(
+  libertadoresSticker(
     16,
     "sl-016",
     "Goleador moderno",
     StickerCategory.PLAYER,
-    StickerEra.POST_1990,
     StickerRarity.COMMON,
     ["jugador", "goleador"],
   ),
-  sticker(
+  libertadoresSticker(
     17,
     "sl-017",
     "Arquero de penales",
     StickerCategory.PLAYER,
-    StickerEra.POST_1990,
     StickerRarity.COMMON,
     ["jugador", "arquero"],
   ),
-  sticker(
+  libertadoresSticker(
     18,
     "sl-018",
     "Lateral incansable",
     StickerCategory.PLAYER,
-    StickerEra.POST_1990,
     StickerRarity.COMMON,
     ["jugador", "defensor"],
   ),
-  sticker(
+  libertadoresSticker(
     19,
     "sl-019",
     "Volante de equilibrio",
     StickerCategory.PLAYER,
-    StickerEra.POST_1990,
     StickerRarity.COMMON,
     ["jugador", "mediocampo"],
   ),
-  sticker(
+  libertadoresSticker(
     20,
     "sl-020",
     "Enganche azulgrana",
     StickerCategory.PLAYER,
-    StickerEra.POST_1990,
     StickerRarity.UNCOMMON,
     ["jugador", "enganche"],
   ),
-  sticker(
+  libertadoresSticker(
     21,
     "sl-021",
     "Delantero de area",
     StickerCategory.PLAYER,
-    StickerEra.POST_1990,
     StickerRarity.COMMON,
     ["jugador", "delantero"],
   ),
-  sticker(
+  libertadoresSticker(
     22,
     "sl-022",
     "Juvenil de cantera",
     StickerCategory.PLAYER,
-    StickerEra.POST_1990,
     StickerRarity.COMMON,
     ["jugador", "cantera"],
   ),
-  sticker(
+  libertadoresSticker(
     23,
     "sl-023",
     "Capitan reciente",
     StickerCategory.PLAYER,
-    StickerEra.POST_1990,
     StickerRarity.UNCOMMON,
     ["jugador", "capitan"],
   ),
-  sticker(
+  libertadoresSticker(
     24,
     "sl-024",
     "Tecnico campeon moderno",
     StickerCategory.COACH,
-    StickerEra.POST_1990,
     StickerRarity.COMMON,
     ["tecnico", "campeon"],
   ),
-  sticker(
+  libertadoresSticker(
     25,
     "sl-025",
     "Tecnico de inferiores",
     StickerCategory.COACH,
-    StickerEra.POST_1990,
     StickerRarity.COMMON,
     ["tecnico", "cantera"],
   ),
-  sticker(
+  libertadoresSticker(
     26,
     "sl-026",
     "Conductor tactico",
     StickerCategory.COACH,
-    StickerEra.POST_1990,
     StickerRarity.UNCOMMON,
     ["tecnico", "tactica"],
   ),
-  sticker(
+  libertadoresSticker(
     27,
     "sl-027",
     "Titulo local moderno",
     StickerCategory.CHAMPIONSHIP,
-    StickerEra.POST_1990,
     StickerRarity.COMMON,
     ["campeonato", "torneo-local"],
   ),
-  sticker(
+  libertadoresSticker(
     28,
     "sl-028",
     "Copa internacional",
     StickerCategory.CHAMPIONSHIP,
-    StickerEra.POST_1990,
     StickerRarity.LEGENDARY,
     ["campeonato", "internacional"],
   ),
-  sticker(
+  libertadoresSticker(
     29,
     "sl-029",
     "Superfinal azulgrana",
     StickerCategory.CHAMPIONSHIP,
-    StickerEra.POST_1990,
     StickerRarity.EPIC,
     ["campeonato", "final"],
   ),
-  sticker(
+  libertadoresSticker(
     30,
     "sl-030",
     "Gol en tiempo cumplido",
     StickerCategory.HISTORIC_MOMENT,
-    StickerEra.POST_1990,
     StickerRarity.RARE,
     ["momento", "gol"],
   ),
-  sticker(
+  libertadoresSticker(
     31,
     "sl-031",
     "Noche de copa",
     StickerCategory.HISTORIC_MOMENT,
-    StickerEra.POST_1990,
     StickerRarity.EPIC,
     ["momento", "copa"],
   ),
-  sticker(
+  libertadoresSticker(
     32,
     "sl-032",
     "Festejo en el Nuevo Gasometro",
     StickerCategory.HISTORIC_MOMENT,
-    StickerEra.POST_1990,
     StickerRarity.UNCOMMON,
     ["momento", "festejo"],
   ),
-  sticker(
+  libertadoresSticker(
     33,
     "sl-033",
     "Nuevo Gasometro",
     StickerCategory.STADIUM,
-    StickerEra.POST_1990,
     StickerRarity.RARE,
     ["estadio", "bajo-flores"],
   ),
@@ -500,22 +468,41 @@ function sticker(
   era: StickerEra,
   rarity: StickerRarity,
   tags: readonly string[],
+  options: { readonly description?: string; readonly tags?: readonly string[] } = {},
 ): Sticker {
   return {
     id,
     number,
     title,
-    description: `${title} - figurita placeholder para validar el flujo inicial del catalogo.`,
+    description:
+      options.description ??
+      `${title} - figurita placeholder para validar el flujo inicial del catalogo.`,
     category,
     era,
     rarity,
     imageUrl: getSeedImageUrl(number, id),
-    tags,
+    tags: options.tags ?? tags,
     sortOrder: number,
     active: true,
     createdAt: SEED_TIMESTAMP,
     updatedAt: SEED_TIMESTAMP,
   };
+}
+
+function libertadoresSticker(
+  number: number,
+  id: string,
+  title: string,
+  category: StickerCategory,
+  rarity: StickerRarity,
+  tags: readonly string[],
+): Sticker {
+  const era = number <= 15 ? StickerEra.PRE_1990 : StickerEra.POST_1990;
+
+  return sticker(number, id, title, category, era, rarity, tags, {
+    description: "",
+    tags: [LIBERTADORES_2014_TAG, ...tags],
+  });
 }
 
 function getSeedImageUrl(number: number, id: string): string {
