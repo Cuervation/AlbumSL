@@ -156,10 +156,17 @@ administrativo.
 
 ## Imagenes Y Copyright
 
-El seed usa placeholders `placeholder://albumsl/stickers/{id}`.
+El seed usa dos tipos de imagen:
 
-No se descargan imagenes de internet y no se incluyen assets con copyright. Cuando existan imagenes
-reales, deben provenir de una fuente autorizada o de assets propios.
+- assets locales autorizados en `apps/web/public/stickers/Libertadores_2014/`
+- placeholders `placeholder://albumsl/stickers/{id}` para las figuritas que todavia no tengan imagen
+
+Las primeras 33 figuritas del seed usan los assets locales copiados desde la carpeta raiz
+`stickers/Libertadores_2014/`. Esa carpeta sigue siendo la fuente original de trabajo, y la copia
+en `apps/web/public` es la que publica Firebase Hosting.
+
+No se descargan imagenes de internet y no se incluyen assets con copyright. Las imagenes reales
+deben provenir de una fuente autorizada o de assets propios.
 
 ## Escalar A 600+
 

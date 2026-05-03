@@ -37,7 +37,17 @@ export function DuplicatesPage(): React.JSX.Element {
             className="duplicate-card"
             to={`/album/${albumSticker.sticker.id}`}
           >
-            <div className="sticker-placeholder">#{albumSticker.sticker.number}</div>
+            <div className="sticker-placeholder">
+              {albumSticker.sticker.imageUrl.startsWith("placeholder://") ? (
+                <>#{albumSticker.sticker.number}</>
+              ) : (
+                <img
+                  src={albumSticker.sticker.imageUrl}
+                  alt={albumSticker.sticker.title}
+                  loading="lazy"
+                />
+              )}
+            </div>
             <div>
               <span className={`album-status ${getAlbumStatusClassName(albumSticker.status)}`}>
                 {getAlbumStatusLabel(albumSticker.status)}

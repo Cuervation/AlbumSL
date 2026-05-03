@@ -25,6 +25,13 @@ export function CatalogPage(): React.JSX.Element {
       <section className="catalog-grid" aria-label="Catalogo de figuritas">
         {stickers.map((sticker) => (
           <article className="sticker-card" key={sticker.id}>
+            <div className="sticker-card-art">
+              {sticker.imageUrl.startsWith("placeholder://") ? (
+                <span className="sticker-card-placeholder">#{sticker.number}</span>
+              ) : (
+                <img src={sticker.imageUrl} alt={sticker.title} loading="lazy" />
+              )}
+            </div>
             <span className="sticker-number">#{sticker.number}</span>
             <h2>{sticker.title}</h2>
             <p>{sticker.description}</p>

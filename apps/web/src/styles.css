@@ -463,7 +463,9 @@ a {
 }
 
 .album-slot-art,
-.sticker-detail-art {
+.sticker-detail-art,
+.sticker-card-art,
+.sticker-placeholder {
   align-items: center;
   background:
     linear-gradient(135deg, rgba(7, 26, 67, 0.95), rgba(220, 38, 38, 0.82)),
@@ -473,8 +475,14 @@ a {
   font-size: 2.4rem;
   font-weight: 900;
   justify-content: center;
+  overflow: hidden;
   min-height: 150px;
   text-align: center;
+}
+
+.sticker-card-art {
+  border-radius: 6px;
+  min-height: 180px;
 }
 
 .album-slot.missing .album-slot-art {
@@ -482,6 +490,16 @@ a {
     linear-gradient(135deg, rgba(148, 163, 184, 0.65), rgba(203, 213, 225, 0.78)),
     repeating-linear-gradient(45deg, transparent 0 9px, rgba(255, 255, 255, 0.4) 9px 12px);
   color: #475569;
+}
+
+.album-slot-art img,
+.sticker-detail-art img,
+.sticker-card-art img,
+.sticker-placeholder img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }
 
 .album-slot-body,

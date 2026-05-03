@@ -54,7 +54,15 @@ export function StickerDetailPage(): React.JSX.Element {
     <main className="page album-page">
       <section className="sticker-detail">
         <div className="sticker-detail-art">
-          <span>#{albumSticker.sticker.number}</span>
+          {albumSticker.sticker.imageUrl.startsWith("placeholder://") ? (
+            <span>#{albumSticker.sticker.number}</span>
+          ) : (
+            <img
+              src={albumSticker.sticker.imageUrl}
+              alt={albumSticker.sticker.title}
+              loading="lazy"
+            />
+          )}
         </div>
         <div className="sticker-detail-body">
           <Link className="back-link" to="/album">

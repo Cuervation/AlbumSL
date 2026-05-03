@@ -157,9 +157,11 @@ function AlbumStickerCard({
     <Link className={`album-slot ${statusClassName}`} to={`/album/${sticker.id}`}>
       <div className="album-slot-art">
         {shouldShowImage ? (
-          <span>
-            {sticker.imageUrl.startsWith("placeholder://") ? `#${sticker.number}` : sticker.title}
-          </span>
+          sticker.imageUrl.startsWith("placeholder://") ? (
+            <span>#{sticker.number}</span>
+          ) : (
+            <img src={sticker.imageUrl} alt={sticker.title} loading="lazy" />
+          )
         ) : (
           <span>?</span>
         )}

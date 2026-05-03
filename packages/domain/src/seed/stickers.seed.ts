@@ -3,6 +3,41 @@ import { StickerCategory, StickerEra, StickerRarity } from "../enums.js";
 
 export const INITIAL_STICKER_SEED_MIN_EXPECTED = 50;
 const SEED_TIMESTAMP = new Date("2026-01-01T00:00:00.000Z");
+const LIBERTADORES_2014_IMAGE_URLS = [
+  "/stickers/Libertadores_2014/libertadores_1.png",
+  "/stickers/Libertadores_2014/libertadores_2.png",
+  "/stickers/Libertadores_2014/libertadores_3.png",
+  "/stickers/Libertadores_2014/Libertadores_4.jpg",
+  "/stickers/Libertadores_2014/Libertadores_6.jpg",
+  "/stickers/Libertadores_2014/libertadores_6.png",
+  "/stickers/Libertadores_2014/libertadores_7.png",
+  "/stickers/Libertadores_2014/libertadores_8.jpg",
+  "/stickers/Libertadores_2014/libertadores_9.jpg",
+  "/stickers/Libertadores_2014/libertadores_10.jpg",
+  "/stickers/Libertadores_2014/libertadores_11.jpg",
+  "/stickers/Libertadores_2014/libertadores_12.jpg",
+  "/stickers/Libertadores_2014/libertadores_13.jpg",
+  "/stickers/Libertadores_2014/libertadores_14.png",
+  "/stickers/Libertadores_2014/libertadores_15.png",
+  "/stickers/Libertadores_2014/libertadores_16.png",
+  "/stickers/Libertadores_2014/libertadores_17.png",
+  "/stickers/Libertadores_2014/libertadores_18.png",
+  "/stickers/Libertadores_2014/libertadores_19.jpg",
+  "/stickers/Libertadores_2014/libertadores_20.png",
+  "/stickers/Libertadores_2014/libertadores_21.jpg",
+  "/stickers/Libertadores_2014/libertadores_22.jpg",
+  "/stickers/Libertadores_2014/libertadores_23.jpg",
+  "/stickers/Libertadores_2014/libertadores_24.jpg",
+  "/stickers/Libertadores_2014/libertadores_25.png",
+  "/stickers/Libertadores_2014/libertadores_26.png",
+  "/stickers/Libertadores_2014/libertadores_27.png",
+  "/stickers/Libertadores_2014/libertadores_28.png",
+  "/stickers/Libertadores_2014/libertadores_29.jpg",
+  "/stickers/Libertadores_2014/libertadores_30.png",
+  "/stickers/Libertadores_2014/libertadores_31.png",
+  "/stickers/Libertadores_2014/libertadores_32.png",
+  "/stickers/Libertadores_2014/libertadores_33.png",
+] as const;
 
 export const initialStickerSeed: readonly Sticker[] = [
   sticker(
@@ -474,11 +509,15 @@ function sticker(
     category,
     era,
     rarity,
-    imageUrl: `placeholder://albumsl/stickers/${id}`,
+    imageUrl: getSeedImageUrl(number, id),
     tags,
     sortOrder: number,
     active: true,
     createdAt: SEED_TIMESTAMP,
     updatedAt: SEED_TIMESTAMP,
   };
+}
+
+function getSeedImageUrl(number: number, id: string): string {
+  return LIBERTADORES_2014_IMAGE_URLS[number - 1] ?? `placeholder://albumsl/stickers/${id}`;
 }
