@@ -14,7 +14,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
+    "@albumsl/application": "0.0.0",
     "@albumsl/contracts": "0.0.0",
+    "@albumsl/infra-firebase": "0.0.0",
     "firebase-admin": "^13.3.0"
   }
 }

@@ -8,7 +8,7 @@ function resolveFirebaseProjectId(): string | undefined {
   return process.env.FIREBASE_PROJECT_ID ?? process.env.GCLOUD_PROJECT;
 }
 
-function getOrCreateFirebaseApp(): App {
+export function getOrCreateFirebaseApp(): App {
   const existingApp = getApps()[0];
   if (existingApp) {
     return existingApp;
