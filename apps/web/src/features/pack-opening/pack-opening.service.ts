@@ -4,15 +4,8 @@ import type {
   OpenPackRequestDto,
   OpenPackResponseDto,
 } from "@albumsl/contracts";
-import { httpsCallable } from "firebase/functions";
 
 import { postAuthenticatedJson } from "../../lib/albumsl-api";
-import { firebaseFunctions } from "../../lib/firebase";
-
-const openPackCallable = httpsCallable<OpenPackRequestDto, OpenPackResponseDto>(
-  firebaseFunctions,
-  "openPack",
-);
 
 export async function claimDailyPack(
   request: ClaimDailyPackRequestDto = {},
@@ -24,6 +17,5 @@ export async function claimDailyPack(
 }
 
 export async function openPack(request: OpenPackRequestDto): Promise<OpenPackResponseDto> {
-  const response = await openPackCallable(request);
-  return response.data;
+  return postAuthenticatedJson<OpenPackRequestDto, OpenPackResponseDto>("/api/packs/open", request);
 }
