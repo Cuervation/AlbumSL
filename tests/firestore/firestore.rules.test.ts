@@ -8,12 +8,18 @@ import {
 } from "@firebase/rules-unit-testing";
 import {
   deleteDoc,
+  collection,
   doc,
   getDoc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
   serverTimestamp,
   setDoc,
   Timestamp,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { afterAll, beforeAll, beforeEach, describe, it } from "vitest";
 
@@ -43,6 +49,12 @@ afterAll(async () => {
 });
 
 describe("firestore.rules users/{userId}", () => {
+  it("allows an authenticated user to read their own profile", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertSucceeds(getDoc(doc(db, "users/user-a")));
+  });
+
   it("allows an authenticated user to create a valid own USER profile", async () => {
     const db = testEnv.authenticatedContext("user-new").firestore();
 
@@ -78,6 +90,24 @@ describe("firestore.rules users/{userId}", () => {
     await assertFails(getDoc(doc(db, "users/user-b")));
   });
 
+  it("denies unauthenticated users from reading profiles", async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+
+    await assertFails(getDoc(doc(db, "users/user-a")));
+  });
+
+  it("allows updating only safe own profile fields", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertSucceeds(
+      updateDoc(doc(db, "users/user-a"), {
+        displayName: "Nuevo nombre",
+        photoURL: "https://example.test/photo.png",
+        updatedAt: serverTimestamp(),
+      }),
+    );
+  });
+
   it("denies changing own role", async () => {
     const db = testEnv.authenticatedContext("user-a").firestore();
 
@@ -98,10 +128,32 @@ describe("firestore.rules stickers/{stickerId}", () => {
     await assertSucceeds(getDoc(doc(db, "stickers/sticker-active")));
   });
 
+  it("allows the catalog query for active stickers", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertSucceeds(
+      getDocs(
+        query(collection(db, "stickers"), where("active", "==", true), orderBy("sortOrder", "asc")),
+      ),
+    );
+  });
+
   it("denies authenticated users from reading inactive stickers", async () => {
     const db = testEnv.authenticatedContext("user-a").firestore();
 
     await assertFails(getDoc(doc(db, "stickers/sticker-inactive")));
+  });
+
+  it("denies listing stickers without the active filter", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertFails(getDocs(collection(db, "stickers")));
+  });
+
+  it("denies unauthenticated users from reading stickers", async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+
+    await assertFails(getDoc(doc(db, "stickers/sticker-active")));
   });
 
   it("denies client create, update and delete", async () => {
@@ -133,6 +185,12 @@ describe("firestore.rules userAlbums/{userId}", () => {
     await assertFails(getDoc(doc(db, "userAlbums/user-b")));
   });
 
+  it("denies unauthenticated users from reading summaries", async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+
+    await assertFails(getDoc(doc(db, "userAlbums/user-a")));
+  });
+
   it("denies client writes", async () => {
     const db = testEnv.authenticatedContext("user-a").firestore();
     const albumRef = doc(db, "userAlbums/user-a");
@@ -156,10 +214,28 @@ describe("firestore.rules userStickers/{userId}/items/{stickerId}", () => {
     await assertSucceeds(getDoc(doc(db, "userStickers/user-a/items/sticker-active")));
   });
 
+  it("allows users to list their own sticker inventory", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertSucceeds(getDocs(collection(db, "userStickers/user-a/items")));
+  });
+
   it("denies users from reading another user's stickers", async () => {
     const db = testEnv.authenticatedContext("user-a").firestore();
 
     await assertFails(getDoc(doc(db, "userStickers/user-b/items/sticker-active")));
+  });
+
+  it("denies users from listing another user's sticker inventory", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertFails(getDocs(collection(db, "userStickers/user-b/items")));
+  });
+
+  it("denies unauthenticated users from reading sticker inventory", async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+
+    await assertFails(getDoc(doc(db, "userStickers/user-a/items/sticker-active")));
   });
 
   it("denies client create, update and delete", async () => {
@@ -185,10 +261,32 @@ describe("firestore.rules packClaims/{claimId}", () => {
     await assertSucceeds(getDoc(doc(db, "packClaims/claim-a")));
   });
 
+  it("allows users to query own claims", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertSucceeds(
+      getDocs(query(collection(db, "packClaims"), where("userId", "==", "user-a"))),
+    );
+  });
+
   it("denies users from reading another user's claims", async () => {
     const db = testEnv.authenticatedContext("user-a").firestore();
 
     await assertFails(getDoc(doc(db, "packClaims/claim-b")));
+  });
+
+  it("denies users from querying another user's claims", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertFails(
+      getDocs(query(collection(db, "packClaims"), where("userId", "==", "user-b"))),
+    );
+  });
+
+  it("denies unauthenticated users from reading claims", async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+
+    await assertFails(getDoc(doc(db, "packClaims/claim-a")));
   });
 
   it("denies client create, update and delete", async () => {
@@ -214,10 +312,39 @@ describe("firestore.rules packOpenings/{openingId}", () => {
     await assertSucceeds(getDoc(doc(db, "packOpenings/opening-a")));
   });
 
+  it("allows the album query for own recent openings", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertSucceeds(
+      getDocs(
+        query(
+          collection(db, "packOpenings"),
+          where("userId", "==", "user-a"),
+          orderBy("createdAt", "desc"),
+          limit(5),
+        ),
+      ),
+    );
+  });
+
   it("denies users from reading another user's openings", async () => {
     const db = testEnv.authenticatedContext("user-a").firestore();
 
     await assertFails(getDoc(doc(db, "packOpenings/opening-b")));
+  });
+
+  it("denies users from querying another user's openings", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertFails(
+      getDocs(query(collection(db, "packOpenings"), where("userId", "==", "user-b"))),
+    );
+  });
+
+  it("denies unauthenticated users from reading openings", async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+
+    await assertFails(getDoc(doc(db, "packOpenings/opening-a")));
   });
 
   it("denies client create, update and delete", async () => {
@@ -235,6 +362,34 @@ describe("firestore.rules packOpenings/{openingId}", () => {
     const db = testEnv.authenticatedContext("admin-a", { admin: true }).firestore();
 
     await assertSucceeds(getDoc(doc(db, "packOpenings/opening-a")));
+  });
+});
+
+describe("firestore.rules stadiumEvents/{eventId}", () => {
+  it("allows authenticated users to read active stadium events", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertSucceeds(getDoc(doc(db, "stadiumEvents/event-active")));
+  });
+
+  it("denies authenticated users from reading inactive stadium events", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertFails(getDoc(doc(db, "stadiumEvents/event-inactive")));
+  });
+
+  it("denies client writes", async () => {
+    const db = testEnv.authenticatedContext("user-a").firestore();
+
+    await assertFails(setDoc(doc(db, "stadiumEvents/event-new"), stadiumEvent("event-new")));
+    await assertFails(updateDoc(doc(db, "stadiumEvents/event-active"), { active: false }));
+    await assertFails(deleteDoc(doc(db, "stadiumEvents/event-active")));
+  });
+
+  it("allows admin custom claim to read inactive stadium events", async () => {
+    const db = testEnv.authenticatedContext("admin-a", { admin: true }).firestore();
+
+    await assertSucceeds(getDoc(doc(db, "stadiumEvents/event-inactive")));
   });
 });
 
@@ -276,6 +431,12 @@ describe("firestore.rules system/config", () => {
 
     await assertFails(updateDoc(doc(db, "system/config"), { packSize: 10 }));
   });
+
+  it("denies unauthenticated users from reading system config", async () => {
+    const db = testEnv.unauthenticatedContext().firestore();
+
+    await assertFails(getDoc(doc(db, "system/config")));
+  });
 });
 
 describe("firestore.rules default deny", () => {
@@ -307,6 +468,11 @@ async function seedFirestore(): Promise<void> {
       setDoc(doc(db, "packClaims/claim-b"), packClaim("claim-b", "user-b")),
       setDoc(doc(db, "packOpenings/opening-a"), packOpening("opening-a", "user-a")),
       setDoc(doc(db, "packOpenings/opening-b"), packOpening("opening-b", "user-b")),
+      setDoc(doc(db, "stadiumEvents/event-active"), stadiumEvent("event-active")),
+      setDoc(doc(db, "stadiumEvents/event-inactive"), {
+        ...stadiumEvent("event-inactive"),
+        active: false,
+      }),
       setDoc(doc(db, "auditLogs/audit-a"), auditLog("audit-a")),
       setDoc(doc(db, "system/config"), {
         packSize: 5,
@@ -406,6 +572,21 @@ function packOpening(id: string, userId: string) {
     repeatedCount: 0,
     createdAt: testTimestamp(),
     metadata: {},
+  };
+}
+
+function stadiumEvent(id: string) {
+  return {
+    id,
+    name: "Evento test",
+    active: true,
+    startsAt: testTimestamp(),
+    endsAt: testTimestamp(),
+    latitude: -34.6356,
+    longitude: -58.4173,
+    radiusMeters: 300,
+    createdAt: testTimestamp(),
+    updatedAt: testTimestamp(),
   };
 }
 

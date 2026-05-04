@@ -5,7 +5,7 @@
 - Denegar por defecto.
 - No confiar en campos de ownership enviados por cliente.
 - Comparar ownership con `request.auth.uid` cuando corresponda.
-- Mantener operaciones sensibles detras de Cloud Functions o Admin SDK.
+- Mantener operaciones sensibles detras del backend Node o Admin SDK.
 - Preparar admins futuros con custom claim `request.auth.token.admin == true`.
 - Tratar Firestore Rules como barrera defensiva, no como motor de negocio.
 
@@ -73,11 +73,11 @@
 - El frontend no puede incrementar `quantity`.
 - El frontend no puede crear `packOpenings`.
 - El frontend no puede modificar `userAlbums`.
-- Las Cloud Functions deben rechazar payloads con figuritas elegidas por el cliente.
+- El backend debe rechazar payloads con figuritas elegidas por el cliente.
 
 ## Reglas para pegado de figuritas
 
-- El pegado se ejecuta mediante callable `pasteSticker`.
+- El pegado se ejecuta mediante `POST /api/stickers/paste` en el backend Node.
 - El frontend solo envia `stickerId`.
 - La identidad confiable sale de `request.auth.uid`, no del payload.
 - El backend lee `userStickers/{uid}/items/{stickerId}` dentro de una transaccion.
@@ -111,7 +111,7 @@
 - La elegibilidad se calcula del lado servidor.
 - El reloj confiable es backend.
 - Firestore Rules bloquean creacion/consumo directo de claims.
-- `claimDailyPack` crea o devuelve el claim diario existente, pero no abre el sobre.
+- `POST /api/packs/claim-daily` crea o devuelve el claim diario existente, pero no abre el sobre.
 
 ## Sobre por estadio
 
@@ -175,7 +175,7 @@
 - No protegen operaciones hechas con credenciales Admin SDK mal usadas.
 - Requieren mantener actualizados los tests con Emulator antes de produccion.
 
-## Lineamientos para Cloud Functions
+## Lineamientos para backend sensible
 
 - Verificar identidad antes de operaciones sensibles.
 - Validar permisos y contexto.
@@ -184,6 +184,7 @@
 - Registrar eventos criticos.
 - Mantener handlers delgados.
 - Mover logica a `packages/application`.
+- Usar backend Node externo para runtime real; Cloud Functions quedan como legacy/local si se conservan.
 
 ## Deploy manual seguro
 
