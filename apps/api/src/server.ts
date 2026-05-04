@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 
-import { claimDailyPackUseCase, openPackUseCase } from "@albumsl/application";
+import { claimDailyPackUseCase, openPackUseCase, pasteStickerUseCase } from "@albumsl/application";
 import {
   ApiErrorCode,
   type ApiErrorResponse,
@@ -11,6 +11,8 @@ import {
   type OpenPackRequestDto,
   type OpenPackResponseDto,
   type PackSourceDto,
+  type PasteStickerRequestDto,
+  type PasteStickerResponseDto,
 } from "@albumsl/contracts";
 
 import { createApiDependencies } from "./api-dependencies.js";
@@ -31,6 +33,10 @@ export interface ApiServerOptions {
     user: AuthenticatedUserDto,
     request: OpenPackRequestDto,
   ) => Promise<OpenPackResponseDto>;
+  readonly pasteSticker?: (
+    user: AuthenticatedUserDto,
+    request: PasteStickerRequestDto,
+  ) => Promise<PasteStickerResponseDto>;
 }
 
 function getRequestedPath(request: IncomingMessage): string {
@@ -171,6 +177,21 @@ function parseOpenPackRequest(body: unknown): OpenPackRequestDto {
   };
 }
 
+function parsePasteStickerRequest(body: unknown): PasteStickerRequestDto {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new HttpApiError(400, ApiErrorCode.INVALID_ARGUMENT, "Request body must be an object");
+  }
+
+  const stickerId = (body as { readonly stickerId?: unknown }).stickerId;
+  if (typeof stickerId !== "string" || stickerId.trim().length === 0) {
+    throw new HttpApiError(400, ApiErrorCode.INVALID_ARGUMENT, "Invalid sticker id");
+  }
+
+  return {
+    stickerId: stickerId.trim(),
+  };
+}
+
 async function defaultClaimDailyPack(
   user: AuthenticatedUserDto,
   request: ClaimDailyPackRequestDto,
@@ -233,10 +254,42 @@ async function defaultOpenPack(
   };
 }
 
+async function defaultPasteSticker(
+  user: AuthenticatedUserDto,
+  request: PasteStickerRequestDto,
+): Promise<PasteStickerResponseDto> {
+  const dependencies = createApiDependencies();
+  const result = await pasteStickerUseCase(
+    {
+      userId: user.uid,
+      stickerId: request.stickerId,
+    },
+    {
+      transactionRunner: dependencies.transactionRunner,
+      clock: dependencies.clock,
+    },
+  );
+
+  return {
+    stickerId: result.userSticker.stickerId,
+    quantity: result.userSticker.quantity,
+    pastedQuantity: result.userSticker.pastedQuantity,
+    repeatedQuantity: Math.max(result.userSticker.quantity - result.userSticker.pastedQuantity, 0),
+    albumProgress: {
+      totalStickers: result.albumProgress.totalStickers,
+      collectedStickers: result.albumProgress.collectedStickers,
+      pastedStickers: result.albumProgress.pastedStickers,
+      repeatedStickers: result.albumProgress.repeatedStickers,
+      completionPercentage: result.albumProgress.completionPercentage,
+    },
+  };
+}
+
 export function createApiServer(options: ApiServerOptions = {}) {
   const authenticateUser = options.authenticateUser ?? authenticateUserFromAuthorizationHeader;
   const claimDailyPack = options.claimDailyPack ?? defaultClaimDailyPack;
   const openPack = options.openPack ?? defaultOpenPack;
+  const pasteSticker = options.pasteSticker ?? defaultPasteSticker;
 
   return createServer((request, response) => {
     void (async () => {
@@ -287,6 +340,20 @@ export function createApiServer(options: ApiServerOptions = {}) {
           return;
         } catch (error) {
           sendHttpApiError(response, toOpenPackHttpApiError(error));
+          return;
+        }
+      }
+
+      if (method === "POST" && path === "/api/stickers/paste") {
+        try {
+          const authenticatedUser = await authenticateUser(request.headers.authorization);
+          const body = await readJsonBody(request);
+          const pasteRequest = parsePasteStickerRequest(body);
+          const pasteResponse = await pasteSticker(authenticatedUser, pasteRequest);
+          sendJson(response, 200, pasteResponse);
+          return;
+        } catch (error) {
+          sendHttpApiError(response, toHttpApiError(error));
           return;
         }
       }

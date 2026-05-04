@@ -430,3 +430,213 @@ describe("createApiServer open pack", () => {
     );
   });
 });
+
+describe("createApiServer paste sticker", () => {
+  it("requires authentication", async () => {
+    await withServer({}, async (baseUrl) => {
+      const response = await postJson(`${baseUrl}/api/stickers/paste`, {
+        body: {
+          stickerId: "sticker-1",
+        },
+      });
+
+      expect(response).toEqual({
+        statusCode: 401,
+        body: {
+          error: {
+            code: "UNAUTHENTICATED",
+            message: "Authentication token is required",
+          },
+        },
+      });
+    });
+  });
+
+  it("rejects invalid tokens", async () => {
+    await withServer(
+      {
+        authenticateUser: async () => {
+          throw new HttpApiError(401, ApiErrorCode.UNAUTHENTICATED, "Invalid or expired token");
+        },
+      },
+      async (baseUrl) => {
+        const response = await postJson(`${baseUrl}/api/stickers/paste`, {
+          authorization: "Bearer invalid-token",
+          body: {
+            stickerId: "sticker-1",
+          },
+        });
+
+        expect(response).toEqual({
+          statusCode: 401,
+          body: {
+            error: {
+              code: "UNAUTHENTICATED",
+              message: "Invalid or expired token",
+            },
+          },
+        });
+      },
+    );
+  });
+
+  it("rejects non-object request bodies", async () => {
+    await withServer(
+      {
+        authenticateUser: async () => ({
+          uid: "user-1",
+          displayName: null,
+          email: null,
+          photoURL: null,
+        }),
+      },
+      async (baseUrl) => {
+        const response = await postJson(`${baseUrl}/api/stickers/paste`, {
+          authorization: "Bearer valid-token",
+          body: null,
+        });
+
+        expect(response).toEqual({
+          statusCode: 400,
+          body: {
+            error: {
+              code: "INVALID_ARGUMENT",
+              message: "Request body must be an object",
+            },
+          },
+        });
+      },
+    );
+  });
+
+  it("rejects invalid sticker ids", async () => {
+    await withServer(
+      {
+        authenticateUser: async () => ({
+          uid: "user-1",
+          displayName: null,
+          email: null,
+          photoURL: null,
+        }),
+      },
+      async (baseUrl) => {
+        const response = await postJson(`${baseUrl}/api/stickers/paste`, {
+          authorization: "Bearer valid-token",
+          body: {
+            stickerId: "   ",
+          },
+        });
+
+        expect(response).toEqual({
+          statusCode: 400,
+          body: {
+            error: {
+              code: "INVALID_ARGUMENT",
+              message: "Invalid sticker id",
+            },
+          },
+        });
+      },
+    );
+  });
+
+  it("uses the authenticated uid and returns the paste response", async () => {
+    await withServer(
+      {
+        authenticateUser: async (authorizationHeader) => {
+          expect(authorizationHeader).toBe("Bearer valid-token");
+          return {
+            uid: "user-1",
+            displayName: "User One",
+            email: "user@example.com",
+            photoURL: null,
+          };
+        },
+        pasteSticker: async (user, pasteRequest) => {
+          expect(user.uid).toBe("user-1");
+          expect(pasteRequest).toEqual({
+            stickerId: "sticker-1",
+          });
+
+          return {
+            stickerId: "sticker-1",
+            quantity: 2,
+            pastedQuantity: 1,
+            repeatedQuantity: 1,
+            albumProgress: {
+              totalStickers: 33,
+              collectedStickers: 1,
+              pastedStickers: 1,
+              repeatedStickers: 1,
+              completionPercentage: 3,
+            },
+          };
+        },
+      },
+      async (baseUrl) => {
+        const response = await postJson(`${baseUrl}/api/stickers/paste`, {
+          authorization: "Bearer valid-token",
+          body: {
+            stickerId: "sticker-1",
+            uid: "attacker-controlled",
+          },
+        });
+
+        expect(response).toEqual({
+          statusCode: 200,
+          body: {
+            stickerId: "sticker-1",
+            quantity: 2,
+            pastedQuantity: 1,
+            repeatedQuantity: 1,
+            albumProgress: {
+              totalStickers: 33,
+              collectedStickers: 1,
+              pastedStickers: 1,
+              repeatedStickers: 1,
+              completionPercentage: 3,
+            },
+          },
+        });
+      },
+    );
+  });
+
+  it("returns a controlled error when no sticker is available", async () => {
+    await withServer(
+      {
+        authenticateUser: async () => ({
+          uid: "user-1",
+          displayName: null,
+          email: null,
+          photoURL: null,
+        }),
+        pasteSticker: async () => {
+          throw new ApplicationError(
+            "INSUFFICIENT_QUANTITY",
+            "User does not have an available sticker to paste",
+          );
+        },
+      },
+      async (baseUrl) => {
+        const response = await postJson(`${baseUrl}/api/stickers/paste`, {
+          authorization: "Bearer valid-token",
+          body: {
+            stickerId: "sticker-1",
+          },
+        });
+
+        expect(response).toEqual({
+          statusCode: 409,
+          body: {
+            error: {
+              code: "INSUFFICIENT_QUANTITY",
+              details: [],
+              message: "User does not have an available sticker to paste",
+            },
+          },
+        });
+      },
+    );
+  });
+});
