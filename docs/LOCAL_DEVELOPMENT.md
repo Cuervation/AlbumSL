@@ -107,9 +107,26 @@ VITE_FIREBASE_STORAGE_BUCKET=
 VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 VITE_USE_FIREBASE_EMULATORS=false
+VITE_ALBUMSL_API_BASE_URL=http://localhost:8081
 ```
 
 Tambien hay que habilitar Google como provider en Firebase Auth.
+
+## Correr backend Node local
+
+El backend Node externo se usa para acciones sensibles que no deben ejecutarse directo desde el
+frontend. Para dev con Firebase real dev:
+
+```powershell
+$env:FIREBASE_PROJECT_ID = "albumsl-dev-cuervation"
+$env:GCLOUD_PROJECT = "albumsl-dev-cuervation"
+$env:GOOGLE_APPLICATION_CREDENTIALS = "C:\FirebaseKeys\albumsl-dev-cuervation-adminsdk.json"
+$env:PORT = "8081"
+npm.cmd --workspace @albumsl/api run build
+node apps/api/dist/main.js
+```
+
+No guardar ni commitear el JSON de service account.
 
 ## Compilar functions
 
@@ -206,10 +223,10 @@ npm.cmd run dev
 
 Luego iniciar sesion en el frontend e ir a `/open-pack`.
 
-La UI llama callables:
+La UI usa backend para operaciones sensibles:
 
-- `claimDailyPack`
-- `openPack`
+- `claimDailyPack`: backend Node externo (`POST /api/packs/claim-daily`)
+- `openPack`: callable legacy/local de Firebase Functions por ahora
 
 El frontend no escribe `packClaims`, `packOpenings`, `userStickers`, `userAlbums` ni `auditLogs`
 directamente.
@@ -218,7 +235,15 @@ Para usar emuladores desde el frontend, configurar:
 
 ```bash
 VITE_USE_FIREBASE_EMULATORS=true
+VITE_ALBUMSL_API_BASE_URL=http://localhost:8081
 ```
+
+Para probar el claim diario con backend Node:
+
+- Terminal 1: correr `apps/api` en `PORT=8081` con credenciales Admin SDK fuera del repo.
+- Terminal 2: correr `npm.cmd run dev` con `VITE_ALBUMSL_API_BASE_URL=http://localhost:8081`.
+- Iniciar sesion con Google, ir a `/open-pack` y reclamar sobre diario.
+- En Network debe verse `POST /api/packs/claim-daily` contra el backend Node. No imprimir tokens.
 
 ## Probar UI del album
 

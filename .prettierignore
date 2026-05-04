@@ -2,6 +2,7 @@ dist
 lib
 node_modules
 coverage
+.codex/skills
 .firebase
 .firebaserc
 firebase-debug.log

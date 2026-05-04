@@ -30,7 +30,7 @@ export function OpenPackPage(): React.JSX.Element {
         <h1>Sobre diario</h1>
         <p>
           Reclama tu sobre diario y abrilo desde backend. La UI solo manda la intencion: las 5
-          figuritas se deciden en Cloud Functions usando los casos de uso.
+          figuritas se deciden en el servidor usando los casos de uso.
         </p>
       </section>
 

@@ -35,9 +35,13 @@ VITE_FIREBASE_STORAGE_BUCKET=
 VITE_FIREBASE_MESSAGING_SENDER_ID=
 VITE_FIREBASE_APP_ID=
 VITE_USE_FIREBASE_EMULATORS=false
+VITE_ALBUMSL_API_BASE_URL=
 ```
 
 No commitear `.env`.
+
+`VITE_ALBUMSL_API_BASE_URL` es publica y debe apuntar al backend Node externo del ambiente. No poner
+secretos en variables `VITE_*`.
 
 ## Variables Backend/Admin
 
@@ -49,6 +53,10 @@ FIRESTORE_EMULATOR_HOST=
 ```
 
 `GOOGLE_APPLICATION_CREDENTIALS` debe apuntar a un archivo fuera del repo.
+
+El backend Node externo usa Firebase Admin SDK para acciones sensibles. Deployarlo fuera de Firebase
+Functions en Spark-only y configurar ahi `FIREBASE_PROJECT_ID`, `GCLOUD_PROJECT` y credenciales
+seguras del proveedor.
 
 ## `.firebaserc` Local
 
