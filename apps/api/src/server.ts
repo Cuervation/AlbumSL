@@ -1,6 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 
-import { claimDailyPackUseCase } from "@albumsl/application";
+import { claimDailyPackUseCase, openPackUseCase } from "@albumsl/application";
 import {
   ApiErrorCode,
   type ApiErrorResponse,
@@ -8,6 +8,9 @@ import {
   type ClaimDailyPackRequestDto,
   type ClaimDailyPackResponseDto,
   type HealthResponseDto,
+  type OpenPackRequestDto,
+  type OpenPackResponseDto,
+  type PackSourceDto,
 } from "@albumsl/contracts";
 
 import { createApiDependencies } from "./api-dependencies.js";
@@ -24,6 +27,10 @@ export interface ApiServerOptions {
     user: AuthenticatedUserDto,
     request: ClaimDailyPackRequestDto,
   ) => Promise<ClaimDailyPackResponseDto>;
+  readonly openPack?: (
+    user: AuthenticatedUserDto,
+    request: OpenPackRequestDto,
+  ) => Promise<OpenPackResponseDto>;
 }
 
 function getRequestedPath(request: IncomingMessage): string {
@@ -79,6 +86,24 @@ function sendHttpApiError(response: ServerResponse<IncomingMessage>, error: Http
   });
 }
 
+function toOpenPackHttpApiError(error: unknown): HttpApiError {
+  const httpError = toHttpApiError(error);
+
+  if (
+    httpError.code === ApiErrorCode.INVALID_CLAIM ||
+    httpError.code === ApiErrorCode.PERMISSION_DENIED
+  ) {
+    return new HttpApiError(
+      404,
+      ApiErrorCode.INVALID_CLAIM,
+      "Pack claim is not available",
+      httpError.details,
+    );
+  }
+
+  return httpError;
+}
+
 async function readJsonBody(request: IncomingMessage): Promise<unknown> {
   const chunks: Buffer[] = [];
   let totalBytes = 0;
@@ -121,6 +146,31 @@ function parseClaimDailyPackRequest(body: unknown): ClaimDailyPackRequestDto {
   };
 }
 
+function parseOpenPackRequest(body: unknown): OpenPackRequestDto {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new HttpApiError(400, ApiErrorCode.INVALID_ARGUMENT, "Request body must be an object");
+  }
+
+  const source = (body as { readonly source?: unknown }).source;
+  if (typeof source !== "string") {
+    throw new HttpApiError(400, ApiErrorCode.INVALID_ARGUMENT, "source must be a string");
+  }
+
+  if (!PACK_SOURCES.includes(source as PackSourceDto)) {
+    throw new HttpApiError(400, ApiErrorCode.INVALID_ARGUMENT, "Invalid pack source");
+  }
+
+  const claimId = (body as { readonly claimId?: unknown }).claimId;
+  if (typeof claimId !== "string") {
+    throw new HttpApiError(400, ApiErrorCode.INVALID_ARGUMENT, "claimId must be a string");
+  }
+
+  return {
+    source: source as PackSourceDto,
+    claimId,
+  };
+}
+
 async function defaultClaimDailyPack(
   user: AuthenticatedUserDto,
   request: ClaimDailyPackRequestDto,
@@ -145,9 +195,48 @@ async function defaultClaimDailyPack(
   };
 }
 
+async function defaultOpenPack(
+  user: AuthenticatedUserDto,
+  request: OpenPackRequestDto,
+): Promise<OpenPackResponseDto> {
+  const dependencies = createApiDependencies();
+  const result = await openPackUseCase(
+    {
+      userId: user.uid,
+      source: request.source,
+      claimId: request.claimId,
+    },
+    {
+      transactionRunner: dependencies.transactionRunner,
+      clock: dependencies.clock,
+      idGenerator: dependencies.idGenerator,
+      randomGenerator: dependencies.randomGenerator,
+    },
+  );
+
+  return {
+    packOpeningId: result.packOpeningId,
+    source: result.source,
+    stickers: result.stickers.map((stickerResult) => ({
+      stickerId: stickerResult.sticker.id,
+      number: stickerResult.sticker.number,
+      title: stickerResult.sticker.title,
+      imageUrl: stickerResult.sticker.imageUrl,
+      rarity: stickerResult.sticker.rarity,
+      category: stickerResult.sticker.category,
+      isNew: stickerResult.isNew,
+      quantityAfter: stickerResult.quantityAfter,
+    })),
+    newCount: result.newCount,
+    repeatedCount: result.repeatedCount,
+    createdAt: result.createdAt.toISOString(),
+  };
+}
+
 export function createApiServer(options: ApiServerOptions = {}) {
   const authenticateUser = options.authenticateUser ?? authenticateUserFromAuthorizationHeader;
   const claimDailyPack = options.claimDailyPack ?? defaultClaimDailyPack;
+  const openPack = options.openPack ?? defaultOpenPack;
 
   return createServer((request, response) => {
     void (async () => {
@@ -188,9 +277,25 @@ export function createApiServer(options: ApiServerOptions = {}) {
         }
       }
 
+      if (method === "POST" && path === "/api/packs/open") {
+        try {
+          const authenticatedUser = await authenticateUser(request.headers.authorization);
+          const body = await readJsonBody(request);
+          const openRequest = parseOpenPackRequest(body);
+          const openResponse = await openPack(authenticatedUser, openRequest);
+          sendJson(response, 200, openResponse);
+          return;
+        } catch (error) {
+          sendHttpApiError(response, toOpenPackHttpApiError(error));
+          return;
+        }
+      }
+
       sendNotFound(response);
     })().catch(() => {
       sendInternalError(response);
     });
   });
 }
+
+const PACK_SOURCES: readonly PackSourceDto[] = ["DAILY", "STADIUM", "PROMO", "ADMIN"];
