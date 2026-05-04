@@ -185,6 +185,8 @@
 - Mantener handlers delgados.
 - Mover logica a `packages/application`.
 - Usar backend Node externo para runtime real; Cloud Functions quedan como legacy/local si se conservan.
+- Para CORS, permitir solo origins declarados en `ALBUMSL_ALLOWED_ORIGINS`.
+- No usar `Access-Control-Allow-Origin: *` en endpoints con `Authorization`.
 
 ## Deploy manual seguro
 
@@ -194,3 +196,5 @@
 - No commitear service accounts, `.env` ni credenciales.
 - `GOOGLE_APPLICATION_CREDENTIALS` debe apuntar a archivo fuera del repo.
 - Custom claims admin se gestionan con script backend/Admin SDK existente.
+- En Render dev, cargar service accounts como Secret File y no como variable con contenido JSON.
+- El backend Render dev debe exponer `/api/health` para healthcheck.

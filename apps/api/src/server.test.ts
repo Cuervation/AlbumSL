@@ -49,6 +49,7 @@ async function postJson(
   options: {
     readonly authorization?: string;
     readonly body?: unknown;
+    readonly origin?: string;
   } = {},
 ): Promise<TestResponse> {
   const body = options.body === undefined ? "" : JSON.stringify(options.body);
@@ -60,6 +61,7 @@ async function postJson(
         method: "POST",
         headers: {
           ...(options.authorization ? { Authorization: options.authorization } : {}),
+          ...(options.origin ? { Origin: options.origin } : {}),
           "Content-Type": "application/json",
           "Content-Length": Buffer.byteLength(body).toString(),
         },
@@ -81,6 +83,127 @@ async function postJson(
     clientRequest.end(body);
   });
 }
+
+async function sendRequest(
+  url: string,
+  options: {
+    readonly method: "GET" | "POST" | "OPTIONS";
+    readonly origin?: string;
+    readonly headers?: Record<string, string>;
+    readonly body?: string;
+  },
+): Promise<{
+  readonly statusCode: number;
+  readonly headers: Record<string, string | string[] | undefined>;
+  readonly body: string;
+}> {
+  return new Promise((resolve, reject) => {
+    const clientRequest = request(
+      url,
+      {
+        method: options.method,
+        headers: {
+          ...(options.origin ? { Origin: options.origin } : {}),
+          ...options.headers,
+          ...(options.body === undefined
+            ? {}
+            : { "Content-Length": Buffer.byteLength(options.body).toString() }),
+        },
+      },
+      (response) => {
+        const chunks: Buffer[] = [];
+        response.on("data", (chunk: Buffer) => chunks.push(chunk));
+        response.on("end", () => {
+          resolve({
+            statusCode: response.statusCode ?? 0,
+            headers: response.headers,
+            body: Buffer.concat(chunks).toString("utf8"),
+          });
+        });
+      },
+    );
+
+    clientRequest.on("error", reject);
+    clientRequest.end(options.body);
+  });
+}
+
+describe("createApiServer health and CORS", () => {
+  it("returns health", async () => {
+    await withServer({}, async (baseUrl) => {
+      const response = await sendRequest(`${baseUrl}/api/health`, { method: "GET" });
+
+      expect(response.statusCode).toBe(200);
+      expect(JSON.parse(response.body) as unknown).toEqual({
+        ok: true,
+        service: "albumsl-api",
+      });
+    });
+  });
+
+  it("allows configured origins", async () => {
+    await withServer(
+      { allowedOrigins: ["https://albumsl-dev-cuervation.web.app"] },
+      async (baseUrl) => {
+        const response = await sendRequest(`${baseUrl}/api/packs/claim-daily`, {
+          method: "POST",
+          origin: "https://albumsl-dev-cuervation.web.app",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: "",
+        });
+
+        expect(response.statusCode).toBe(401);
+        expect(response.headers["access-control-allow-origin"]).toBe(
+          "https://albumsl-dev-cuervation.web.app",
+        );
+      },
+    );
+  });
+
+  it("handles preflight for configured origins", async () => {
+    await withServer(
+      { allowedOrigins: ["https://albumsl-dev-cuervation.web.app"] },
+      async (baseUrl) => {
+        const response = await sendRequest(`${baseUrl}/api/packs/open`, {
+          method: "OPTIONS",
+          origin: "https://albumsl-dev-cuervation.web.app",
+          headers: {
+            "Access-Control-Request-Method": "POST",
+            "Access-Control-Request-Headers": "Authorization, Content-Type",
+          },
+        });
+
+        expect(response.statusCode).toBe(204);
+        expect(response.headers["access-control-allow-origin"]).toBe(
+          "https://albumsl-dev-cuervation.web.app",
+        );
+        expect(response.headers["access-control-allow-methods"]).toBe("GET, POST, OPTIONS");
+        expect(response.headers["access-control-allow-headers"]).toBe(
+          "Authorization, Content-Type",
+        );
+        expect(response.headers.vary).toBe("Origin");
+        expect(response.body).toBe("");
+      },
+    );
+  });
+
+  it("does not reflect unconfigured origins", async () => {
+    await withServer(
+      { allowedOrigins: ["https://albumsl-dev-cuervation.web.app"] },
+      async (baseUrl) => {
+        const response = await sendRequest(`${baseUrl}/api/packs/open`, {
+          method: "OPTIONS",
+          origin: "https://evil.example",
+        });
+
+        expect(response.statusCode).toBe(204);
+        expect(response.headers["access-control-allow-origin"]).toBeUndefined();
+      },
+    );
+  });
+});
 
 describe("createApiServer claim daily pack", () => {
   it("requires authentication", async () => {

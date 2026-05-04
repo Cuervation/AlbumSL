@@ -20,8 +20,11 @@ import { authenticateUserFromAuthorizationHeader } from "./firebase-auth.js";
 import { HttpApiError, toHttpApiError } from "./http-errors.js";
 
 const MAX_JSON_BODY_BYTES = 16 * 1024;
+const CORS_ALLOWED_METHODS = "GET, POST, OPTIONS";
+const CORS_ALLOWED_HEADERS = "Authorization, Content-Type";
 
 export interface ApiServerOptions {
+  readonly allowedOrigins?: readonly string[];
   readonly authenticateUser?: (
     authorizationHeader: string | undefined,
   ) => Promise<AuthenticatedUserDto>;
@@ -41,6 +44,48 @@ export interface ApiServerOptions {
 
 function getRequestedPath(request: IncomingMessage): string {
   return new URL(request.url ?? "/", "http://localhost").pathname;
+}
+
+function parseAllowedOrigins(rawAllowedOrigins: string | undefined): readonly string[] {
+  if (!rawAllowedOrigins) {
+    return [];
+  }
+
+  return rawAllowedOrigins
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
+}
+
+function getAllowedOrigin(
+  request: IncomingMessage,
+  allowedOrigins: readonly string[],
+): string | undefined {
+  const origin = request.headers.origin;
+  if (!origin || Array.isArray(origin)) {
+    return undefined;
+  }
+
+  return allowedOrigins.includes(origin) ? origin : undefined;
+}
+
+function writeCorsHeaders(response: ServerResponse<IncomingMessage>, origin: string): void {
+  response.setHeader("Access-Control-Allow-Origin", origin);
+  response.setHeader("Access-Control-Allow-Methods", CORS_ALLOWED_METHODS);
+  response.setHeader("Access-Control-Allow-Headers", CORS_ALLOWED_HEADERS);
+  response.setHeader("Vary", "Origin");
+}
+
+function sendCorsPreflight(
+  response: ServerResponse<IncomingMessage>,
+  allowedOrigin: string | undefined,
+): void {
+  if (allowedOrigin) {
+    writeCorsHeaders(response, allowedOrigin);
+  }
+
+  response.writeHead(204);
+  response.end();
 }
 
 function sendJson(
@@ -286,6 +331,8 @@ async function defaultPasteSticker(
 }
 
 export function createApiServer(options: ApiServerOptions = {}) {
+  const allowedOrigins =
+    options.allowedOrigins ?? parseAllowedOrigins(process.env.ALBUMSL_ALLOWED_ORIGINS);
   const authenticateUser = options.authenticateUser ?? authenticateUserFromAuthorizationHeader;
   const claimDailyPack = options.claimDailyPack ?? defaultClaimDailyPack;
   const openPack = options.openPack ?? defaultOpenPack;
@@ -295,6 +342,16 @@ export function createApiServer(options: ApiServerOptions = {}) {
     void (async () => {
       const method = request.method ?? "GET";
       const path = getRequestedPath(request);
+      const allowedOrigin = getAllowedOrigin(request, allowedOrigins);
+
+      if (allowedOrigin) {
+        writeCorsHeaders(response, allowedOrigin);
+      }
+
+      if (method === "OPTIONS") {
+        sendCorsPreflight(response, allowedOrigin);
+        return;
+      }
 
       if (method === "GET" && path === "/api/health") {
         const healthResponse: HealthResponseDto = {

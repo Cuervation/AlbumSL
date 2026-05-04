@@ -58,6 +58,72 @@ El backend Node externo usa Firebase Admin SDK para acciones sensibles. Deployar
 Functions en Spark-only y configurar ahi `FIREBASE_PROJECT_ID`, `GCLOUD_PROJECT` y credenciales
 seguras del proveedor.
 
+## Backend Node Dev En Render
+
+Objetivo PR 14: preparar deploy dev del backend Node externo en Render. No deployar desde Codex si
+requiere credenciales externas o UI.
+
+Crear un Web Service manual en Render:
+
+| Campo             | Valor                                              |
+| ----------------- | -------------------------------------------------- |
+| Service type      | Web Service                                        |
+| Runtime           | Node                                               |
+| Branch            | `master`                                           |
+| Build Command     | `npm ci && npm --workspace @albumsl/api run build` |
+| Start Command     | `node apps/api/dist/main.js`                       |
+| Health Check Path | `/api/health`                                      |
+
+Render inyecta `PORT`; no hardcodearlo. El backend ya escucha `process.env.PORT` y usa `8081` solo
+como fallback local.
+
+Variables de entorno dev:
+
+```bash
+NODE_VERSION=22
+FIREBASE_PROJECT_ID=albumsl-dev-cuervation
+GCLOUD_PROJECT=albumsl-dev-cuervation
+GOOGLE_APPLICATION_CREDENTIALS=/etc/secrets/albumsl-dev-cuervation-adminsdk.json
+ALBUMSL_ALLOWED_ORIGINS=https://albumsl-dev-cuervation.web.app,http://localhost:5173
+```
+
+No configurar `PORT` manualmente en Render.
+
+Service account:
+
+- cargar el JSON de Firebase Admin SDK como Render Secret File
+- filename: `albumsl-dev-cuervation-adminsdk.json`
+- runtime path: `/etc/secrets/albumsl-dev-cuervation-adminsdk.json`
+- no commitear el JSON
+- no pegar ni imprimir su contenido
+- no agregar secretos a `render.yaml`
+
+Healthcheck esperado:
+
+```bash
+https://<backend-dev>.onrender.com/api/health
+```
+
+Respuesta esperada:
+
+```json
+{
+  "ok": true,
+  "service": "albumsl-api"
+}
+```
+
+Smoke CORS desde Hosting dev:
+
+- `Origin` permitido: `https://albumsl-dev-cuervation.web.app`
+- headers permitidos: `Authorization, Content-Type`
+- metodos permitidos: `GET, POST, OPTIONS`
+- no usar wildcard `*` con `Authorization`
+- si se prueba desde local, conservar `http://localhost:5173` en `ALBUMSL_ALLOWED_ORIGINS`
+
+PR 15 conectara el frontend dev publico con `VITE_ALBUMSL_API_BASE_URL` apuntando al backend Render.
+Hasta entonces, no cambiar Hosting dev para consumir el backend publico por defecto.
+
 ## `.firebaserc` Local
 
 Crear localmente:

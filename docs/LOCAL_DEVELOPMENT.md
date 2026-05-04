@@ -121,12 +121,15 @@ frontend. Para dev con Firebase real dev:
 $env:FIREBASE_PROJECT_ID = "albumsl-dev-cuervation"
 $env:GCLOUD_PROJECT = "albumsl-dev-cuervation"
 $env:GOOGLE_APPLICATION_CREDENTIALS = "C:\FirebaseKeys\albumsl-dev-cuervation-adminsdk.json"
+$env:ALBUMSL_ALLOWED_ORIGINS = "http://localhost:5173"
 $env:PORT = "8081"
 npm.cmd --workspace @albumsl/api run build
 node apps/api/dist/main.js
 ```
 
 No guardar ni commitear el JSON de service account.
+`PORT` lo lee el backend desde `process.env.PORT`; Render lo inyecta automaticamente.
+`ALBUMSL_ALLOWED_ORIGINS` controla CORS. Para dev local, incluir `http://localhost:5173`.
 
 ## Compilar functions
 
@@ -244,6 +247,19 @@ Para probar el claim diario con backend Node:
 - Terminal 2: correr `npm.cmd run dev` con `VITE_ALBUMSL_API_BASE_URL=http://localhost:8081`.
 - Iniciar sesion con Google, ir a `/open-pack` y reclamar sobre diario.
 - En Network debe verse `POST /api/packs/claim-daily` contra el backend Node. No imprimir tokens.
+
+## Probar CORS con backend dev publico
+
+Cuando Render dev exista, el frontend de Hosting dev todavia no debe conectarse automaticamente hasta
+PR 15. Para smoke manual desde el navegador, abrir Hosting dev y ejecutar un request autenticado
+contra el backend publico solo durante la prueba.
+
+Validar en Network:
+
+- `Origin`: `https://albumsl-dev-cuervation.web.app`
+- respuesta con `Access-Control-Allow-Origin: https://albumsl-dev-cuervation.web.app`
+- preflight `OPTIONS` con `Access-Control-Allow-Headers: Authorization, Content-Type`
+- ningun token ni JSON de service account impreso en consola
 
 ## Probar UI del album
 
