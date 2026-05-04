@@ -1,9 +1,4 @@
-import type {
-  PasteStickerRequestDto,
-  PasteStickerResponseDto,
-  StickerDto,
-  UserAlbumSummaryDto,
-} from "@albumsl/contracts";
+import type { PasteStickerResponseDto, StickerDto, UserAlbumSummaryDto } from "@albumsl/contracts";
 import type { Sticker, UserSticker } from "@albumsl/domain";
 import {
   collection,
@@ -16,9 +11,9 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore";
-import { httpsCallable } from "firebase/functions";
 
-import { firebaseFunctions, firestoreDb } from "../../lib/firebase";
+import { postAuthenticatedJson } from "../../lib/albumsl-api";
+import { firestoreDb } from "../../lib/firebase";
 import { getActiveStickers } from "../sticker-catalog/sticker-catalog.service";
 
 export interface RecentPackOpening {
@@ -28,11 +23,6 @@ export interface RecentPackOpening {
   readonly repeatedCount: number;
   readonly createdAt: string;
 }
-
-const pasteStickerCallable = httpsCallable<PasteStickerRequestDto, PasteStickerResponseDto>(
-  firebaseFunctions,
-  "pasteSticker",
-);
 
 export async function getActiveAlbumStickers(): Promise<readonly Sticker[]> {
   const stickerDtos = await getActiveStickers();
@@ -78,8 +68,10 @@ export async function getRecentPackOpenings(
 }
 
 export async function pasteSticker(stickerId: string): Promise<PasteStickerResponseDto> {
-  const response = await pasteStickerCallable({ stickerId });
-  return response.data;
+  return postAuthenticatedJson<{ readonly stickerId: string }, PasteStickerResponseDto>(
+    "/api/stickers/paste",
+    { stickerId },
+  );
 }
 
 function mapStickerDtoToDomain(sticker: StickerDto): Sticker {
