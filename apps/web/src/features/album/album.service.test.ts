@@ -1,4 +1,6 @@
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { pasteSticker } from "./album.service";
 
 const firebaseAuthMock = vi.hoisted(() => ({
   currentUser: null as null | { readonly getIdToken: () => Promise<string> },
@@ -15,12 +17,6 @@ vi.mock("../sticker-catalog/sticker-catalog.service", () => ({
 }));
 
 describe("album.service pasteSticker", () => {
-  let pasteSticker: (stickerId: string) => Promise<{ readonly stickerId: string }>;
-
-  beforeAll(async () => {
-    pasteSticker = (await import("./album.service")).pasteSticker;
-  });
-
   beforeEach(() => {
     firebaseAuthMock.currentUser = null;
     vi.unstubAllGlobals();
