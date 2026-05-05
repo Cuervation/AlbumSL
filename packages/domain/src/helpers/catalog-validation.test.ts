@@ -171,4 +171,22 @@ describe("catalog validation", () => {
     expect(validation.distribution.pre1990Count).toBe(15);
     expect(validation.distribution.post1990Count).toBe(35);
   });
+
+  it("keeps the Libertadores 2014 subset curated and consistent", () => {
+    const libertadoresStickers = initialStickerSeed.slice(0, 33);
+
+    expect(libertadoresStickers).toHaveLength(33);
+    expect(libertadoresStickers.every((sticker) => sticker.era === StickerEra.POST_1990)).toBe(
+      true,
+    );
+    expect(
+      libertadoresStickers.every((sticker) =>
+        sticker.imageUrl.startsWith("/stickers/Libertadores_2014/"),
+      ),
+    ).toBe(true);
+    expect(libertadoresStickers.every((sticker) => sticker.description === "")).toBe(true);
+    expect(
+      libertadoresStickers.every((sticker) => sticker.tags.includes("libertadores-2014")),
+    ).toBe(true);
+  });
 });

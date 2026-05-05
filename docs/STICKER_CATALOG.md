@@ -65,12 +65,37 @@ concreto de escritura vive en infraestructura:
 El seed inicial contiene 50 figuritas de ejemplo para validar UI, reglas, queries e integracion.
 No busca precision historica definitiva.
 
+Curacion MVP PR21:
+
+- Las primeras 33 figuritas forman el bloque `Libertadores 2014`.
+- Ese bloque usa `era = POST_1990`, `description = ""` y el tag `libertadores-2014`.
+- Los titulos del bloque son genericos pero coherentes con las imagenes locales, sin afirmar datos
+  historicos finos no verificados.
+- Las figuritas 34 a 48 completan la muestra `PRE_1990` con placeholders editoriales.
+- Las figuritas 49 y 50 quedan como muestra `POST_1990` fuera del bloque Libertadores 2014.
+
 Distribucion actual:
 
 - 50 figuritas totales.
 - 15 `PRE_1990` y 35 `POST_1990`.
 - 30% / 70% exacto para esta muestra.
 - `COMMON` es la rareza mayoritaria.
+- Rarezas actuales del seed: 28 `COMMON`, 9 `UNCOMMON`, 7 `RARE`, 4 `EPIC` y 2
+  `LEGENDARY`.
+
+## Balance Inicial De Sobres
+
+El MVP usa seleccion ponderada por rareza en dominio:
+
+- `packSize`: 5 figuritas.
+- Pesos: `COMMON` 70, `UNCOMMON` 20, `RARE` 7, `EPIC` 2, `LEGENDARY` 1.
+- Si una rareza no tiene figuritas activas, su peso se ignora y se redistribuye entre rarezas
+  disponibles.
+- La seleccion usa random inyectado y es testeable.
+- La seleccion es con reemplazo; puede salir una repetida dentro del mismo sobre.
+
+Esta configuracion busca sobres entretenidos sin hacer imposible completar la muestra chica. No se
+agrega economia, monedas, trading ni reglas dinamicas en el MVP.
 
 ## Validaciones Puras
 

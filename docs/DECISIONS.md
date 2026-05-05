@@ -269,3 +269,13 @@ Motivo: Separar validacion automatica de despliegues reales y exigir aprobacion 
 Alternativas consideradas: Configurar CD automatico o usar un solo proyecto Firebase.
 Impacto: El repo queda listo para operar dev/prod con Firebase CLI sin commitear IDs ni credenciales reales.
 Riesgos: Requiere disciplina operativa para configurar aliases correctos y validar antes de ejecutar deploy prod.
+
+## DEC-028 - Curar bloque Libertadores 2014 y mantener balance simple MVP
+
+Fecha: 2026-05-05
+Estado: Aprobada
+Decision: Mantener el seed MVP en 50 figuritas, con las primeras 33 como bloque `Libertadores 2014` post-1990 y pesos de sobre `70/20/7/2/1`.
+Motivo: El MVP necesita contenido coherente con las imagenes locales y un balance inicial jugable sin agregar economia ni reglas dinamicas.
+Alternativas consideradas: Redisenar el algoritmo de sobres o ampliar masivamente el catalogo antes del smoke autenticado.
+Impacto: Los IDs, numeros y `sortOrder` quedan estables; solo cambia curacion editorial y documentacion del balance.
+Riesgos: Si el seed ya fue escrito en dev, hace falta dry-run y seed controlado para sincronizar los cambios editoriales.
