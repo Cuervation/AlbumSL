@@ -108,7 +108,8 @@
 - Las escrituras de `stickers` quedan denegadas desde Firestore Client SDK.
 - La carga inicial se ejecuta con Admin SDK desde `packages/infra-firebase`.
 - El seed valida ids, numeros, campos requeridos y distribucion antes de escribir.
-- Las imagenes del seed son placeholders y no assets descargados de internet.
+- Las imagenes del seed son assets locales autorizados o placeholders; no se descargan assets de
+  internet desde el repo.
 
 ## Claims de sobres
 

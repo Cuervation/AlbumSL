@@ -250,7 +250,7 @@ No tocar prod sin aprobacion humana explicita.
 
 ## Prod
 
-Prod queda fuera del flujo PR17.
+Prod queda fuera del flujo MVP dev actual.
 
 No ejecutar comandos prod desde este runbook. Si alguna vez se habilita prod, requiere una decision
 operativa nueva, checklist dedicado, aprobacion humana explicita y runbook separado.

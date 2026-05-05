@@ -154,7 +154,7 @@ npm.cmd run deploy:prod:hosting
 npm.cmd run deploy:prod:rules
 ```
 
-## Configurar Firebase mas adelante
+## Configurar Firebase local/aliases
 
 1. Crear proyectos Firebase separados para dev y prod.
 2. Completar `.env` a partir de `.env.example`.
@@ -180,20 +180,24 @@ npm.cmd run deploy:prod:rules
 - Backend Render dev: `https://albumsl-api-dev.onrender.com`
 - Healthcheck: `https://albumsl-api-dev.onrender.com/api/health`
 - Firebase real dev: Hosting, Auth Google, Firestore, Rules/Indexes.
+- Backend Node real dev maneja `claimDailyPack`, `openPack` y `pasteSticker`.
+- Firebase Cloud Functions no se deployan en Spark-only.
 - Smoke autenticado completo queda pendiente.
 
-## Admin MVP
+## Admin dashboard
 
-Ver [docs/ADMIN.md](docs/ADMIN.md) para el panel admin solo lectura protegido por custom claim
-`admin == true`.
+Admin dashboard queda diferido para despues del MVP jugable. `/admin` queda protegido y muestra
+mensaje de backend pendiente.
+
+Futuro correcto: `GET /api/admin/dashboard` en Backend Node, con Firebase ID token y custom claim
+`admin == true` verificado server-side.
 
 Para asignar o quitar custom claims admin de forma operativa, ver
 [docs/ADMIN_CLAIMS.md](docs/ADMIN_CLAIMS.md).
 
 ## Operaciones
 
-Ver [docs/OPERATIONS.md](docs/OPERATIONS.md) para logs seguros y troubleshooting. Si menciona
-Cloud Functions, tratarlo como legacy/local hasta actualizar ese runbook.
+Ver [docs/OPERATIONS.md](docs/OPERATIONS.md) para logs seguros y troubleshooting de Render dev.
 
 ## Performance
 
