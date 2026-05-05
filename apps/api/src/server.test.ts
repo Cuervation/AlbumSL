@@ -327,6 +327,37 @@ describe("createApiServer claim daily pack", () => {
       },
     );
   });
+
+  it("rejects invalid JSON bodies", async () => {
+    await withServer(
+      {
+        authenticateUser: async () => ({
+          uid: "user-1",
+          displayName: null,
+          email: null,
+          photoURL: null,
+        }),
+      },
+      async (baseUrl) => {
+        const response = await sendRequest(`${baseUrl}/api/packs/claim-daily`, {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer valid-token",
+            "Content-Type": "application/json",
+          },
+          body: "{not-json",
+        });
+
+        expect(response.statusCode).toBe(400);
+        expect(JSON.parse(response.body) as unknown).toEqual({
+          error: {
+            code: "INVALID_ARGUMENT",
+            message: "Request body must be valid JSON",
+          },
+        });
+      },
+    );
+  });
 });
 
 describe("createApiServer open pack", () => {
@@ -548,7 +579,6 @@ describe("createApiServer open pack", () => {
           body: {
             error: {
               code: "INVALID_CLAIM",
-              details: [],
               message: "Pack claim is not available",
             },
           },

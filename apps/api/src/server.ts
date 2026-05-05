@@ -145,12 +145,7 @@ function toOpenPackHttpApiError(error: unknown): HttpApiError {
     httpError.code === ApiErrorCode.INVALID_CLAIM ||
     httpError.code === ApiErrorCode.PERMISSION_DENIED
   ) {
-    return new HttpApiError(
-      404,
-      ApiErrorCode.INVALID_CLAIM,
-      "Pack claim is not available",
-      httpError.details,
-    );
+    return new HttpApiError(404, ApiErrorCode.INVALID_CLAIM, "Pack claim is not available");
   }
 
   return httpError;
