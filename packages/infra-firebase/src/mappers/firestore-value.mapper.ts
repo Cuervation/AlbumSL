@@ -66,3 +66,11 @@ export function enumValue<T extends string>(
     ? (value as T)
     : fallback;
 }
+
+export function omitUndefinedFields<T extends Record<string, unknown>>(value: T): T {
+  return Object.fromEntries(
+    Object.entries(value).filter((entry): entry is [string, Exclude<unknown, undefined>] => {
+      return entry[1] !== undefined;
+    }),
+  ) as T;
+}

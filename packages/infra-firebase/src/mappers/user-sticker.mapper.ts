@@ -1,6 +1,6 @@
 import type { UserSticker } from "@albumsl/domain";
 
-import { optionalDateValue, stringValue } from "./firestore-value.mapper.js";
+import { omitUndefinedFields, optionalDateValue, stringValue } from "./firestore-value.mapper.js";
 
 export interface FirestoreUserStickerDocument {
   readonly stickerId: string;
@@ -16,7 +16,7 @@ export function toFirestoreUserStickerDocument(
   userId: string,
   userSticker: UserSticker,
 ): FirestoreUserStickerDocument {
-  return {
+  return omitUndefinedFields({
     stickerId: userSticker.stickerId,
     userId,
     quantity: userSticker.quantity,
@@ -24,7 +24,7 @@ export function toFirestoreUserStickerDocument(
     firstCollectedAt: userSticker.firstCollectedAt ?? userSticker.acquiredAt,
     lastCollectedAt: userSticker.lastCollectedAt,
     updatedAt: userSticker.updatedAt,
-  };
+  });
 }
 
 export function fromFirestoreUserStickerDocument(

@@ -3,6 +3,7 @@ import { ClaimStatus, PackSource, type PackClaim } from "@albumsl/domain";
 import {
   enumValue,
   metadataValue,
+  omitUndefinedFields,
   optionalDateValue,
   optionalStringValue,
   stringValue,
@@ -24,7 +25,7 @@ export interface FirestorePackClaimDocument {
 }
 
 export function toFirestorePackClaimDocument(packClaim: PackClaim): FirestorePackClaimDocument {
-  return {
+  return omitUndefinedFields({
     id: packClaim.id,
     userId: packClaim.userId,
     source: packClaim.source,
@@ -37,7 +38,7 @@ export function toFirestorePackClaimDocument(packClaim: PackClaim): FirestorePac
     metadata: packClaim.metadata ?? {},
     packId: packClaim.packId,
     reason: packClaim.reason,
-  };
+  });
 }
 
 export function fromFirestorePackClaimDocument(

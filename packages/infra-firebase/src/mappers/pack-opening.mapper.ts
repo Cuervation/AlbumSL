@@ -4,6 +4,7 @@ import {
   dateValue,
   enumValue,
   metadataValue,
+  omitUndefinedFields,
   optionalStringValue,
   stringValue,
 } from "./firestore-value.mapper.js";
@@ -24,7 +25,7 @@ export interface FirestorePackOpeningDocument {
 export function toFirestorePackOpeningDocument(
   packOpening: PackOpening,
 ): FirestorePackOpeningDocument {
-  return {
+  return omitUndefinedFields({
     id: packOpening.id,
     userId: packOpening.userId,
     source: packOpening.source,
@@ -35,7 +36,7 @@ export function toFirestorePackOpeningDocument(
     createdAt: packOpening.createdAt,
     metadata: packOpening.metadata ?? {},
     auditLogId: packOpening.auditLogId,
-  };
+  });
 }
 
 export function fromFirestorePackOpeningDocument(
