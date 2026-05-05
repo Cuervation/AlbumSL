@@ -8,6 +8,8 @@
 - Mantener operaciones sensibles detras del backend Node o Admin SDK.
 - Preparar admins futuros con custom claim `request.auth.token.admin == true`.
 - Tratar Firestore Rules como barrera defensiva, no como motor de negocio.
+- Mantener Firebase Spark-only en deploy real: sin Cloud Functions deployadas.
+- Usar Render dev como backend Node publico para operaciones sensibles.
 
 ## Que puede hacer el frontend
 
@@ -38,6 +40,18 @@
 - Crear o editar eventos de estadio.
 - Modificar configuracion global.
 
+## Arquitectura de seguridad dev actual
+
+- Firebase Hosting sirve React.
+- Firebase Auth Google emite ID tokens.
+- El frontend envia `Authorization: Bearer <ID token>` al backend Node.
+- Backend Node corre en Render y valida el ID token con Firebase Admin SDK.
+- Backend Node usa `uid` del token como identidad confiable.
+- Backend Node ignora cualquier `uid` enviado en body.
+- Firestore real dev guarda datos y queda protegido por Rules/Indexes.
+- Service account vive como Secret File en Render o archivo local fuera del repo.
+- Cloud Functions no se deployan en Firebase real Spark-only.
+
 ## Matriz de permisos por coleccion
 
 | Coleccion                                 | Lectura frontend             | Escritura frontend                     | Backend/Admin SDK |
@@ -57,6 +71,7 @@
 - Toda apertura valida nace en backend.
 - El frontend solo puede solicitar la apertura.
 - El frontend debe enviar `source` y `claimId`, nunca stickers elegidas.
+- El backend debe ignorar cualquier `uid` o ownership enviado en el body.
 - La seleccion real de figuritas usa random server-side basado en `node:crypto`.
 - Cada apertura debe estar asociada a un usuario autenticado.
 - El claim debe pertenecer al usuario autenticado.
@@ -112,6 +127,8 @@
 - El reloj confiable es backend.
 - Firestore Rules bloquean creacion/consumo directo de claims.
 - `POST /api/packs/claim-daily` crea o devuelve el claim diario existente, pero no abre el sobre.
+- El backend devuelve el claim existente si ya fue reclamado para el dia UTC.
+- Si el claim ya fue consumido, una apertura repetida debe fallar controladamente.
 
 ## Sobre por estadio
 
@@ -126,7 +143,8 @@
 - Admins pueden leer mas informacion donde la regla lo permite.
 - Escrituras administrativas sensibles deben seguir pasando por backend/Admin SDK.
 - No asumir rol admin por flags locales en frontend.
-- El admin MVP usa callable `adminGetDashboard` y valida `request.auth.token.admin == true`.
+- El admin MVP fue callable/local; en runtime real Spark-only debe migrar o exponerse via backend
+  Node antes de usarse en dev publico.
 - `users/{uid}.role` puede usarse solo para UI; no es fuente de autorizacion real.
 - El panel admin MVP es solo lectura y no expone emails.
 - La asignacion o remocion de custom claim admin se realiza con script backend/Admin SDK, dry-run por defecto y `--confirm` obligatorio para cambios reales.
@@ -134,7 +152,8 @@
 ## Hardening QA actual
 
 - Las escrituras cliente a `stickers`, `userStickers`, `userAlbums`, `packClaims`, `packOpenings` y `auditLogs` siguen bloqueadas por Rules.
-- La UI del album solo lee inventario/resumen/aperturas y usa callable para `pasteSticker`.
+- La UI del album solo lee inventario/resumen/aperturas y usa `POST /api/stickers/paste` para
+  `pasteSticker`.
 - Los tests criticos cubren claim ajeno, claim consumido, consumo de claim, repetidas, pegado sin cantidad e idempotencia diaria.
 - Firestore Rules tienen tests automatizados con Firestore Emulator y `@firebase/rules-unit-testing`.
 
@@ -187,14 +206,33 @@
 - Usar backend Node externo para runtime real; Cloud Functions quedan como legacy/local si se conservan.
 - Para CORS, permitir solo origins declarados en `ALBUMSL_ALLOWED_ORIGINS`.
 - No usar `Access-Control-Allow-Origin: *` en endpoints con `Authorization`.
+- No loguear tokens, headers `Authorization`, cookies, service accounts ni cuerpos con secretos.
+- Logs operativos pueden incluir requestId, path, stage, status code, duracion y estado de claim.
 
 ## Deploy manual seguro
 
 - CI solo valida; no despliega.
-- Deploy dev/prod se ejecuta manualmente con Firebase CLI.
+- Deploy dev se ejecuta manualmente con Firebase CLI; prod queda fuera del flujo actual.
 - Produccion requiere aprobacion humana.
 - No commitear service accounts, `.env` ni credenciales.
 - `GOOGLE_APPLICATION_CREDENTIALS` debe apuntar a archivo fuera del repo.
 - Custom claims admin se gestionan con script backend/Admin SDK existente.
 - En Render dev, cargar service accounts como Secret File y no como variable con contenido JSON.
 - El backend Render dev debe exponer `/api/health` para healthcheck.
+- Render dev debe usar `ALBUMSL_ALLOWED_ORIGINS=https://albumsl-dev-cuervation.web.app,http://localhost:5173`.
+- No usar wildcard CORS con requests autenticados.
+
+## Smoke de seguridad pendiente
+
+Queda pendiente completar smoke autenticado:
+
+- login Google
+- `claimDailyPack`
+- `openPack`
+- `pasteSticker`
+- `/album`
+- `/duplicates`
+- logout/login y persistencia
+- revisar Console sin tokens ni service account
+- revisar Network sin `localhost`, CORS OK y sin 500
+- revisar Render logs sin tokens ni service account

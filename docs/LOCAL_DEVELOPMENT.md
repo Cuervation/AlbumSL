@@ -1,5 +1,23 @@
 # Local Development
 
+## Arquitectura dev actual
+
+Flujo real de dev:
+
+- React + Vite corre en Firebase Hosting o Vite local.
+- Firebase real dev usa Hosting, Auth Google, Firestore y Firestore Rules/Indexes.
+- Backend Node externo corre en Render: `https://albumsl-api-dev.onrender.com`.
+- Backend Node usa Firebase Admin SDK y service account fuera del repo.
+- Operaciones sensibles pasan por backend Node: `claimDailyPack`, `openPack` y `pasteSticker`.
+- Firestore Rules bloquean escrituras sensibles directas desde cliente.
+- Cloud Functions no se deployan a Firebase real en Spark-only.
+
+Ambientes dev actuales:
+
+- Hosting dev: `https://albumsl-dev-cuervation.web.app`
+- Backend dev: `https://albumsl-api-dev.onrender.com`
+- Healthcheck backend: `https://albumsl-api-dev.onrender.com/api/health`
+
 ## Instalar dependencias
 
 Desde la raiz del repo:
@@ -16,21 +34,21 @@ npm.cmd install
 
 ## Correr validaciones
 
-```bash
-npm run typecheck
-npm run lint
-npm run test
-npm run test:rules
-npm run build
-npm run validate
+```powershell
+npm.cmd run typecheck
+npm.cmd run lint
+npm.cmd run test
+npm.cmd run test:rules
+npm.cmd run build
+npm.cmd run validate
 ```
 
-`npm run validate` ejecuta typecheck, lint, tests, build y chequeo de formato.
+`npm.cmd run validate` ejecuta typecheck, lint, tests, build y chequeo de formato.
 
 ## Tests de Firestore Rules
 
-```bash
-npm run test:rules
+```powershell
+npm.cmd run test:rules
 ```
 
 El comando usa `firebase emulators:exec` con Firestore Emulator y
@@ -48,25 +66,32 @@ Cubre:
 
 ## CI
 
-- Validacion local: `npm run validate`.
+- Validacion local: `npm.cmd run validate`.
 - Validacion CI: GitHub Actions ejecuta `npm ci` y `npm run validate` en push/PR a `master`.
 - El CI no despliega a produccion.
 
 ## Deploy manual
 
-Ver `docs/DEPLOYMENT.md` para deploy manual Firebase dev/prod.
+Ver `docs/DEPLOYMENT.md` para deploy manual Firebase dev. Prod queda fuera del flujo actual.
 
 Los scripts usan aliases `dev` y `prod` de Firebase CLI. No commitear `.firebaserc` con IDs reales
 sin decision explicita.
 
 Flujo Spark-only recomendado:
 
-- `npm run deploy:dev` o `npm run deploy:dev:spark`
-- `npm run deploy:dev:rules`
-- `npm run deploy:dev:hosting`
+- `npm.cmd run deploy:dev`
+- `npm.cmd run deploy:dev:rules`
+- `npm.cmd run deploy:dev:hosting`
 
-No usar `npm run deploy:dev:functions` en Spark-only. Ese flujo queda para emulator local o para un
-escenario Blaze que este repo no usa.
+No usar en Spark-only:
+
+- `npm.cmd run deploy:dev:functions`
+- `npm.cmd run deploy:prod`
+- `npm.cmd run deploy:prod:functions`
+- `npm.cmd run deploy:prod:hosting`
+- `npm.cmd run deploy:prod:rules`
+
+Ese flujo queda bloqueado hasta decision manual explicita. No tocar prod desde runbook dev.
 
 ## Flujo de trabajo con agentes
 
@@ -86,13 +111,13 @@ Ejemplos:
 - Catalogo o seed: Data / Content Agent + Domain / Application Agent + QA Agent.
 - Deploy: Release / Operations Agent + Architect / DevOps Agent + Security / Ciberseguridad Agent.
 
-Aunque la tarea sea solo documental, cerrar con `npm run validate` para verificar que el repo sigue
+Aunque la tarea sea solo documental, cerrar con `npm.cmd run validate` para verificar que el repo sigue
 consistente.
 
 ## Correr el frontend
 
-```bash
-npm run dev
+```powershell
+npm.cmd run dev
 ```
 
 El comando levanta `apps/web` con Vite.
@@ -131,10 +156,47 @@ No guardar ni commitear el JSON de service account.
 `PORT` lo lee el backend desde `process.env.PORT`; Render lo inyecta automaticamente.
 `ALBUMSL_ALLOWED_ORIGINS` controla CORS. Para dev local, incluir `http://localhost:5173`.
 
-## Compilar functions
+El backend local expone:
+
+- `GET /api/health`
+- `POST /api/packs/claim-daily`
+- `POST /api/packs/open`
+- `POST /api/stickers/paste`
+
+Todos los endpoints sensibles usan `Authorization: Bearer <Firebase ID token>` y el backend toma la
+identidad desde el token, no desde el body.
+
+## Frontend dev publico
+
+Para compilar Hosting dev contra Render dev, `.env` local debe usar:
 
 ```bash
-npm run build:functions
+VITE_ALBUMSL_API_BASE_URL=https://albumsl-api-dev.onrender.com
+```
+
+Build:
+
+```powershell
+npm.cmd run build:web
+```
+
+Verificar bundle:
+
+- contiene `albumsl-api-dev.onrender.com`
+- no contiene `localhost:8081` como API base
+
+Deploy Hosting dev:
+
+```powershell
+npm.cmd run deploy:dev:hosting
+```
+
+No deployar Functions.
+
+## Compilar functions
+
+```powershell
+npm.cmd run build:functions
 ```
 
 Las functions viven en `functions/` y deben mantenerse como adapters delgados que llaman a
@@ -145,14 +207,14 @@ En Spark-only, `functions` se compila localmente pero no se despliega a Firebase
 
 Dry-run:
 
-```bash
-npm run seed:stickers:dry-run
+```powershell
+npm.cmd run seed:stickers:dry-run
 ```
 
 Seed real:
 
-```bash
-npm run seed:stickers
+```powershell
+npm.cmd run seed:stickers
 ```
 
 Para emulador local:
@@ -173,15 +235,15 @@ el dataset.
 
 Dry-run:
 
-```bash
-npm run admin:claim:dry-run -- --uid USER_UID --admin true
+```powershell
+npm.cmd run admin:claim:dry-run -- --uid USER_UID --admin true
 ```
 
 Cambio real con confirmacion:
 
-```bash
-npm run admin:claim -- --uid USER_UID --admin true --confirm
-npm run admin:claim -- --uid USER_UID --admin false --confirm
+```powershell
+npm.cmd run admin:claim -- --uid USER_UID --admin true --confirm
+npm.cmd run admin:claim -- --uid USER_UID --admin false --confirm
 ```
 
 Requiere `FIREBASE_PROJECT_ID` o `GCLOUD_PROJECT` y credenciales Admin SDK, por ejemplo
@@ -205,22 +267,24 @@ Emuladores previstos:
 
 Antes de usar emuladores hay que configurar el proyecto Firebase y revisar `.firebaserc`.
 
-## Probar claim diario y apertura
+## Probar claim diario, apertura y pegado
 
-Flujo local recomendado:
+Flujo local con backend Node:
 
 ```powershell
-$env:FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080"
-$env:FIREBASE_PROJECT_ID = "albumsl-local"
-firebase emulators:start
+$env:FIREBASE_PROJECT_ID = "albumsl-dev-cuervation"
+$env:GCLOUD_PROJECT = "albumsl-dev-cuervation"
+$env:GOOGLE_APPLICATION_CREDENTIALS = "C:\FirebaseKeys\albumsl-dev-cuervation-adminsdk.json"
+$env:ALBUMSL_ALLOWED_ORIGINS = "http://localhost:5173"
+$env:PORT = "8081"
+npm.cmd --workspace @albumsl/api run build
+node apps/api/dist/main.js
 ```
 
 En otra terminal:
 
 ```powershell
-$env:FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080"
-$env:FIREBASE_PROJECT_ID = "albumsl-local"
-npm.cmd run seed:stickers
+$env:VITE_ALBUMSL_API_BASE_URL = "http://localhost:8081"
 npm.cmd run dev
 ```
 
@@ -229,7 +293,8 @@ Luego iniciar sesion en el frontend e ir a `/open-pack`.
 La UI usa backend para operaciones sensibles:
 
 - `claimDailyPack`: backend Node externo (`POST /api/packs/claim-daily`)
-- `openPack`: callable legacy/local de Firebase Functions por ahora
+- `openPack`: backend Node externo (`POST /api/packs/open`)
+- `pasteSticker`: backend Node externo (`POST /api/stickers/paste`)
 
 El frontend no escribe `packClaims`, `packOpenings`, `userStickers`, `userAlbums` ni `auditLogs`
 directamente.
@@ -241,18 +306,18 @@ VITE_USE_FIREBASE_EMULATORS=true
 VITE_ALBUMSL_API_BASE_URL=http://localhost:8081
 ```
 
-Para probar el claim diario con backend Node:
+Para probar el flujo:
 
 - Terminal 1: correr `apps/api` en `PORT=8081` con credenciales Admin SDK fuera del repo.
 - Terminal 2: correr `npm.cmd run dev` con `VITE_ALBUMSL_API_BASE_URL=http://localhost:8081`.
-- Iniciar sesion con Google, ir a `/open-pack` y reclamar sobre diario.
-- En Network debe verse `POST /api/packs/claim-daily` contra el backend Node. No imprimir tokens.
+- Iniciar sesion con Google, ir a `/open-pack`, reclamar y abrir sobre.
+- Ir a `/album`, abrir detalle de una figurita obtenida y pegarla.
+- En Network deben verse requests al backend Node. No imprimir tokens.
 
 ## Probar CORS con backend dev publico
 
-Cuando Render dev exista, el frontend de Hosting dev todavia no debe conectarse automaticamente hasta
-PR 15. Para smoke manual desde el navegador, abrir Hosting dev y ejecutar un request autenticado
-contra el backend publico solo durante la prueba.
+Hosting dev ya apunta al backend Render dev. Smoke autenticado completo queda pendiente para PR
+futuro.
 
 Validar en Network:
 
@@ -261,12 +326,29 @@ Validar en Network:
 - preflight `OPTIONS` con `Access-Control-Allow-Headers: Authorization, Content-Type`
 - ningun token ni JSON de service account impreso en consola
 
+## Smoke test pendiente
+
+Pendiente para otro momento:
+
+- login Google
+- `claimDailyPack`
+- `openPack`
+- ver figuritas obtenidas
+- `/album`
+- `pasteSticker`
+- `/duplicates`
+- logout/login
+- persistencia
+- revisar Console sin errores graves
+- revisar Network sin `localhost`, sin 500 y con CORS OK
+- revisar Render logs sin tokens ni service account
+
 ## Probar UI del album
 
 Con el frontend corriendo:
 
-```bash
-npm run dev
+```powershell
+npm.cmd run dev
 ```
 
 Rutas protegidas principales:
@@ -278,10 +360,10 @@ Rutas protegidas principales:
 Para que haya datos utiles:
 
 - autenticar con Google o emulador de Auth
-- cargar catalogo con `npm run seed:stickers`
-- reclamar y abrir un sobre desde `/open-pack`
+- cargar catalogo con `npm.cmd run seed:stickers`
+- reclamar y abrir un sobre desde `/open-pack` mediante backend Node
 
-La accion de pegar llama la callable `pasteSticker`. El frontend no escribe directo en
+La accion de pegar llama `POST /api/stickers/paste`. El frontend no escribe directo en
 `userStickers` ni en `userAlbums`.
 
 ## Variables de entorno

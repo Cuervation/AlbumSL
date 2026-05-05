@@ -2,11 +2,11 @@
 
 ## Objetivo
 
-Preparar deploy manual a Firebase para ambientes `dev` y `prod`.
+Preparar deploy manual a Firebase dev y documentar backend Node externo en Render.
 
 No hay CD automatico. CI solo valida. Produccion requiere aprobacion humana.
-Este repo queda en Firebase Spark-only para deploy real: hosting + Firestore Rules/Indexes.
-Cloud Functions quedan fuera del deploy real porque requieren Blaze.
+Este repo queda en Firebase Spark-only para deploy real: Hosting + Firestore Rules/Indexes.
+Cloud Functions no se deployan a Firebase real porque requieren Blaze.
 
 ## Proyectos Firebase Recomendados
 
@@ -15,13 +15,24 @@ Cloud Functions quedan fuera del deploy real porque requieren Blaze.
 
 Usar proyectos Firebase separados. No reutilizar credenciales ni bases entre ambientes.
 
+## Arquitectura Dev Actual
+
+- React + Vite se publica en Firebase Hosting dev.
+- Firebase Auth Google autentica usuarios.
+- Firestore guarda catalogo, perfiles, claims, aperturas, inventario y album.
+- Firestore Rules/Indexes se deployan a Firebase dev.
+- Backend Node corre como Web Service en Render dev: `https://albumsl-api-dev.onrender.com`.
+- Backend Node usa Firebase Admin SDK con service account como Secret File.
+- `claimDailyPack`, `openPack` y `pasteSticker` pasan por backend Node.
+- Cloud Functions pueden compilarse localmente, pero no se deployan en Spark-only.
+
 ## Config Firebase Actual
 
 - Hosting publica `apps/web/dist`.
-- Functions usa source `functions`.
 - Firestore usa `firestore.rules`.
 - Indices usan `firestore.indexes.json`.
 - Emulators configurados: Auth, Functions, Firestore, Hosting y UI.
+- Functions existe como adapter legacy/local, no como deploy real.
 
 ## Variables Frontend
 
@@ -50,6 +61,8 @@ FIREBASE_PROJECT_ID=
 GCLOUD_PROJECT=
 GOOGLE_APPLICATION_CREDENTIALS=
 FIRESTORE_EMULATOR_HOST=
+ALBUMSL_ALLOWED_ORIGINS=
+PORT=
 ```
 
 `GOOGLE_APPLICATION_CREDENTIALS` debe apuntar a un archivo fuera del repo.
@@ -60,19 +73,18 @@ seguras del proveedor.
 
 ## Backend Node Dev En Render
 
-Objetivo PR 14: preparar deploy dev del backend Node externo en Render. No deployar desde Codex si
-requiere credenciales externas o UI.
+Backend dev actual: `https://albumsl-api-dev.onrender.com`.
 
 Crear un Web Service manual en Render:
 
-| Campo             | Valor                                              |
-| ----------------- | -------------------------------------------------- |
-| Service type      | Web Service                                        |
-| Runtime           | Node                                               |
-| Branch            | `master`                                           |
-| Build Command     | `npm ci && npm --workspace @albumsl/api run build` |
-| Start Command     | `node apps/api/dist/main.js`                       |
-| Health Check Path | `/api/health`                                      |
+| Campo             | Valor                                                                        |
+| ----------------- | ---------------------------------------------------------------------------- |
+| Service type      | Web Service                                                                  |
+| Runtime           | Node                                                                         |
+| Branch            | `master`                                                                     |
+| Build Command     | `npm ci && npm run build:packages && npm --workspace @albumsl/api run build` |
+| Start Command     | `node apps/api/dist/main.js`                                                 |
+| Health Check Path | `/api/health`                                                                |
 
 Render inyecta `PORT`; no hardcodearlo. El backend ya escucha `process.env.PORT` y usa `8081` solo
 como fallback local.
@@ -101,7 +113,7 @@ Service account:
 Healthcheck esperado:
 
 ```bash
-https://<backend-dev>.onrender.com/api/health
+https://albumsl-api-dev.onrender.com/api/health
 ```
 
 Respuesta esperada:
@@ -121,8 +133,17 @@ Smoke CORS desde Hosting dev:
 - no usar wildcard `*` con `Authorization`
 - si se prueba desde local, conservar `http://localhost:5173` en `ALBUMSL_ALLOWED_ORIGINS`
 
-PR 15 conectara el frontend dev publico con `VITE_ALBUMSL_API_BASE_URL` apuntando al backend Render.
-Hasta entonces, no cambiar Hosting dev para consumir el backend publico por defecto.
+El frontend dev publico usa:
+
+```bash
+VITE_ALBUMSL_API_BASE_URL=https://albumsl-api-dev.onrender.com
+```
+
+Antes de deployar Hosting dev:
+
+- `npm.cmd run build:web`
+- verificar bundle con `albumsl-api-dev.onrender.com`
+- verificar bundle sin `localhost:8081` como API base
 
 ## `.firebaserc` Local
 
@@ -176,79 +197,69 @@ firebase use
 
 Validar primero:
 
-```bash
-npm run validate
+```powershell
+npm.cmd run validate
 ```
 
 Deploy Spark-safe:
 
-```bash
-npm run deploy:dev
+```powershell
+npm.cmd run deploy:dev
 ```
 
 Equivale a:
 
-```bash
-npm run deploy:dev:spark
+```powershell
+npm.cmd run deploy:dev:spark
 ```
 
 Solo hosting:
 
-```bash
-npm run deploy:dev:hosting
+```powershell
+npm.cmd run deploy:dev:hosting
 ```
 
 Solo functions:
 
-```bash
-npm run deploy:dev:functions
+```powershell
+npm.cmd run deploy:dev:functions
 ```
 
 No usar en Spark-only. Este script requiere Blaze y no es parte del flujo de deploy real del repo.
 
 Solo Firestore Rules/Indexes:
 
-```bash
-npm run deploy:dev:rules
+```powershell
+npm.cmd run deploy:dev:rules
 ```
 
-## Deploy Manual A Prod
+## Comandos que no se usan en flujo dev Spark-only
 
-Requiere aprobacion humana antes de correr.
-En este repo, no usar deploy prod salvo decision manual explicita fuera del flujo Spark-only.
+No correr:
 
-Checklist minimo:
-
-- `npm run validate` OK.
-- Deploy dev probado.
-- `.env` prod correcto.
-- Firebase alias `prod` apunta al proyecto correcto.
-- No hay service accounts dentro del repo.
-- Admin claims revisados.
-
-Deploy completo:
-
-```bash
-npm run deploy:prod
+```powershell
+npm.cmd run deploy:dev:functions
+npm.cmd run deploy:prod
+npm.cmd run deploy:prod:functions
+npm.cmd run deploy:prod:hosting
+npm.cmd run deploy:prod:rules
 ```
 
-Solo hosting:
+No tocar prod sin aprobacion humana explicita.
 
-```bash
-npm run deploy:prod:hosting
-```
+## Prod
 
-Solo functions:
+Prod queda fuera del flujo PR17.
 
-```bash
-npm run deploy:prod:functions
-```
+No ejecutar comandos prod desde este runbook. Si alguna vez se habilita prod, requiere una decision
+operativa nueva, checklist dedicado, aprobacion humana explicita y runbook separado.
 
-Solo Firestore Rules/Indexes:
+Comandos bloqueados en flujo dev actual:
 
-```bash
-npm run deploy:prod:rules
-```
+- `npm.cmd run deploy:prod`
+- `npm.cmd run deploy:prod:functions`
+- `npm.cmd run deploy:prod:hosting`
+- `npm.cmd run deploy:prod:rules`
 
 ## Seed De Stickers En Dev
 
@@ -261,14 +272,14 @@ $env:GOOGLE_APPLICATION_CREDENTIALS = "C:\\path\\outside\\repo\\service-account.
 
 Dry-run:
 
-```bash
-npm run seed:stickers:dry-run
+```powershell
+npm.cmd run seed:stickers:dry-run
 ```
 
 Seed real:
 
-```bash
-npm run seed:stickers
+```powershell
+npm.cmd run seed:stickers
 ```
 
 No correr seed real en prod sin aprobacion explicita.
@@ -277,9 +288,9 @@ No correr seed real en prod sin aprobacion explicita.
 
 Asignar/quitar admins con script existente:
 
-```bash
-npm run admin:claim:dry-run -- --uid USER_UID --admin true
-npm run admin:claim -- --uid USER_UID --admin true --confirm
+```powershell
+npm.cmd run admin:claim:dry-run -- --uid USER_UID --admin true
+npm.cmd run admin:claim -- --uid USER_UID --admin true --confirm
 ```
 
 Ver `docs/ADMIN_CLAIMS.md`.
@@ -292,8 +303,8 @@ Hosting:
 
 Functions:
 
-- Re-deploy de commit estable.
-- Revisar logs en Firebase Console/Google Cloud Logging.
+- No aplica al flujo real Spark-only; no se deployan Cloud Functions.
+- Si se mantiene codigo `functions`, usar solo build/tests/local emulator.
 
 Firestore Rules:
 
@@ -301,9 +312,28 @@ Firestore Rules:
 - Re-deploy:
 
 ```bash
-npm run deploy:dev:rules
-npm run deploy:prod:rules
+npm.cmd run deploy:dev:rules
 ```
+
+Prod rules requiere aprobacion explicita antes de ejecutar cualquier comando.
+
+## Smoke test pendiente
+
+Smoke autenticado completo pendiente:
+
+- abrir `https://albumsl-dev-cuervation.web.app`
+- login Google
+- reclamar sobre diario (`POST /api/packs/claim-daily`)
+- abrir sobre (`POST /api/packs/open`)
+- ver figuritas obtenidas
+- ir a `/album`
+- pegar figurita (`POST /api/stickers/paste`)
+- ir a `/duplicates`
+- logout/login
+- confirmar persistencia
+- revisar Console sin errores graves
+- revisar Network sin `localhost`, CORS OK, sin 500
+- revisar Render logs sin tokens ni service account
 
 ## Seguridad
 
@@ -313,3 +343,6 @@ npm run deploy:prod:rules
 - Produccion requiere aprobacion manual.
 - CI no despliega.
 - Usar `GOOGLE_APPLICATION_CREDENTIALS` solo local/CI seguro y fuera del repo.
+- Render dev usa Secret File para service account.
+- No usar wildcard `*` en CORS con endpoints que reciben `Authorization`.
+- No imprimir tokens, cookies, service accounts ni payloads sensibles en logs.

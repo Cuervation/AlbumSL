@@ -6,7 +6,7 @@ Album virtual de figuritas de San Lorenzo de Almagro.
 
 - Node.js 22 o superior.
 - npm.
-- Firebase CLI, cuando se configure Firebase.
+- Firebase CLI para Hosting, Firestore Rules/Indexes y emuladores.
 
 ## Instalacion
 
@@ -22,8 +22,9 @@ npm.cmd install
 
 ## Estructura del monorepo
 
-- `apps/web`: frontend React + Vite + TypeScript.
-- `functions`: adapter serverless inicial con Firebase Cloud Functions.
+- `apps/web`: frontend React + Vite + TypeScript publicado en Firebase Hosting.
+- `apps/api`: backend Node externo para Render.
+- `functions`: adapter legacy/local con Firebase Cloud Functions; no se deploya en Spark-only.
 - `packages/domain`: entidades y reglas puras del negocio.
 - `packages/application`: casos de uso y puertos.
 - `packages/contracts`: DTOs, tipos compartidos y errores compartidos.
@@ -66,39 +67,54 @@ En proximos prompts se pueden invocar por nombre, por ejemplo: "usa `albumsl-qa-
 ## Comandos principales
 
 ```bash
-npm run dev
-npm run build
-npm run lint
-npm run test
-npm run typecheck
-npm run validate
-npm run format
-npm run format:check
-npm run seed:stickers:dry-run
-npm run seed:stickers
+npm.cmd run dev
+npm.cmd run build
+npm.cmd run lint
+npm.cmd run test
+npm.cmd run typecheck
+npm.cmd run validate
+npm.cmd run format
+npm.cmd run format:check
+npm.cmd run seed:stickers:dry-run
+npm.cmd run seed:stickers
 ```
 
 ## Correr frontend
 
 ```bash
-npm run dev
+npm.cmd run dev
 ```
 
 Antes de levantar el frontend, crear `.env` local a partir de `.env.example` con las variables
 `VITE_FIREBASE_*` del proyecto Firebase. Para emuladores, usar
 `VITE_USE_FIREBASE_EMULATORS=true`.
 
+Backend local esperado para operaciones sensibles:
+
+```bash
+VITE_ALBUMSL_API_BASE_URL=http://localhost:8081
+```
+
+Frontend dev publico usa Render:
+
+```bash
+VITE_ALBUMSL_API_BASE_URL=https://albumsl-api-dev.onrender.com
+```
+
 ## Compilar functions
 
 ```bash
-npm run build:functions
+npm.cmd run build:functions
 ```
+
+Las Cloud Functions no se deployan a Firebase real en Spark-only. El backend real dev corre en
+Render.
 
 ## Seed del catalogo
 
 ```bash
-npm run seed:stickers:dry-run
-npm run seed:stickers
+npm.cmd run seed:stickers:dry-run
+npm.cmd run seed:stickers
 ```
 
 El seed usa Firebase Admin SDK desde `packages/infra-firebase`. Para proyecto real, configurar
@@ -107,7 +123,7 @@ El seed usa Firebase Admin SDK desde `packages/infra-firebase`. Para proyecto re
 ## Validar todo
 
 ```bash
-npm run validate
+npm.cmd run validate
 ```
 
 ## CI
@@ -117,8 +133,26 @@ El workflow valida typecheck, lint, tests, build y formato. No despliega a produ
 
 ## Deploy Manual
 
-Ver [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) para deploy manual Firebase dev/prod. No hay deploy
-automatico desde CI.
+Ver [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) para deploy manual Firebase dev. No hay deploy
+automatico desde CI. Prod queda fuera del flujo actual.
+
+Comandos Spark-safe dev:
+
+```bash
+npm.cmd run deploy:dev
+npm.cmd run deploy:dev:hosting
+npm.cmd run deploy:dev:rules
+```
+
+No usar en flujo dev actual:
+
+```bash
+npm.cmd run deploy:dev:functions
+npm.cmd run deploy:prod
+npm.cmd run deploy:prod:functions
+npm.cmd run deploy:prod:hosting
+npm.cmd run deploy:prod:rules
+```
 
 ## Configurar Firebase mas adelante
 
@@ -134,9 +168,19 @@ automatico desde CI.
 - Firebase es infraestructura inicial, no el centro del dominio.
 - `packages/domain` no debe importar Firebase ni codigo de `functions`.
 - `packages/application` depende de puertos/interfaces, no de implementaciones concretas.
-- Las Cloud Functions deben actuar como adaptadores delgados.
-- Las operaciones sensibles deben pasar por backend.
+- Las Cloud Functions, si se conservan, deben actuar como adaptadores delgados y no se deployan en Spark-only.
+- Las operaciones sensibles pasan por backend Node externo en Render.
 - El frontend no debe asignar figuritas ni escribir datos sensibles directamente.
+- Backend Node usa Firebase Admin SDK y `uid` del ID token; no confia en `uid` del body.
+- Firestore Rules bloquean escrituras sensibles directas del cliente.
+
+## Dev actual
+
+- Hosting dev: `https://albumsl-dev-cuervation.web.app`
+- Backend Render dev: `https://albumsl-api-dev.onrender.com`
+- Healthcheck: `https://albumsl-api-dev.onrender.com/api/health`
+- Firebase real dev: Hosting, Auth Google, Firestore, Rules/Indexes.
+- Smoke autenticado completo queda pendiente.
 
 ## Admin MVP
 
@@ -148,8 +192,8 @@ Para asignar o quitar custom claims admin de forma operativa, ver
 
 ## Operaciones
 
-Ver [docs/OPERATIONS.md](docs/OPERATIONS.md) para logs seguros, eventos observados y
-troubleshooting basico de Cloud Functions.
+Ver [docs/OPERATIONS.md](docs/OPERATIONS.md) para logs seguros y troubleshooting. Si menciona
+Cloud Functions, tratarlo como legacy/local hasta actualizar ese runbook.
 
 ## Performance
 
