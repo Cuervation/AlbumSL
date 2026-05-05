@@ -48,7 +48,8 @@ esperados.
 - `ClaimStatusDto`
 
 `OpenPackResponseDto` devuelve `packOpeningId`, `source`, `stickers`, `newCount`,
-`repeatedCount` y `createdAt`. Cada sticker incluye `isNew` y `quantityAfter`.
+`repeatedCount` y `createdAt`. Cada sticker incluye datos publicos de catalogo (`imageUrl`, `era`,
+`rarity`, `category`, `tags`), `isNew` y `quantityAfter`.
 
 ## Errores API
 

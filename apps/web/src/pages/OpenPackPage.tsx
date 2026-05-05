@@ -1,5 +1,4 @@
-import type { PackStickerResultDto } from "@albumsl/contracts";
-
+import { StickerCatalogCard } from "../components/StickerCatalogCard";
 import { useDailyPack } from "../features/pack-opening/useDailyPack";
 import { useOpenPack } from "../features/pack-opening/useOpenPack";
 
@@ -81,36 +80,12 @@ export function OpenPackPage(): React.JSX.Element {
 
           <div className="pack-sticker-grid">
             {packOpening.result.stickers.map((sticker, index) => (
-              <PackStickerCard key={`${sticker.stickerId}-${index}`} sticker={sticker} />
+              <StickerCatalogCard key={`${sticker.stickerId}-${index}`} sticker={sticker} />
             ))}
           </div>
         </section>
       ) : null}
     </main>
-  );
-}
-
-function PackStickerCard({
-  sticker,
-}: {
-  readonly sticker: PackStickerResultDto;
-}): React.JSX.Element {
-  return (
-    <article className="pack-sticker-card">
-      <div className="sticker-placeholder" aria-hidden="true">
-        #{sticker.number}
-      </div>
-      <div>
-        <span className={sticker.isNew ? "sticker-badge new" : "sticker-badge repeated"}>
-          {sticker.isNew ? "Nueva" : "Repetida"}
-        </span>
-        <h3>{sticker.title}</h3>
-        <p>
-          {sticker.category} · {sticker.rarity}
-        </p>
-        <p>Cantidad ahora: {sticker.quantityAfter}</p>
-      </div>
-    </article>
   );
 }
 

@@ -1,3 +1,4 @@
+import { StickerCatalogCard } from "../components/StickerCatalogCard";
 import { useStickerCatalog } from "../features/sticker-catalog/useStickerCatalog";
 
 export function CatalogPage(): React.JSX.Element {
@@ -24,40 +25,9 @@ export function CatalogPage(): React.JSX.Element {
 
       <section className="catalog-grid" aria-label="Catalogo de figuritas">
         {stickers.map((sticker) => (
-          <article className="sticker-card" key={sticker.id}>
-            <div className="sticker-card-art">
-              {sticker.imageUrl.startsWith("placeholder://") ? (
-                <span className="sticker-card-placeholder">#{sticker.number}</span>
-              ) : (
-                <img src={sticker.imageUrl} alt={sticker.title} loading="lazy" />
-              )}
-            </div>
-            <span className="sticker-number">#{sticker.number}</span>
-            <dl>
-              <div>
-                <dt>Epoca</dt>
-                <dd>{getCatalogEraLabel(sticker.tags, sticker.imageUrl, sticker.era)}</dd>
-              </div>
-              <div>
-                <dt>Rareza</dt>
-                <dd>{sticker.rarity}</dd>
-              </div>
-            </dl>
-          </article>
+          <StickerCatalogCard key={sticker.id} sticker={sticker} />
         ))}
       </section>
     </main>
   );
-}
-
-function getCatalogEraLabel(tags: readonly string[], imageUrl: string, era: string): string {
-  if (tags.includes("libertadores-2014")) {
-    return "Libertadores 2014";
-  }
-
-  if (imageUrl.includes("/Libertadores_2014/")) {
-    return "Libertadores 2014";
-  }
-
-  return era;
 }

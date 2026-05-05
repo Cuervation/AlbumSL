@@ -18,6 +18,7 @@ import {
 import { createApiDependencies } from "./api-dependencies.js";
 import { authenticateUserFromAuthorizationHeader } from "./firebase-auth.js";
 import { HttpApiError, toHttpApiError } from "./http-errors.js";
+import { createRequestLogContext, logApiStage, withApiTimeout } from "./safe-log.js";
 
 const MAX_JSON_BODY_BYTES = 16 * 1024;
 const CORS_ALLOWED_METHODS = "GET, POST, OPTIONS";
@@ -288,8 +289,10 @@ async function defaultOpenPack(
       number: stickerResult.sticker.number,
       title: stickerResult.sticker.title,
       imageUrl: stickerResult.sticker.imageUrl,
+      era: stickerResult.sticker.era,
       rarity: stickerResult.sticker.rarity,
       category: stickerResult.sticker.category,
+      tags: stickerResult.sticker.tags,
       isNew: stickerResult.isNew,
       quantityAfter: stickerResult.quantityAfter,
     })),
@@ -343,6 +346,11 @@ export function createApiServer(options: ApiServerOptions = {}) {
       const method = request.method ?? "GET";
       const path = getRequestedPath(request);
       const allowedOrigin = getAllowedOrigin(request, allowedOrigins);
+      const logContext = createRequestLogContext(method, path);
+
+      logApiStage(logContext, "request_start", {
+        hasOrigin: Boolean(request.headers.origin),
+      });
 
       if (allowedOrigin) {
         writeCorsHeaders(response, allowedOrigin);
@@ -364,53 +372,113 @@ export function createApiServer(options: ApiServerOptions = {}) {
 
       if (method === "GET" && path === "/api/me") {
         try {
-          const authenticatedUser = await authenticateUser(request.headers.authorization);
+          logApiStage(logContext, "auth_start");
+          const authenticatedUser = await withApiTimeout(
+            logContext,
+            "auth",
+            authenticateUser(request.headers.authorization),
+          );
+          logApiStage(logContext, "auth_ok");
           sendJson(response, 200, authenticatedUser);
+          logApiStage(logContext, "request_ok", { statusCode: 200 });
           return;
         } catch (error) {
-          sendHttpApiError(response, toHttpApiError(error));
+          const httpError = toHttpApiError(error);
+          logApiStage(logContext, "request_error", { statusCode: httpError.statusCode });
+          sendHttpApiError(response, httpError);
           return;
         }
       }
 
       if (method === "POST" && path === "/api/packs/claim-daily") {
         try {
-          const authenticatedUser = await authenticateUser(request.headers.authorization);
-          const body = await readJsonBody(request);
+          logApiStage(logContext, "auth_start");
+          const authenticatedUser = await withApiTimeout(
+            logContext,
+            "auth",
+            authenticateUser(request.headers.authorization),
+          );
+          logApiStage(logContext, "auth_ok");
+          logApiStage(logContext, "body_start");
+          const body = await withApiTimeout(logContext, "body", readJsonBody(request));
+          logApiStage(logContext, "body_ok");
           const claimRequest = parseClaimDailyPackRequest(body);
-          const claimResponse = await claimDailyPack(authenticatedUser, claimRequest);
+          logApiStage(logContext, "claim_daily_start");
+          const claimResponse = await withApiTimeout(
+            logContext,
+            "claim_daily",
+            claimDailyPack(authenticatedUser, claimRequest),
+          );
+          logApiStage(logContext, "claim_daily_ok", { claimStatus: claimResponse.status });
           sendJson(response, 200, claimResponse);
+          logApiStage(logContext, "request_ok", { statusCode: 200 });
           return;
         } catch (error) {
-          sendHttpApiError(response, toHttpApiError(error));
+          const httpError = toHttpApiError(error);
+          logApiStage(logContext, "request_error", { statusCode: httpError.statusCode });
+          sendHttpApiError(response, httpError);
           return;
         }
       }
 
       if (method === "POST" && path === "/api/packs/open") {
         try {
-          const authenticatedUser = await authenticateUser(request.headers.authorization);
-          const body = await readJsonBody(request);
+          logApiStage(logContext, "auth_start");
+          const authenticatedUser = await withApiTimeout(
+            logContext,
+            "auth",
+            authenticateUser(request.headers.authorization),
+          );
+          logApiStage(logContext, "auth_ok");
+          logApiStage(logContext, "body_start");
+          const body = await withApiTimeout(logContext, "body", readJsonBody(request));
+          logApiStage(logContext, "body_ok");
           const openRequest = parseOpenPackRequest(body);
-          const openResponse = await openPack(authenticatedUser, openRequest);
+          logApiStage(logContext, "open_pack_start");
+          const openResponse = await withApiTimeout(
+            logContext,
+            "open_pack",
+            openPack(authenticatedUser, openRequest),
+          );
+          logApiStage(logContext, "open_pack_ok");
           sendJson(response, 200, openResponse);
+          logApiStage(logContext, "request_ok", { statusCode: 200 });
           return;
         } catch (error) {
-          sendHttpApiError(response, toOpenPackHttpApiError(error));
+          const httpError = toOpenPackHttpApiError(error);
+          logApiStage(logContext, "request_error", { statusCode: httpError.statusCode });
+          sendHttpApiError(response, httpError);
           return;
         }
       }
 
       if (method === "POST" && path === "/api/stickers/paste") {
         try {
-          const authenticatedUser = await authenticateUser(request.headers.authorization);
-          const body = await readJsonBody(request);
+          logApiStage(logContext, "auth_start");
+          const authenticatedUser = await withApiTimeout(
+            logContext,
+            "auth",
+            authenticateUser(request.headers.authorization),
+          );
+          logApiStage(logContext, "auth_ok");
+          logApiStage(logContext, "body_start");
+          const body = await withApiTimeout(logContext, "body", readJsonBody(request));
+          logApiStage(logContext, "body_ok");
           const pasteRequest = parsePasteStickerRequest(body);
-          const pasteResponse = await pasteSticker(authenticatedUser, pasteRequest);
+          logApiStage(logContext, "paste_sticker_start");
+          const pasteResponse = await withApiTimeout(
+            logContext,
+            "paste_sticker",
+            pasteSticker(authenticatedUser, pasteRequest),
+          );
+          logApiStage(logContext, "paste_sticker_ok");
           sendJson(response, 200, pasteResponse);
+          logApiStage(logContext, "request_ok", { statusCode: 200 });
           return;
         } catch (error) {
-          sendHttpApiError(response, toHttpApiError(error));
+          const httpError = toHttpApiError(error);
+          logApiStage(logContext, "request_error", { statusCode: httpError.statusCode });
+          sendHttpApiError(response, httpError);
           return;
         }
       }

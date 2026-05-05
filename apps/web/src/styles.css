@@ -258,10 +258,15 @@ a {
 }
 
 .open-pack-hero,
-.pack-actions-card,
-.pack-result-section {
+.pack-actions-card {
   margin: 0 auto;
   max-width: 980px;
+  width: 100%;
+}
+
+.pack-result-section {
+  margin: 0 auto;
+  max-width: 1180px;
   width: 100%;
 }
 
@@ -273,8 +278,7 @@ a {
 }
 
 .open-pack-hero p,
-.pack-actions-card p,
-.pack-sticker-card p {
+.pack-actions-card p {
   color: #475569;
   line-height: 1.65;
 }
@@ -766,23 +770,9 @@ a {
 .pack-sticker-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-}
-
-.pack-sticker-card {
-  background: #ffffff;
-  border: 1px solid #dbe3ef;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.pack-sticker-card > div:last-child {
-  padding: 16px;
-}
-
-.pack-sticker-card h3 {
-  color: #071a43;
-  margin: 12px 0 8px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  margin: 0 auto;
+  max-width: 1180px;
 }
 
 .sticker-placeholder {
@@ -796,25 +786,6 @@ a {
   font-weight: 900;
   justify-content: center;
   min-height: 132px;
-}
-
-.sticker-badge {
-  border-radius: 999px;
-  display: inline-flex;
-  font-size: 0.75rem;
-  font-weight: 900;
-  padding: 6px 10px;
-  text-transform: uppercase;
-}
-
-.sticker-badge.new {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.sticker-badge.repeated {
-  background: #fee2e2;
-  color: #991b1b;
 }
 
 .catalog-header {

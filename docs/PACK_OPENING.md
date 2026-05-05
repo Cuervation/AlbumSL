@@ -101,6 +101,7 @@ Luego puede migrarse a `system/config` y leerse desde infraestructura sin cambia
 - Si el usuario no tenia la figurita, el resultado es `isNew: true`.
 - Si ya la tenia, el resultado es `isNew: false`.
 - Si una misma figurita sale dos veces en el mismo sobre, solo la primera puede contar como nueva.
+- La respuesta incluye datos publicos de catalogo para mostrar la misma card que en Catalogo.
 - `quantityAfter` informa la cantidad del usuario luego de aplicar cada figurita del sobre.
 
 ## Idempotencia

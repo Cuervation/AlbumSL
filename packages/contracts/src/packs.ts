@@ -1,4 +1,4 @@
-import type { StickerCategoryDto, StickerRarityDto } from "./stickers.js";
+import type { StickerCategoryDto, StickerEraDto, StickerRarityDto } from "./stickers.js";
 
 export type PackSourceDto = "DAILY" | "STADIUM" | "PROMO" | "ADMIN";
 export type ClaimStatusDto =
@@ -20,8 +20,10 @@ export interface PackStickerResultDto {
   readonly number: number;
   readonly title: string;
   readonly imageUrl: string;
+  readonly era: StickerEraDto;
   readonly rarity: StickerRarityDto;
   readonly category: StickerCategoryDto;
+  readonly tags: readonly string[];
   readonly isNew: boolean;
   readonly quantityAfter: number;
 }
