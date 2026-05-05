@@ -24,6 +24,7 @@ Usar proyectos Firebase separados. No reutilizar credenciales ni bases entre amb
 - Backend Node corre como Web Service en Render dev: `https://albumsl-api-dev.onrender.com`.
 - Backend Node usa Firebase Admin SDK con service account como Secret File.
 - `claimDailyPack`, `openPack` y `pasteSticker` pasan por backend Node.
+- Dashboard admin queda diferido; no hay endpoint admin publico en PR19.
 - Cloud Functions pueden compilarse localmente, pero no se deployan en Spark-only.
 
 ## Config Firebase Actual

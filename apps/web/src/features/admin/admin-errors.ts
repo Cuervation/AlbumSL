@@ -1,4 +1,8 @@
 export function getAdminErrorMessage(error: unknown): string {
+  if (error instanceof Error && error.message === "ADMIN_BACKEND_PENDING") {
+    return "Panel admin pendiente de habilitacion en backend.";
+  }
+
   if (isFirebaseError(error)) {
     if (error.code === "functions/unauthenticated") {
       return "Necesitas iniciar sesion para acceder al panel admin.";

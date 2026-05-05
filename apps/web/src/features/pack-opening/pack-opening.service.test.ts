@@ -7,7 +7,6 @@ const firebaseAuthMock = vi.hoisted(() => ({
 
 vi.mock("../../lib/firebase", () => ({
   firebaseAuth: firebaseAuthMock,
-  firebaseFunctions: {},
 }));
 
 describe("pack-opening.service", () => {

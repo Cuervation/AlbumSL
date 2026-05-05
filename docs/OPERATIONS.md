@@ -2,12 +2,12 @@
 
 ## Objetivo
 
-Dar una guia minima para observar y diagnosticar Cloud Functions sin exponer datos sensibles.
+Dar una guia minima para observar y diagnosticar backend/Functions legacy sin exponer datos sensibles.
 
 ## Como Leer Logs
 
-- Firebase Console: Functions > Logs.
-- Google Cloud Logging: filtrar por nombre de funcion o `jsonPayload.event`.
+- Render dev: Logs del Web Service `albumsl-api-dev`.
+- Firebase Console/Google Cloud Logging: solo para Functions legacy/local si se usan en emulador.
 - Local/emulador: revisar la salida de `firebase emulators:start`.
 
 ## Eventos Logueados
@@ -18,12 +18,17 @@ Las callables registran eventos estructurados minimos:
 - `function_success`
 - `function_error`
 
-Funciones instrumentadas:
+Funciones legacy instrumentadas:
 
 - `claimDailyPack`
 - `openPack`
 - `pasteSticker`
 - `adminGetDashboard`
+
+Runtime real dev:
+
+- `claimDailyPack`, `openPack` y `pasteSticker` van por Backend Node en Render.
+- `adminGetDashboard` queda diferido en PR19 y no se deploya como Cloud Function.
 
 ## Metadata Permitida
 
@@ -82,6 +87,7 @@ Funciones instrumentadas:
 
 ### adminGetDashboard
 
-- Verificar que el usuario tenga custom claim `admin == true`.
-- Si aparece `PERMISSION_DENIED`, revisar custom claims y no `users/{uid}.role`.
-- Revisar limites de queries si las metricas crecen.
+- PR19 lo difiere para despues del MVP jugable.
+- `/admin` debe mostrar mensaje de backend pendiente.
+- Implementacion futura: `GET /api/admin/dashboard` en Backend Node con custom claim
+  `admin == true`.

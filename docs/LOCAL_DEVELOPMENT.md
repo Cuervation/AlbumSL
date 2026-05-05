@@ -9,6 +9,7 @@ Flujo real de dev:
 - Backend Node externo corre en Render: `https://albumsl-api-dev.onrender.com`.
 - Backend Node usa Firebase Admin SDK y service account fuera del repo.
 - Operaciones sensibles pasan por backend Node: `claimDailyPack`, `openPack` y `pasteSticker`.
+- Dashboard admin queda diferido; `/admin` muestra backend pendiente.
 - Firestore Rules bloquean escrituras sensibles directas desde cliente.
 - Cloud Functions no se deployan a Firebase real en Spark-only.
 
@@ -162,6 +163,9 @@ El backend local expone:
 - `POST /api/packs/claim-daily`
 - `POST /api/packs/open`
 - `POST /api/stickers/paste`
+
+No expone dashboard admin en PR19. La implementacion futura debe ser
+`GET /api/admin/dashboard` con custom claim `admin == true`.
 
 Todos los endpoints sensibles usan `Authorization: Bearer <Firebase ID token>` y el backend toma la
 identidad desde el token, no desde el body.

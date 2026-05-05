@@ -9,7 +9,6 @@ const firebaseAuthMock = vi.hoisted(() => ({
 vi.mock("../../lib/firebase", () => ({
   firebaseAuth: firebaseAuthMock,
   firestoreDb: {},
-  firebaseFunctions: {},
 }));
 
 vi.mock("../sticker-catalog/sticker-catalog.service", () => ({

@@ -57,8 +57,9 @@ npm run admin:claim -- --uid USER_UID --admin false --confirm
 
 - Pedir al usuario que cierre sesion y vuelva a iniciar sesion para refrescar ID token.
 - Entrar a `/admin`.
-- Confirmar que `adminGetDashboard` responde correctamente.
-- Si no funciona, verificar custom claims en Firebase Auth y revisar logs seguros de Functions.
+- Confirmar que la ruta queda protegida por `AdminGuard`.
+- PR19 difiere las metricas admin: no hay `adminGetDashboard` real en Spark-only.
+- Cuando exista `GET /api/admin/dashboard` en Backend Node, confirmar respuesta 200 para admin y 403 para no admin.
 
 ## Riesgos
 

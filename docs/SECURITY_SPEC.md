@@ -143,8 +143,10 @@
 - Admins pueden leer mas informacion donde la regla lo permite.
 - Escrituras administrativas sensibles deben seguir pasando por backend/Admin SDK.
 - No asumir rol admin por flags locales en frontend.
-- El admin MVP fue callable/local; en runtime real Spark-only debe migrar o exponerse via backend
-  Node antes de usarse en dev publico.
+- PR19 difiere el dashboard admin para despues del MVP jugable.
+- La ruta `/admin` queda protegida, pero no carga metricas desde Cloud Functions.
+- La implementacion futura debe ser `GET /api/admin/dashboard` en Backend Node.
+- Backend Node debe verificar ID token y custom claim `admin == true` del lado servidor.
 - `users/{uid}.role` puede usarse solo para UI; no es fuente de autorizacion real.
 - El panel admin MVP es solo lectura y no expone emails.
 - La asignacion o remocion de custom claim admin se realiza con script backend/Admin SDK, dry-run por defecto y `--confirm` obligatorio para cambios reales.

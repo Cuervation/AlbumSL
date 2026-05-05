@@ -36,8 +36,8 @@ Se mantienen eager:
 - Album: lee `stickers` activos, `userStickers/{uid}/items` y `userAlbums/{uid}`.
 - Sticker detail: lee `stickers` activos y `userStickers/{uid}/items`.
 - Duplicates: lee `stickers` activos y `userStickers/{uid}/items`.
-- OpenPack: usa Cloud Functions `claimDailyPack` y `openPack`.
-- Admin: usa Cloud Function `adminGetDashboard`.
+- OpenPack: usa Backend Node para `claimDailyPack` y `openPack`.
+- Admin: PR19 difiere metricas; la ruta muestra mensaje pendiente y no llama Functions.
 
 ## Cache Aplicada
 
@@ -50,7 +50,7 @@ Se agrego cache en memoria para el catalogo activo en `sticker-catalog.service`.
 
 ## Seguridad
 
-- Las acciones sensibles siguen pasando por Cloud Functions.
+- Las acciones sensibles del MVP jugable pasan por Backend Node.
 - No se agregaron escrituras directas a Firestore.
 - No se cachean datos sensibles del usuario.
 

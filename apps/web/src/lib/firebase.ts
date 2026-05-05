@@ -1,7 +1,6 @@
 import { initializeApp, type FirebaseOptions } from "firebase/app";
 import { connectAuthEmulator, getAuth, GoogleAuthProvider } from "firebase/auth";
 import { connectFirestoreEmulator, getFirestore } from "firebase/firestore";
-import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 
 function getRequiredEnvValue(key: string): string {
   const value = import.meta.env[key];
@@ -25,11 +24,9 @@ const firebaseConfig: FirebaseOptions = {
 export const firebaseApp = initializeApp(firebaseConfig);
 export const firebaseAuth = getAuth(firebaseApp);
 export const firestoreDb = getFirestore(firebaseApp);
-export const firebaseFunctions = getFunctions(firebaseApp);
 export const googleAuthProvider = new GoogleAuthProvider();
 
 if (import.meta.env.VITE_USE_FIREBASE_EMULATORS === "true") {
   connectAuthEmulator(firebaseAuth, "http://127.0.0.1:9099", { disableWarnings: true });
   connectFirestoreEmulator(firestoreDb, "127.0.0.1", 8080);
-  connectFunctionsEmulator(firebaseFunctions, "127.0.0.1", 5001);
 }

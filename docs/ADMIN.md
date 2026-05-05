@@ -2,32 +2,27 @@
 
 ## Objetivo
 
-Implementar un panel admin basico y solo lectura para monitorear el estado del sistema sin habilitar
-edicion, borrado ni acciones destructivas.
+Documentar el estado del panel admin despues de PR19.
+
+Decision actual: diferir el dashboard admin hasta despues del MVP jugable. La version anterior
+dependia de la callable `adminGetDashboard`, pero Cloud Functions no se deployan en Firebase
+Spark-only.
 
 ## Acceso
 
 - La seguridad real usa Firebase custom claim `admin == true`.
 - `users/{uid}.role` puede ayudar a mostrar links en la UI, pero no autoriza operaciones.
-- La callable `adminGetDashboard` rechaza usuarios no autenticados o sin custom claim admin.
+- `/admin` queda protegido por `AdminGuard`, pero no carga metricas desde Functions.
 - El alta/baja operativa de admins esta documentada en `docs/ADMIN_CLAIMS.md`.
 
 ## Pantallas
 
-- `/admin`: dashboard protegido para administradores.
+- `/admin`: ruta protegida para administradores con mensaje de backend pendiente.
 
 ## Datos mostrados
 
-- Total de usuarios.
-- Total de stickers.
-- Stickers activos.
-- Stickers inactivos.
-- Total de aperturas.
-- Total de claims.
-- Ultimas aperturas.
-- Ultimos claims.
-
-No se muestran emails ni datos personales innecesarios en esta etapa.
+- No se muestran metricas en runtime real dev.
+- La implementacion futura debe devolver solo metricas minimas y evitar PII innecesaria.
 
 ## Cosas NO permitidas todavia
 
@@ -38,14 +33,17 @@ No se muestran emails ni datos personales innecesarios en esta etapa.
 - Crear promociones.
 - Ver audit logs desde frontend.
 - Modificar roles o custom claims desde la UI.
+- Usar Cloud Functions reales en Spark-only.
 
 ## Seguridad
 
 - Firestore Rules permiten lectura admin con custom claim donde corresponde.
 - Firestore Rules siguen bloqueando create/update/delete sensibles desde frontend.
-- El backend usa Admin SDK para metricas solo lectura.
-- Las queries recientes usan limite fijo.
+- La implementacion futura debe vivir en Backend Node: `GET /api/admin/dashboard`.
+- Backend Node debe verificar Firebase ID token y custom claim `admin == true`.
+- No alcanza con `users/{uid}.role`.
 
 ## Riesgos pendientes
 
 - Las metricas de conteo pueden requerir cache si el volumen crece.
+- Implementar dashboard admin en Backend Node queda para PR separado.
