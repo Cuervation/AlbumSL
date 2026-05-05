@@ -637,6 +637,22 @@ a {
   margin: 16px 0;
 }
 
+.state-message.empty-state {
+  align-items: flex-start;
+  display: grid;
+  gap: 10px;
+}
+
+.state-message.empty-state span {
+  color: #475569;
+  font-weight: 700;
+}
+
+.state-message.empty-state .primary-link {
+  justify-self: flex-start;
+  margin-top: 4px;
+}
+
 .dashboard-openings {
   background: #ffffff;
   border: 1px solid #dbe3ef;

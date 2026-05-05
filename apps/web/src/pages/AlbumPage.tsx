@@ -8,6 +8,7 @@ import { useAlbumData } from "../features/album/useAlbumData";
 export function AlbumPage(): React.JSX.Element {
   const { albumStickers, progress, loading, error, refresh } = useAlbumData();
   const { filters, filteredStickers, updateFilter, resetFilters } = useAlbumFilters(albumStickers);
+  const hasNoCollectedStickers = !loading && !error && progress.collectedStickers === 0;
 
   return (
     <main className="page album-page">
@@ -20,8 +21,13 @@ export function AlbumPage(): React.JSX.Element {
             el album.
           </p>
         </div>
-        <button type="button" className="ghost-button" onClick={() => void refresh()}>
-          Actualizar
+        <button
+          type="button"
+          className="ghost-button"
+          onClick={() => void refresh()}
+          disabled={loading}
+        >
+          {loading ? "Actualizando..." : "Actualizar"}
         </button>
       </section>
 
@@ -115,8 +121,21 @@ export function AlbumPage(): React.JSX.Element {
       </section>
 
       {loading ? <p className="state-message">Cargando tu album...</p> : null}
-      {error ? <p className="error-message">{error}</p> : null}
-      {!loading && !error && filteredStickers.length === 0 ? (
+      {error ? (
+        <p className="error-message" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {hasNoCollectedStickers ? (
+        <div className="state-message empty-state">
+          <strong>Tu album todavia esta esperando la primera figurita.</strong>
+          <span>Abri un sobre diario para empezar la coleccion.</span>
+          <Link className="primary-link" to="/open-pack">
+            Ir a sobres
+          </Link>
+        </div>
+      ) : null}
+      {!loading && !error && !hasNoCollectedStickers && filteredStickers.length === 0 ? (
         <p className="state-message">No hay figuritas para los filtros elegidos.</p>
       ) : null}
 

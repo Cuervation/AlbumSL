@@ -14,9 +14,9 @@ export function AdminDashboardPage(): React.JSX.Element {
         <p className="eyebrow">Decision PR19</p>
         <h2>Diferido despues del MVP jugable</h2>
         <p className="state-message compact">
-          La version anterior dependia de Cloud Functions y no corre en Firebase Spark-only. Cuando
-          se habilite, debe ser GET /api/admin/dashboard en Backend Node, con Firebase ID token y
-          custom claim admin igual a true verificado del lado servidor.
+          La version anterior dependia de infraestructura no disponible en Firebase Spark-only.
+          Cuando se habilite, debe ser GET /api/admin/dashboard en Backend Node, con Firebase ID
+          token y custom claim admin igual a true verificado del lado servidor.
         </p>
       </section>
     </main>

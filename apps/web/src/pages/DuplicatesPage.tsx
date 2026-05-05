@@ -16,18 +16,34 @@ export function DuplicatesPage(): React.JSX.Element {
           <p className="eyebrow">Mis repetidas</p>
           <h1>Figuritas para futuros intercambios</h1>
           <p>
-            Por ahora solo las mostramos. El intercambio entre usuarios queda fuera de esta etapa.
+            Una repetida es una figurita que ya tenes pegada o disponible mas de una vez. Por ahora
+            solo las mostramos; los intercambios quedan para mas adelante.
           </p>
         </div>
-        <button type="button" className="ghost-button" onClick={() => void refresh()}>
-          Actualizar
+        <button
+          type="button"
+          className="ghost-button"
+          onClick={() => void refresh()}
+          disabled={loading}
+        >
+          {loading ? "Actualizando..." : "Actualizar"}
         </button>
       </section>
 
       {loading ? <p className="state-message">Cargando repetidas...</p> : null}
-      {error ? <p className="error-message">{error}</p> : null}
+      {error ? (
+        <p className="error-message" role="alert">
+          {error}
+        </p>
+      ) : null}
       {!loading && !error && duplicatedStickers.length === 0 ? (
-        <p className="state-message">Todavia no tenes figuritas repetidas.</p>
+        <div className="state-message empty-state">
+          <strong>Todavia no tenes repetidas.</strong>
+          <span>Abri mas sobres para sumar figuritas y encontrar copias.</span>
+          <Link className="primary-link" to="/open-pack">
+            Ir a sobres
+          </Link>
+        </div>
       ) : null}
 
       <section className="duplicates-grid" aria-label="Figuritas repetidas">

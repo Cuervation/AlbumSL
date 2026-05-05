@@ -34,7 +34,12 @@ export function StickerDetailPage(): React.JSX.Element {
   if (error) {
     return (
       <main className="page album-page">
-        <p className="error-message">{error}</p>
+        <p className="error-message" role="alert">
+          {error}
+        </p>
+        <Link className="primary-link" to="/album">
+          Volver al album
+        </Link>
       </main>
     );
   }
@@ -96,16 +101,35 @@ export function StickerDetailPage(): React.JSX.Element {
                 : "Pegar en album"}
             </button>
           ) : (
-            <p className="state-message compact">
-              Necesitas una figurita disponible sin pegar para usar esta accion.
-            </p>
+            <p className="state-message compact">{getPasteUnavailableMessage(albumSticker)}</p>
           )}
 
-          {pasteSticker.error ? <p className="error-message">{pasteSticker.error}</p> : null}
+          {pasteSticker.result?.stickerId === albumSticker.sticker.id ? (
+            <p className="state-message compact" aria-live="polite" role="status">
+              Figurita pegada en tu album.
+            </p>
+          ) : null}
+          {pasteSticker.error ? (
+            <p className="error-message" role="alert">
+              {pasteSticker.error}
+            </p>
+          ) : null}
         </div>
       </section>
     </main>
   );
+}
+
+function getPasteUnavailableMessage(albumSticker: AlbumStickerView): string {
+  if (!albumSticker.userSticker || albumSticker.userSticker.quantity === 0) {
+    return "Todavia no conseguiste esta figurita. Abri sobres para encontrarla.";
+  }
+
+  if (albumSticker.userSticker.pastedQuantity >= albumSticker.userSticker.quantity) {
+    return "Ya pegaste todas las copias disponibles de esta figurita.";
+  }
+
+  return "No hay una copia disponible para pegar en este momento.";
 }
 
 function StickerDetailStats({

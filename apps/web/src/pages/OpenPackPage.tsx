@@ -1,3 +1,5 @@
+import type { ClaimDailyPackResponseDto } from "@albumsl/contracts";
+
 import { StickerCatalogCard } from "../components/StickerCatalogCard";
 import { useDailyPack } from "../features/pack-opening/useDailyPack";
 import { useOpenPack } from "../features/pack-opening/useOpenPack";
@@ -6,6 +8,7 @@ export function OpenPackPage(): React.JSX.Element {
   const dailyPack = useDailyPack();
   const packOpening = useOpenPack();
   const canOpenDailyPack = dailyPack.claim?.status === "AVAILABLE";
+  const isBusy = dailyPack.loading || packOpening.loading;
 
   async function handleOpenDailyPack(): Promise<void> {
     if (!dailyPack.claim) {
@@ -28,42 +31,42 @@ export function OpenPackPage(): React.JSX.Element {
         <p className="eyebrow">Sobres</p>
         <h1>Sobre diario</h1>
         <p>
-          Reclama tu sobre diario y abrilo desde backend. La UI solo manda la intencion: las 5
-          figuritas se deciden en el servidor usando los casos de uso.
+          Reclama tu sobre diario, abrilo y sumale cinco figuritas a tu coleccion. AlbumSL valida la
+          apertura antes de entregar el resultado.
         </p>
       </section>
 
       <section className="pack-actions-card">
         <div>
           <h2>Claim diario</h2>
-          <p>
-            {dailyPack.claim
-              ? `Claim ${dailyPack.claim.status.toLowerCase()} hasta ${formatDate(
-                  dailyPack.claim.expiresAt,
-                )}.`
-              : "Todavia no reclamaste un sobre diario en esta sesion."}
+          <p aria-live="polite" role="status">
+            {getClaimStateMessage(dailyPack.claim)}
           </p>
         </div>
 
         <div className="pack-actions">
-          <button
-            type="button"
-            onClick={() => void dailyPack.claimDaily()}
-            disabled={dailyPack.loading}
-          >
+          <button type="button" onClick={() => void dailyPack.claimDaily()} disabled={isBusy}>
             {dailyPack.loading ? "Reclamando..." : "Reclamar sobre diario"}
           </button>
           <button
             type="button"
             onClick={() => void handleOpenDailyPack()}
-            disabled={!canOpenDailyPack || packOpening.loading}
+            disabled={!canOpenDailyPack || isBusy}
           >
             {packOpening.loading ? "Abriendo..." : "Abrir sobre"}
           </button>
         </div>
 
-        {dailyPack.error ? <p className="error-message">{dailyPack.error}</p> : null}
-        {packOpening.error ? <p className="error-message">{packOpening.error}</p> : null}
+        {dailyPack.error ? (
+          <p className="error-message" role="alert">
+            {dailyPack.error}
+          </p>
+        ) : null}
+        {packOpening.error ? (
+          <p className="error-message" role="alert">
+            {packOpening.error}
+          </p>
+        ) : null}
       </section>
 
       {packOpening.result ? (
@@ -87,6 +90,22 @@ export function OpenPackPage(): React.JSX.Element {
       ) : null}
     </main>
   );
+}
+
+function getClaimStateMessage(claim: ClaimDailyPackResponseDto | null): string {
+  if (!claim) {
+    return "Todavia no reclamaste tu sobre diario. Empeza por reclamarlo.";
+  }
+
+  if (claim.status === "AVAILABLE") {
+    return `Tu sobre diario esta listo para abrir. Vence ${formatDate(claim.expiresAt)}.`;
+  }
+
+  if (claim.status === "CONSUMED") {
+    return "Ya abriste el sobre diario. Volve cuando tengas otro disponible.";
+  }
+
+  return "El sobre diario no esta disponible en este momento.";
 }
 
 function formatDate(value: string | undefined): string {
