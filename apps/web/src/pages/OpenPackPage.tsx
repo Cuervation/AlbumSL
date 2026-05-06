@@ -11,6 +11,7 @@ export function OpenPackPage(): React.JSX.Element {
   const isBusy = dailyPack.loading || packOpening.loading;
   const claimVisualState = getClaimVisualState(dailyPack.claim);
   const packEnvelopeState = getPackEnvelopeState(dailyPack.claim, packOpening.loading);
+  const packEnvelopeLabel = getPackEnvelopeLabel(packEnvelopeState);
 
   async function handleOpenDailyPack(): Promise<void> {
     if (!dailyPack.claim) {
@@ -46,15 +47,15 @@ export function OpenPackPage(): React.JSX.Element {
         </aside>
       </section>
 
-      <section className="pack-actions-card">
-        <div
-          className={`daily-pack-visual daily-pack-visual--${packEnvelopeState}`}
-          aria-hidden="true"
-        >
-          <span className="daily-pack-visual-flap" />
-          <span className="daily-pack-visual-body" />
-          <span className="daily-pack-visual-seal">SL</span>
-          <span className="daily-pack-visual-shine" />
+      <section className={`pack-actions-card pack-actions-card--${packEnvelopeState}`}>
+        <div className="daily-pack-stage" aria-hidden="true">
+          <div className={`daily-pack-visual daily-pack-visual--${packEnvelopeState}`}>
+            <span className="daily-pack-visual-flap" />
+            <span className="daily-pack-visual-body" />
+            <span className="daily-pack-visual-seal">SL</span>
+            <span className="daily-pack-visual-shine" />
+          </div>
+          <span className="daily-pack-visual-label">{packEnvelopeLabel}</span>
         </div>
 
         <div className="pack-actions-copy">
@@ -66,7 +67,7 @@ export function OpenPackPage(): React.JSX.Element {
 
         <div className="pack-actions">
           <button type="button" onClick={() => void dailyPack.claimDaily()} disabled={isBusy}>
-            {dailyPack.loading ? "Reclamando..." : "Reclamar sobre diario"}
+            {dailyPack.loading ? "Reclamando..." : "Reclama tu sobre"}
           </button>
           <button
             type="button"
@@ -108,7 +109,17 @@ export function OpenPackPage(): React.JSX.Element {
 
           <div className="pack-sticker-grid">
             {packOpening.result.stickers.map((sticker, index) => (
-              <StickerCatalogCard key={`${sticker.stickerId}-${index}`} sticker={sticker} />
+              <article
+                className={`pack-result-sticker ${
+                  sticker.isNew ? "pack-result-sticker--new" : "pack-result-sticker--repeated"
+                }`}
+                key={`${sticker.stickerId}-${index}`}
+              >
+                <span className="pack-result-sticker-badge">
+                  {sticker.isNew ? "Nueva" : "Repetida"}
+                </span>
+                <StickerCatalogCard sticker={sticker} />
+              </article>
             ))}
           </div>
         </section>
@@ -136,6 +147,22 @@ function getPackEnvelopeState(
   return "idle";
 }
 
+function getPackEnvelopeLabel(state: "idle" | "ready" | "opening" | "opened"): string {
+  if (state === "ready") {
+    return "Sobre disponible";
+  }
+
+  if (state === "opening") {
+    return "Abriendo sobre";
+  }
+
+  if (state === "opened") {
+    return "Sobre abierto";
+  }
+
+  return "Sin reclamar";
+}
+
 function getClaimStateMessage(claim: ClaimDailyPackResponseDto | null): string {
   if (!claim) {
     return "Todavia no reclamaste tu sobre diario. Empeza por reclamarlo.";
@@ -160,7 +187,7 @@ function getClaimVisualState(claim: ClaimDailyPackResponseDto | null): {
   if (!claim) {
     return {
       variant: "empty",
-      title: "Esperando claim",
+      title: "Reclama tu sobre",
       description: "Todavia no reclamaste el sobre de hoy.",
     };
   }
