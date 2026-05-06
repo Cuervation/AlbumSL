@@ -10,6 +10,12 @@ export function AlbumPage(): React.JSX.Element {
   const { filters, filteredStickers, updateFilter, resetFilters } = useAlbumFilters(albumStickers);
   const hasNoCollectedStickers = !loading && !error && progress.collectedStickers === 0;
   const completion = Math.max(0, Math.min(100, progress.completionPercentage));
+  const libertadoresStickers = albumStickers.filter(isLibertadores2014Sticker);
+  const filteredLibertadoresStickers = filteredStickers.filter(isLibertadores2014Sticker);
+  const filteredOtherStickers = filteredStickers.filter(
+    (albumSticker) => !isLibertadores2014Sticker(albumSticker),
+  );
+  const libertadoresProgress = getCollectionProgress(libertadoresStickers);
 
   return (
     <main className="page album-page">
@@ -154,12 +160,74 @@ export function AlbumPage(): React.JSX.Element {
         <p className="state-message">No hay figuritas para los filtros elegidos.</p>
       ) : null}
 
-      <section className="album-grid" aria-label="Figuritas del album">
-        {filteredStickers.map((albumSticker) => (
+      {filteredLibertadoresStickers.length > 0 ? (
+        <CollectionSection
+          title="Libertadores 2014"
+          description="Casilleros de la coleccion campeona: faltantes, disponibles y pegadas en una sola pagina."
+          progress={libertadoresProgress}
+          stickers={filteredLibertadoresStickers}
+        />
+      ) : null}
+
+      {filteredOtherStickers.length > 0 ? (
+        <section className="album-collection-section" aria-label="Otras figuritas del album">
+          <div className="album-collection-header">
+            <div>
+              <p className="eyebrow">AlbumSL</p>
+              <h2>Otras figuritas</h2>
+              <p>Resto del catalogo azulgrana disponible con los mismos estados del album.</p>
+            </div>
+          </div>
+          <div className="album-grid album-slot-grid">
+            {filteredOtherStickers.map((albumSticker) => (
+              <AlbumStickerCard key={albumSticker.sticker.id} albumSticker={albumSticker} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+    </main>
+  );
+}
+
+function CollectionSection({
+  title,
+  description,
+  progress,
+  stickers,
+}: {
+  readonly title: string;
+  readonly description: string;
+  readonly progress: CollectionProgress;
+  readonly stickers: readonly AlbumStickerView[];
+}): React.JSX.Element {
+  const completion = progress.total > 0 ? Math.round((progress.pasted / progress.total) * 100) : 0;
+
+  return (
+    <section className="album-collection-section" aria-labelledby="libertadores-2014-title">
+      <div className="album-collection-header">
+        <div>
+          <p className="eyebrow">Coleccion</p>
+          <h2 id="libertadores-2014-title">{title}</h2>
+          <p>{description}</p>
+        </div>
+        <div className="collection-progress-pill" aria-label="Progreso Libertadores 2014">
+          <strong>
+            {progress.pasted} / {progress.total}
+          </strong>
+          <span>{progress.collected} conseguidas</span>
+        </div>
+      </div>
+
+      <div className="collection-progress-meter" aria-hidden="true">
+        <span style={{ width: `${completion}%` }} />
+      </div>
+
+      <div className="album-grid album-slot-grid">
+        {stickers.map((albumSticker) => (
           <AlbumStickerCard key={albumSticker.sticker.id} albumSticker={albumSticker} />
         ))}
-      </section>
-    </main>
+      </div>
+    </section>
   );
 }
 
@@ -176,6 +244,31 @@ function ProgressCard({
       <strong>{value}</strong>
     </article>
   );
+}
+
+interface CollectionProgress {
+  readonly total: number;
+  readonly collected: number;
+  readonly pasted: number;
+}
+
+function getCollectionProgress(stickers: readonly AlbumStickerView[]): CollectionProgress {
+  return stickers.reduce<CollectionProgress>(
+    (progress, albumSticker) => ({
+      total: progress.total + 1,
+      collected: progress.collected + (albumSticker.isCollected ? 1 : 0),
+      pasted: progress.pasted + (albumSticker.isPasted ? 1 : 0),
+    }),
+    {
+      total: 0,
+      collected: 0,
+      pasted: 0,
+    },
+  );
+}
+
+function isLibertadores2014Sticker(albumSticker: AlbumStickerView): boolean {
+  return albumSticker.sticker.tags.includes("libertadores-2014");
 }
 
 function AlbumStickerCard({

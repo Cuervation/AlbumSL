@@ -344,6 +344,7 @@ a {
 .album-hero,
 .album-progress-grid,
 .album-filters,
+.album-collection-section,
 .album-grid,
 .duplicates-grid,
 .sticker-detail,
@@ -441,6 +442,83 @@ a {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.album-collection-section {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(248, 251, 255, 0.92)),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(7, 26, 67, 0.035) 22px 24px);
+  border: 1px solid #dbe3ef;
+  border-radius: 22px;
+  box-shadow: 0 22px 54px rgba(7, 26, 67, 0.08);
+  margin-top: 22px;
+  padding: 20px;
+}
+
+.album-collection-header {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.album-collection-header h2 {
+  color: #071a43;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+  letter-spacing: -0.04em;
+  margin: 0 0 8px;
+}
+
+.album-collection-header p {
+  color: #475569;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 680px;
+}
+
+.collection-progress-pill {
+  align-items: center;
+  background: linear-gradient(135deg, #071a43, #dc2626);
+  border-radius: 18px;
+  color: #ffffff;
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 132px;
+  padding: 14px 16px;
+  text-align: center;
+}
+
+.collection-progress-pill strong {
+  font-size: 1.65rem;
+  letter-spacing: -0.05em;
+}
+
+.collection-progress-pill span {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.collection-progress-meter {
+  background: #e2e8f0;
+  border-radius: 999px;
+  height: 12px;
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.collection-progress-meter span {
+  background: linear-gradient(90deg, #dc2626, #071a43, #f59e0b);
+  display: block;
+  height: 100%;
+}
+
+.album-slot-grid {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
 }
 
 .album-slot,
@@ -1381,7 +1459,8 @@ a {
 
   .open-pack-hero--featured,
   .album-hero--featured,
-  .pack-result-summary {
+  .pack-result-summary,
+  .album-collection-header {
     flex-direction: column;
   }
 
