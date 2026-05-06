@@ -781,7 +781,7 @@ a {
 }
 
 .album-slot-grid--libertadores .album-slot-body {
-  gap: 5px;
+  gap: 0;
   padding: 9px;
 }
 
@@ -802,17 +802,6 @@ a {
 
 .album-slot-grid--libertadores .sticker-number {
   display: none;
-}
-
-.album-slot-grid--libertadores .album-status {
-  font-size: 0.62rem;
-  justify-self: start;
-  padding: 5px 7px;
-}
-
-.album-slot-grid--libertadores .album-slot-hint {
-  font-size: 0.68rem;
-  line-height: 1.2;
 }
 
 .sticker-card-art {
@@ -1722,20 +1711,6 @@ a {
   opacity: 1;
 }
 
-.album-slot-number {
-  background: #071a43;
-  border: 2px solid #ffffff;
-  border-radius: 999px;
-  color: #ffffff;
-  font-size: 0.78rem;
-  font-weight: 1000;
-  left: 10px;
-  padding: 6px 8px;
-  position: absolute;
-  top: 10px;
-  z-index: 2;
-}
-
 .album-slot-empty-number {
   color: rgba(7, 26, 67, 0.72);
   font-size: clamp(2.2rem, 7vw, 3.2rem);
@@ -1770,29 +1745,6 @@ a {
 
 .album-slot--extra {
   border-color: rgba(220, 38, 38, 0.34);
-}
-
-.album-slot.pasted::after,
-.album-slot.repeated::after {
-  background: linear-gradient(135deg, rgba(22, 101, 52, 0.96), rgba(21, 128, 61, 0.9));
-  border-radius: 999px;
-  color: #ffffff;
-  content: "Pegada";
-  font-size: 0.7rem;
-  font-weight: 1000;
-  letter-spacing: 0.04em;
-  padding: 7px 9px;
-  position: absolute;
-  right: 10px;
-  text-transform: uppercase;
-  top: 10px;
-  z-index: 2;
-}
-
-.album-slot-hint {
-  color: #475569;
-  font-size: 0.8rem;
-  font-weight: 800;
 }
 
 .sticker-detail {
