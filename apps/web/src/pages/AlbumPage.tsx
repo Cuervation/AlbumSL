@@ -149,8 +149,8 @@ export function AlbumPage(): React.JSX.Element {
       ) : null}
       {hasNoCollectedStickers ? (
         <div className="album-empty-state">
-          <strong>Tu album todavia esta esperando la primera figurita.</strong>
-          <span>Abri un sobre diario para empezar la coleccion.</span>
+          <strong>Todavia no tenes figuritas.</strong>
+          <span>Abri un sobre para empezar la coleccion.</span>
           <Link className="primary-link" to="/open-pack">
             Ir a sobres
           </Link>
@@ -280,12 +280,20 @@ function AlbumStickerCard({
   const statusClassName = getAlbumStatusClassName(albumSticker.status);
   const shouldShowImage = albumSticker.isCollected || albumSticker.isPasted;
   const rarityClassName = `album-slot--${sticker.rarity.toLowerCase()}`;
+  const availableQuantity = Math.max(
+    0,
+    (albumSticker.userSticker?.quantity ?? 0) - (albumSticker.userSticker?.pastedQuantity ?? 0),
+  );
+  const slotHint = getAlbumSlotHint(albumSticker, availableQuantity);
+  const extraClassName = albumSticker.repeatedQuantity > 0 ? "album-slot--extra" : "";
 
   return (
     <Link
-      className={`album-slot ${statusClassName} ${rarityClassName}`}
+      className={`album-slot ${statusClassName} ${rarityClassName} ${extraClassName}`}
       to={`/album/${sticker.id}`}
+      aria-label={`Figurita ${sticker.number}: ${sticker.title}. ${slotHint}`}
     >
+      <span className="album-slot-number">#{sticker.number}</span>
       <div className="album-slot-art">
         {shouldShowImage ? (
           sticker.imageUrl.startsWith("placeholder://") ? (
@@ -294,7 +302,7 @@ function AlbumStickerCard({
             <img src={sticker.imageUrl} alt={sticker.title} loading="lazy" />
           )
         ) : (
-          <span>?</span>
+          <span className="album-slot-empty-number">#{sticker.number}</span>
         )}
       </div>
       <div className="album-slot-body">
@@ -306,7 +314,26 @@ function AlbumStickerCard({
         <span className={`album-status ${statusClassName}`}>
           {getAlbumStatusLabel(albumSticker.status)}
         </span>
+        <span className="album-slot-hint">{slotHint}</span>
       </div>
     </Link>
   );
+}
+
+function getAlbumSlotHint(albumSticker: AlbumStickerView, availableQuantity: number): string {
+  if (!albumSticker.isCollected) {
+    return "Casillero vacio";
+  }
+
+  if (albumSticker.isPasted && albumSticker.repeatedQuantity > 0) {
+    return `Pegada, +${albumSticker.repeatedQuantity} repetida${
+      albumSticker.repeatedQuantity === 1 ? "" : "s"
+    }`;
+  }
+
+  if (albumSticker.isPasted) {
+    return "Pegada en el album";
+  }
+
+  return `${availableQuantity} disponible${availableQuantity === 1 ? "" : "s"} para pegar`;
 }

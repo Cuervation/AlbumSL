@@ -3,9 +3,9 @@ import { AlbumStickerStatus, type AlbumStickerView } from "@albumsl/domain";
 export function getAlbumStatusLabel(status: AlbumStickerView["status"]): string {
   switch (status) {
     case AlbumStickerStatus.MISSING:
-      return "No conseguida";
+      return "Falta";
     case AlbumStickerStatus.COLLECTED:
-      return "Conseguida";
+      return "Disponible";
     case AlbumStickerStatus.PASTED:
       return "Pegada";
     case AlbumStickerStatus.REPEATED:
