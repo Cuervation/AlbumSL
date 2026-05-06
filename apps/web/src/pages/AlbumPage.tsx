@@ -1,8 +1,12 @@
 import { type AlbumStickerView } from "@albumsl/domain";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import { getAlbumStatusClassName } from "../features/album/album-view-labels";
 import { useAlbumData } from "../features/album/useAlbumData";
+
+const STICKERS_PER_ALBUM_SIDE = 6;
+const STICKERS_PER_ALBUM_SPREAD = STICKERS_PER_ALBUM_SIDE * 2;
 
 export function AlbumPage(): React.JSX.Element {
   const { albumStickers, progress, loading, error, refresh } = useAlbumData();
@@ -53,7 +57,7 @@ export function AlbumPage(): React.JSX.Element {
       {libertadoresStickers.length > 0 ? (
         <CollectionSection
           title="Libertadores 2014"
-          description="Casilleros de la coleccion campeona: faltantes, disponibles y pegadas en una sola pagina."
+          description="Pasa las paginas y completa los casilleros de la coleccion campeona."
           progress={libertadoresProgress}
           stickers={libertadoresStickers}
         />
@@ -113,6 +117,21 @@ function CollectionSection({
   readonly stickers: readonly AlbumStickerView[];
 }): React.JSX.Element {
   const completion = progress.total > 0 ? Math.round((progress.pasted / progress.total) * 100) : 0;
+  const [spreadIndex, setSpreadIndex] = useState(0);
+  const orderedStickers = [...stickers].sort(compareAlbumStickersByNumber);
+  const spreadCount = Math.max(1, Math.ceil(orderedStickers.length / STICKERS_PER_ALBUM_SPREAD));
+  const currentSpreadIndex = Math.min(spreadIndex, spreadCount - 1);
+  const spreadStartIndex = currentSpreadIndex * STICKERS_PER_ALBUM_SPREAD;
+  const leftPageStickers = orderedStickers.slice(
+    spreadStartIndex,
+    spreadStartIndex + STICKERS_PER_ALBUM_SIDE,
+  );
+  const rightPageStickers = orderedStickers.slice(
+    spreadStartIndex + STICKERS_PER_ALBUM_SIDE,
+    spreadStartIndex + STICKERS_PER_ALBUM_SPREAD,
+  );
+  const canGoBack = currentSpreadIndex > 0;
+  const canGoForward = currentSpreadIndex < spreadCount - 1;
 
   return (
     <section
@@ -137,12 +156,54 @@ function CollectionSection({
         <span style={{ width: `${completion}%` }} />
       </div>
 
-      <div className="album-grid album-slot-grid album-slot-grid--libertadores">
+      <div className="album-book" aria-label={`${title}, paginas ${currentSpreadIndex + 1}`}>
+        <AlbumBookPage side="left" stickers={leftPageStickers} />
+        <div className="album-book-spine" aria-hidden="true" />
+        <AlbumBookPage side="right" stickers={rightPageStickers} />
+      </div>
+
+      <div className="album-page-nav" aria-label="Navegacion de paginas del album">
+        <button
+          type="button"
+          className="album-page-arrow"
+          onClick={() => setSpreadIndex((current) => Math.max(0, current - 1))}
+          disabled={!canGoBack}
+          aria-label="Pagina anterior"
+        >
+          {"<"}
+        </button>
+        <span>
+          Pagina {currentSpreadIndex + 1} / {spreadCount}
+        </span>
+        <button
+          type="button"
+          className="album-page-arrow"
+          onClick={() => setSpreadIndex((current) => Math.min(spreadCount - 1, current + 1))}
+          disabled={!canGoForward}
+          aria-label="Pagina siguiente"
+        >
+          {">"}
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function AlbumBookPage({
+  side,
+  stickers,
+}: {
+  readonly side: "left" | "right";
+  readonly stickers: readonly AlbumStickerView[];
+}): React.JSX.Element {
+  return (
+    <div className={`album-book-page album-book-page--${side}`}>
+      <div className="album-grid album-slot-grid album-slot-grid--libertadores album-book-slots">
         {stickers.map((albumSticker) => (
           <AlbumStickerCard key={albumSticker.sticker.id} albumSticker={albumSticker} />
         ))}
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -180,6 +241,10 @@ function getCollectionProgress(stickers: readonly AlbumStickerView[]): Collectio
       pasted: 0,
     },
   );
+}
+
+function compareAlbumStickersByNumber(first: AlbumStickerView, second: AlbumStickerView): number {
+  return Number(first.sticker.number) - Number(second.sticker.number);
 }
 
 function isLibertadores2014Sticker(albumSticker: AlbumStickerView): boolean {
