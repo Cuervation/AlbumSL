@@ -8,11 +8,15 @@ export function DuplicatesPage(): React.JSX.Element {
   const duplicatedStickers = albumStickers.filter(
     (albumSticker) => albumSticker.repeatedQuantity > 0,
   );
+  const duplicateCopies = duplicatedStickers.reduce(
+    (total, item) => total + item.repeatedQuantity,
+    0,
+  );
 
   return (
     <main className="page album-page">
-      <section className="album-hero">
-        <div>
+      <section className="album-hero album-hero--featured">
+        <div className="album-hero-copy">
           <p className="eyebrow">Mis repetidas</p>
           <h1>Figuritas para futuros intercambios</h1>
           <p>
@@ -30,6 +34,17 @@ export function DuplicatesPage(): React.JSX.Element {
         </button>
       </section>
 
+      <section className="duplicates-summary" aria-label="Resumen de repetidas">
+        <div>
+          <span>Total de figuras</span>
+          <strong>{duplicatedStickers.length}</strong>
+        </div>
+        <div>
+          <span>Copias repetidas</span>
+          <strong>{duplicateCopies}</strong>
+        </div>
+      </section>
+
       {loading ? <p className="state-message">Cargando repetidas...</p> : null}
       {error ? (
         <p className="error-message" role="alert">
@@ -37,7 +52,7 @@ export function DuplicatesPage(): React.JSX.Element {
         </p>
       ) : null}
       {!loading && !error && duplicatedStickers.length === 0 ? (
-        <div className="state-message empty-state">
+        <div className="duplicates-empty-state">
           <strong>Todavia no tenes repetidas.</strong>
           <span>Abri mas sobres para sumar figuritas y encontrar copias.</span>
           <Link className="primary-link" to="/open-pack">
@@ -72,7 +87,7 @@ export function DuplicatesPage(): React.JSX.Element {
               <p>
                 {albumSticker.sticker.category} · {albumSticker.sticker.rarity}
               </p>
-              <strong>{albumSticker.repeatedQuantity} repetida(s)</strong>
+              <strong>{albumSticker.repeatedQuantity} copia(s)</strong>
             </div>
           </Link>
         ))}

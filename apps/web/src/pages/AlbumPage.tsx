@@ -9,11 +9,12 @@ export function AlbumPage(): React.JSX.Element {
   const { albumStickers, progress, loading, error, refresh } = useAlbumData();
   const { filters, filteredStickers, updateFilter, resetFilters } = useAlbumFilters(albumStickers);
   const hasNoCollectedStickers = !loading && !error && progress.collectedStickers === 0;
+  const completion = Math.max(0, Math.min(100, progress.completionPercentage));
 
   return (
     <main className="page album-page">
-      <section className="album-hero">
-        <div>
+      <section className="album-hero album-hero--featured">
+        <div className="album-hero-copy">
           <p className="eyebrow">Mi Album</p>
           <h1>Tu coleccion azulgrana</h1>
           <p>
@@ -29,6 +30,20 @@ export function AlbumPage(): React.JSX.Element {
         >
           {loading ? "Actualizando..." : "Actualizar"}
         </button>
+      </section>
+
+      <section className="album-progress-banner" aria-label="Resumen visual del album">
+        <div className="album-progress-banner-copy">
+          <p className="eyebrow">Progreso</p>
+          <h2>{progress.completionPercentage}% completo</h2>
+          <p>
+            {progress.collectedStickers} conseguidas, {progress.pastedStickers} pegadas y{" "}
+            {progress.repeatedStickers} repetidas.
+          </p>
+        </div>
+        <div className="album-progress-meter" aria-hidden="true">
+          <span style={{ width: `${completion}%` }} />
+        </div>
       </section>
 
       <section className="album-progress-grid" aria-label="Progreso del album">
@@ -127,7 +142,7 @@ export function AlbumPage(): React.JSX.Element {
         </p>
       ) : null}
       {hasNoCollectedStickers ? (
-        <div className="state-message empty-state">
+        <div className="album-empty-state">
           <strong>Tu album todavia esta esperando la primera figurita.</strong>
           <span>Abri un sobre diario para empezar la coleccion.</span>
           <Link className="primary-link" to="/open-pack">
@@ -171,9 +186,13 @@ function AlbumStickerCard({
   const { sticker } = albumSticker;
   const statusClassName = getAlbumStatusClassName(albumSticker.status);
   const shouldShowImage = albumSticker.isCollected || albumSticker.isPasted;
+  const rarityClassName = `album-slot--${sticker.rarity.toLowerCase()}`;
 
   return (
-    <Link className={`album-slot ${statusClassName}`} to={`/album/${sticker.id}`}>
+    <Link
+      className={`album-slot ${statusClassName} ${rarityClassName}`}
+      to={`/album/${sticker.id}`}
+    >
       <div className="album-slot-art">
         {shouldShowImage ? (
           sticker.imageUrl.startsWith("placeholder://") ? (

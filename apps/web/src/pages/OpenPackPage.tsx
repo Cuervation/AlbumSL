@@ -9,6 +9,7 @@ export function OpenPackPage(): React.JSX.Element {
   const packOpening = useOpenPack();
   const canOpenDailyPack = dailyPack.claim?.status === "AVAILABLE";
   const isBusy = dailyPack.loading || packOpening.loading;
+  const claimVisualState = getClaimVisualState(dailyPack.claim);
 
   async function handleOpenDailyPack(): Promise<void> {
     if (!dailyPack.claim) {
@@ -27,17 +28,25 @@ export function OpenPackPage(): React.JSX.Element {
 
   return (
     <main className="page open-pack-page">
-      <section className="open-pack-hero">
-        <p className="eyebrow">Sobres</p>
-        <h1>Sobre diario</h1>
-        <p>
-          Reclama tu sobre diario, abrilo y sumale cinco figuritas a tu coleccion. AlbumSL valida la
-          apertura antes de entregar el resultado.
-        </p>
+      <section className="open-pack-hero open-pack-hero--featured">
+        <div className="open-pack-hero-copy">
+          <p className="eyebrow">Sobres</p>
+          <h1>Sobre diario azulgrana</h1>
+          <p>
+            Reclama tu sobre diario, abrilo y sumale cinco figuritas a tu coleccion. AlbumSL valida
+            la apertura antes de entregar el resultado.
+          </p>
+        </div>
+
+        <aside className={`claim-badge claim-badge--${claimVisualState.variant}`}>
+          <span className="claim-badge-label">Estado del sobre</span>
+          <strong>{claimVisualState.title}</strong>
+          <p>{claimVisualState.description}</p>
+        </aside>
       </section>
 
       <section className="pack-actions-card">
-        <div>
+        <div className="pack-actions-copy">
           <h2>Claim diario</h2>
           <p aria-live="polite" role="status">
             {getClaimStateMessage(dailyPack.claim)}
@@ -71,14 +80,19 @@ export function OpenPackPage(): React.JSX.Element {
 
       {packOpening.result ? (
         <section className="pack-result-section" aria-label="Resultado del sobre">
-          <div className="catalog-header">
+          <div className="pack-result-summary">
             <div>
               <p className="eyebrow">Resultado</p>
               <h2>Figuritas obtenidas</h2>
             </div>
-            <p>
-              Nuevas: {packOpening.result.newCount} · Repetidas: {packOpening.result.repeatedCount}
-            </p>
+            <div className="pack-result-metrics" aria-label="Resumen del sobre">
+              <span>
+                Nuevas <strong>{packOpening.result.newCount}</strong>
+              </span>
+              <span>
+                Repetidas <strong>{packOpening.result.repeatedCount}</strong>
+              </span>
+            </div>
           </div>
 
           <div className="pack-sticker-grid">
@@ -106,6 +120,34 @@ function getClaimStateMessage(claim: ClaimDailyPackResponseDto | null): string {
   }
 
   return "El sobre diario no esta disponible en este momento.";
+}
+
+function getClaimVisualState(claim: ClaimDailyPackResponseDto | null): {
+  readonly variant: "empty" | "available" | "consumed";
+  readonly title: string;
+  readonly description: string;
+} {
+  if (!claim) {
+    return {
+      variant: "empty",
+      title: "Esperando claim",
+      description: "Todavia no reclamaste el sobre de hoy.",
+    };
+  }
+
+  if (claim.status === "AVAILABLE") {
+    return {
+      variant: "available",
+      title: "Sobre listo",
+      description: `Disponible hasta ${formatDate(claim.expiresAt)}.`,
+    };
+  }
+
+  return {
+    variant: "consumed",
+    title: "Sobre consumido",
+    description: "Ya fue abierto. Volve cuando haya otro disponible.",
+  };
 }
 
 function formatDate(value: string | undefined): string {

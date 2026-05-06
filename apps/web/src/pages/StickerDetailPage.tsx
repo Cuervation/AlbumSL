@@ -73,9 +73,14 @@ export function StickerDetailPage(): React.JSX.Element {
           <Link className="back-link" to="/album">
             Volver al album
           </Link>
-          <span className={`album-status ${getAlbumStatusClassName(albumSticker.status)}`}>
-            {getAlbumStatusLabel(albumSticker.status)}
-          </span>
+          <div className="sticker-detail-header">
+            <span className={`album-status ${getAlbumStatusClassName(albumSticker.status)}`}>
+              {getAlbumStatusLabel(albumSticker.status)}
+            </span>
+            <span className="sticker-detail-copy">
+              {albumSticker.userSticker?.quantity ?? 0} copias disponibles
+            </span>
+          </div>
           <h1>{albumSticker.sticker.title}</h1>
           <p>{albumSticker.sticker.description}</p>
 
@@ -92,7 +97,7 @@ export function StickerDetailPage(): React.JSX.Element {
           {albumSticker.userSticker && canPasteSticker(albumSticker.userSticker) ? (
             <button
               type="button"
-              className="primary-button"
+              className="primary-button sticker-detail-cta"
               onClick={() => void handlePaste()}
               disabled={pasteSticker.loadingStickerId === albumSticker.sticker.id}
             >
@@ -105,7 +110,7 @@ export function StickerDetailPage(): React.JSX.Element {
           )}
 
           {pasteSticker.result?.stickerId === albumSticker.sticker.id ? (
-            <p className="state-message compact" aria-live="polite" role="status">
+            <p className="sticker-detail-success" aria-live="polite" role="status">
               Figurita pegada en tu album.
             </p>
           ) : null}
