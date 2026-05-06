@@ -38,27 +38,33 @@ export function AlbumPage(): React.JSX.Element {
         </button>
       </section>
 
-      <section className="album-progress-banner" aria-label="Resumen visual del album">
-        <div className="album-progress-banner-copy">
-          <p className="eyebrow">Progreso</p>
-          <h2>{progress.completionPercentage}% completo</h2>
-          <p>
-            {progress.collectedStickers} conseguidas, {progress.pastedStickers} pegadas y{" "}
-            {progress.repeatedStickers} repetidas.
-          </p>
+      {loading ? <p className="state-message">Cargando tu album...</p> : null}
+      {error ? (
+        <p className="error-message" role="alert">
+          {error}
+        </p>
+      ) : null}
+      {hasNoCollectedStickers ? (
+        <div className="album-empty-state">
+          <strong>Todavia no tenes figuritas.</strong>
+          <span>Abri un sobre para empezar la coleccion.</span>
+          <Link className="primary-link" to="/open-pack">
+            Ir a sobres
+          </Link>
         </div>
-        <div className="album-progress-meter" aria-hidden="true">
-          <span style={{ width: `${completion}%` }} />
-        </div>
-      </section>
+      ) : null}
+      {!loading && !error && !hasNoCollectedStickers && filteredStickers.length === 0 ? (
+        <p className="state-message">No hay figuritas para los filtros elegidos.</p>
+      ) : null}
 
-      <section className="album-progress-grid" aria-label="Progreso del album">
-        <ProgressCard label="Total" value={progress.totalStickers} />
-        <ProgressCard label="Conseguidas" value={progress.collectedStickers} />
-        <ProgressCard label="Pegadas" value={progress.pastedStickers} />
-        <ProgressCard label="Repetidas" value={progress.repeatedStickers} />
-        <ProgressCard label="Completitud" value={`${progress.completionPercentage}%`} />
-      </section>
+      {filteredLibertadoresStickers.length > 0 ? (
+        <CollectionSection
+          title="Libertadores 2014"
+          description="Casilleros de la coleccion campeona: faltantes, disponibles y pegadas en una sola pagina."
+          progress={libertadoresProgress}
+          stickers={filteredLibertadoresStickers}
+        />
+      ) : null}
 
       <section className="album-filters" aria-label="Filtros del album">
         <label>
@@ -141,33 +147,27 @@ export function AlbumPage(): React.JSX.Element {
         </button>
       </section>
 
-      {loading ? <p className="state-message">Cargando tu album...</p> : null}
-      {error ? (
-        <p className="error-message" role="alert">
-          {error}
-        </p>
-      ) : null}
-      {hasNoCollectedStickers ? (
-        <div className="album-empty-state">
-          <strong>Todavia no tenes figuritas.</strong>
-          <span>Abri un sobre para empezar la coleccion.</span>
-          <Link className="primary-link" to="/open-pack">
-            Ir a sobres
-          </Link>
+      <section className="album-progress-banner" aria-label="Resumen visual del album">
+        <div className="album-progress-banner-copy">
+          <p className="eyebrow">Progreso</p>
+          <h2>{progress.completionPercentage}% completo</h2>
+          <p>
+            {progress.collectedStickers} conseguidas, {progress.pastedStickers} pegadas y{" "}
+            {progress.repeatedStickers} repetidas.
+          </p>
         </div>
-      ) : null}
-      {!loading && !error && !hasNoCollectedStickers && filteredStickers.length === 0 ? (
-        <p className="state-message">No hay figuritas para los filtros elegidos.</p>
-      ) : null}
+        <div className="album-progress-meter" aria-hidden="true">
+          <span style={{ width: `${completion}%` }} />
+        </div>
+      </section>
 
-      {filteredLibertadoresStickers.length > 0 ? (
-        <CollectionSection
-          title="Libertadores 2014"
-          description="Casilleros de la coleccion campeona: faltantes, disponibles y pegadas en una sola pagina."
-          progress={libertadoresProgress}
-          stickers={filteredLibertadoresStickers}
-        />
-      ) : null}
+      <section className="album-progress-grid" aria-label="Progreso del album">
+        <ProgressCard label="Total" value={progress.totalStickers} />
+        <ProgressCard label="Conseguidas" value={progress.collectedStickers} />
+        <ProgressCard label="Pegadas" value={progress.pastedStickers} />
+        <ProgressCard label="Repetidas" value={progress.repeatedStickers} />
+        <ProgressCard label="Completitud" value={`${progress.completionPercentage}%`} />
+      </section>
 
       {filteredOtherStickers.length > 0 ? (
         <section className="album-collection-section" aria-label="Otras figuritas del album">
@@ -203,7 +203,10 @@ function CollectionSection({
   const completion = progress.total > 0 ? Math.round((progress.pasted / progress.total) * 100) : 0;
 
   return (
-    <section className="album-collection-section" aria-labelledby="libertadores-2014-title">
+    <section
+      className="album-collection-section album-collection-section--libertadores"
+      aria-labelledby="libertadores-2014-title"
+    >
       <div className="album-collection-header">
         <div>
           <p className="eyebrow">Coleccion</p>
@@ -222,7 +225,7 @@ function CollectionSection({
         <span style={{ width: `${completion}%` }} />
       </div>
 
-      <div className="album-grid album-slot-grid">
+      <div className="album-grid album-slot-grid album-slot-grid--libertadores">
         {stickers.map((albumSticker) => (
           <AlbumStickerCard key={albumSticker.sticker.id} albumSticker={albumSticker} />
         ))}
