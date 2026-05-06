@@ -509,7 +509,6 @@ a {
 
 .album-hero,
 .album-progress-grid,
-.album-filters,
 .album-collection-section,
 .album-grid,
 .duplicates-grid,
@@ -581,38 +580,6 @@ a {
   font-size: 2rem;
   line-height: 1;
   margin-top: 10px;
-}
-
-.album-filters {
-  align-items: end;
-  background: #ffffff;
-  border: 1px solid #dbe3ef;
-  border-radius: 12px;
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  margin-top: 18px;
-  margin-bottom: 20px;
-  padding: 16px;
-}
-
-.album-filters label {
-  color: #475569;
-  display: grid;
-  font-size: 0.78rem;
-  font-weight: 900;
-  gap: 6px;
-  text-transform: uppercase;
-}
-
-.album-filters input,
-.album-filters select {
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  color: #071a43;
-  font: inherit;
-  min-height: 42px;
-  padding: 0 10px;
 }
 
 .album-grid,

@@ -1,18 +1,15 @@
-import { StickerCategory, StickerEra, StickerRarity, type AlbumStickerView } from "@albumsl/domain";
+import { type AlbumStickerView } from "@albumsl/domain";
 import { Link } from "react-router-dom";
 
 import { getAlbumStatusClassName } from "../features/album/album-view-labels";
-import { AlbumStatusFilter, useAlbumFilters } from "../features/album/useAlbumFilters";
 import { useAlbumData } from "../features/album/useAlbumData";
 
 export function AlbumPage(): React.JSX.Element {
   const { albumStickers, progress, loading, error, refresh } = useAlbumData();
-  const { filters, filteredStickers, updateFilter, resetFilters } = useAlbumFilters(albumStickers);
   const hasNoCollectedStickers = !loading && !error && progress.collectedStickers === 0;
   const completion = Math.max(0, Math.min(100, progress.completionPercentage));
   const libertadoresStickers = albumStickers.filter(isLibertadores2014Sticker);
-  const filteredLibertadoresStickers = filteredStickers.filter(isLibertadores2014Sticker);
-  const filteredOtherStickers = filteredStickers.filter(
+  const otherStickers = albumStickers.filter(
     (albumSticker) => !isLibertadores2014Sticker(albumSticker),
   );
   const libertadoresProgress = getCollectionProgress(libertadoresStickers);
@@ -53,99 +50,14 @@ export function AlbumPage(): React.JSX.Element {
           </Link>
         </div>
       ) : null}
-      {!loading && !error && !hasNoCollectedStickers && filteredStickers.length === 0 ? (
-        <p className="state-message">No hay figuritas para los filtros elegidos.</p>
-      ) : null}
-
-      {filteredLibertadoresStickers.length > 0 ? (
+      {libertadoresStickers.length > 0 ? (
         <CollectionSection
           title="Libertadores 2014"
           description="Casilleros de la coleccion campeona: faltantes, disponibles y pegadas en una sola pagina."
           progress={libertadoresProgress}
-          stickers={filteredLibertadoresStickers}
+          stickers={libertadoresStickers}
         />
       ) : null}
-
-      <section className="album-filters" aria-label="Filtros del album">
-        <label>
-          Buscar
-          <input
-            type="search"
-            value={filters.search}
-            onChange={(event) => updateFilter("search", event.target.value)}
-            placeholder="Titulo, descripcion o tag"
-          />
-        </label>
-
-        <label>
-          Categoria
-          <select
-            value={filters.category}
-            onChange={(event) =>
-              updateFilter("category", event.target.value as typeof filters.category)
-            }
-          >
-            <option value="ALL">Todas</option>
-            {Object.values(StickerCategory).map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Rareza
-          <select
-            value={filters.rarity}
-            onChange={(event) =>
-              updateFilter("rarity", event.target.value as typeof filters.rarity)
-            }
-          >
-            <option value="ALL">Todas</option>
-            {Object.values(StickerRarity).map((rarity) => (
-              <option key={rarity} value={rarity}>
-                {rarity}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Epoca
-          <select
-            value={filters.era}
-            onChange={(event) => updateFilter("era", event.target.value as typeof filters.era)}
-          >
-            <option value="ALL">Todas</option>
-            {Object.values(StickerEra).map((era) => (
-              <option key={era} value={era}>
-                {era}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label>
-          Estado
-          <select
-            value={filters.status}
-            onChange={(event) =>
-              updateFilter("status", event.target.value as typeof filters.status)
-            }
-          >
-            <option value={AlbumStatusFilter.ALL}>Todas</option>
-            <option value={AlbumStatusFilter.COLLECTED}>Conseguidas</option>
-            <option value={AlbumStatusFilter.PASTED}>Pegadas</option>
-            <option value={AlbumStatusFilter.MISSING}>Faltantes</option>
-            <option value={AlbumStatusFilter.REPEATED}>Repetidas</option>
-          </select>
-        </label>
-
-        <button type="button" className="ghost-button" onClick={resetFilters}>
-          Limpiar
-        </button>
-      </section>
 
       <section className="album-progress-banner" aria-label="Resumen visual del album">
         <div className="album-progress-banner-copy">
@@ -169,7 +81,7 @@ export function AlbumPage(): React.JSX.Element {
         <ProgressCard label="Completitud" value={`${progress.completionPercentage}%`} />
       </section>
 
-      {filteredOtherStickers.length > 0 ? (
+      {otherStickers.length > 0 ? (
         <section className="album-collection-section" aria-label="Otras figuritas del album">
           <div className="album-collection-header">
             <div>
@@ -179,7 +91,7 @@ export function AlbumPage(): React.JSX.Element {
             </div>
           </div>
           <div className="album-grid album-slot-grid">
-            {filteredOtherStickers.map((albumSticker) => (
+            {otherStickers.map((albumSticker) => (
               <AlbumStickerCard key={albumSticker.sticker.id} albumSticker={albumSticker} />
             ))}
           </div>
