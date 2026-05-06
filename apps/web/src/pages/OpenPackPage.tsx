@@ -10,6 +10,7 @@ export function OpenPackPage(): React.JSX.Element {
   const canOpenDailyPack = dailyPack.claim?.status === "AVAILABLE";
   const isBusy = dailyPack.loading || packOpening.loading;
   const claimVisualState = getClaimVisualState(dailyPack.claim);
+  const packEnvelopeState = getPackEnvelopeState(dailyPack.claim, packOpening.loading);
 
   async function handleOpenDailyPack(): Promise<void> {
     if (!dailyPack.claim) {
@@ -46,8 +47,18 @@ export function OpenPackPage(): React.JSX.Element {
       </section>
 
       <section className="pack-actions-card">
+        <div
+          className={`daily-pack-visual daily-pack-visual--${packEnvelopeState}`}
+          aria-hidden="true"
+        >
+          <span className="daily-pack-visual-flap" />
+          <span className="daily-pack-visual-body" />
+          <span className="daily-pack-visual-seal">SL</span>
+          <span className="daily-pack-visual-shine" />
+        </div>
+
         <div className="pack-actions-copy">
-          <h2>Claim diario</h2>
+          <h2>Sobre diario</h2>
           <p aria-live="polite" role="status">
             {getClaimStateMessage(dailyPack.claim)}
           </p>
@@ -83,7 +94,7 @@ export function OpenPackPage(): React.JSX.Element {
           <div className="pack-result-summary">
             <div>
               <p className="eyebrow">Resultado</p>
-              <h2>Figuritas obtenidas</h2>
+              <h2>Tus figuritas</h2>
             </div>
             <div className="pack-result-metrics" aria-label="Resumen del sobre">
               <span>
@@ -104,6 +115,25 @@ export function OpenPackPage(): React.JSX.Element {
       ) : null}
     </main>
   );
+}
+
+function getPackEnvelopeState(
+  claim: ClaimDailyPackResponseDto | null,
+  isOpening: boolean,
+): "idle" | "ready" | "opening" | "opened" {
+  if (isOpening) {
+    return "opening";
+  }
+
+  if (claim?.status === "AVAILABLE") {
+    return "ready";
+  }
+
+  if (claim?.status === "CONSUMED") {
+    return "opened";
+  }
+
+  return "idle";
 }
 
 function getClaimStateMessage(claim: ClaimDailyPackResponseDto | null): string {
