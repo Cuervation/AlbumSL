@@ -718,6 +718,42 @@ a {
   position: absolute;
 }
 
+.album-book::after {
+  background:
+    linear-gradient(
+      100deg,
+      rgba(255, 255, 255, 0.12),
+      rgba(255, 255, 255, 0.86) 42%,
+      rgba(7, 26, 67, 0.18)
+    ),
+    linear-gradient(135deg, rgba(255, 248, 237, 0.98), rgba(238, 229, 215, 0.94));
+  border-radius: 14px;
+  box-shadow: -24px 0 42px rgba(7, 26, 67, 0.24);
+  content: "";
+  inset: 12px 50% 12px 12px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transform: rotateY(0deg);
+  transform-origin: right center;
+  z-index: 3;
+}
+
+.album-book--turning-next::after {
+  animation: album-page-turn-next 560ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+  inset: 12px 12px 12px 50%;
+  transform-origin: left center;
+}
+
+.album-book--turning-previous::after {
+  animation: album-page-turn-previous 560ms cubic-bezier(0.22, 0.72, 0.22, 1) both;
+}
+
+.album-book--turning-next .album-book-page--right,
+.album-book--turning-previous .album-book-page--left {
+  animation: album-page-shadow-pulse 560ms ease both;
+}
+
 .album-book-page {
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 248, 237, 0.84)),
@@ -787,6 +823,59 @@ a {
 .album-page-arrow:disabled {
   cursor: not-allowed;
   opacity: 0.35;
+}
+
+@keyframes album-page-turn-next {
+  0% {
+    opacity: 0;
+    transform: perspective(1200px) rotateY(0deg) translateX(0) scale(1);
+  }
+
+  14% {
+    opacity: 1;
+  }
+
+  52% {
+    opacity: 0.92;
+    transform: perspective(1200px) rotateY(-54deg) translateX(-12px) scale(1.015);
+  }
+
+  100% {
+    opacity: 0;
+    transform: perspective(1200px) rotateY(-108deg) translateX(-28px) scale(0.985);
+  }
+}
+
+@keyframes album-page-turn-previous {
+  0% {
+    opacity: 0;
+    transform: perspective(1200px) rotateY(0deg) translateX(0) scale(1);
+  }
+
+  14% {
+    opacity: 1;
+  }
+
+  52% {
+    opacity: 0.92;
+    transform: perspective(1200px) rotateY(54deg) translateX(12px) scale(1.015);
+  }
+
+  100% {
+    opacity: 0;
+    transform: perspective(1200px) rotateY(108deg) translateX(28px) scale(0.985);
+  }
+}
+
+@keyframes album-page-shadow-pulse {
+  0%,
+  100% {
+    filter: none;
+  }
+
+  48% {
+    filter: drop-shadow(0 18px 24px rgba(7, 26, 67, 0.24));
+  }
 }
 
 .album-slot-grid {
@@ -1986,7 +2075,11 @@ a {
   .daily-pack-visual,
   .daily-pack-visual-shine,
   .pack-result-section,
-  .pack-result-sticker {
+  .pack-result-sticker,
+  .album-book--turning-next::after,
+  .album-book--turning-previous::after,
+  .album-book--turning-next .album-book-page--right,
+  .album-book--turning-previous .album-book-page--left {
     animation: none;
   }
 

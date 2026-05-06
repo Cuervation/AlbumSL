@@ -1,5 +1,5 @@
 import { type AlbumStickerView } from "@albumsl/domain";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { getAlbumStatusClassName } from "../features/album/album-view-labels";
@@ -7,6 +7,7 @@ import { useAlbumData } from "../features/album/useAlbumData";
 
 const STICKERS_PER_ALBUM_SIDE = 6;
 const STICKERS_PER_ALBUM_SPREAD = STICKERS_PER_ALBUM_SIDE * 2;
+const ALBUM_PAGE_TURN_MS = 560;
 
 export function AlbumPage(): React.JSX.Element {
   const { albumStickers, progress, loading, error, refresh } = useAlbumData();
@@ -118,6 +119,7 @@ function CollectionSection({
 }): React.JSX.Element {
   const completion = progress.total > 0 ? Math.round((progress.pasted / progress.total) * 100) : 0;
   const [spreadIndex, setSpreadIndex] = useState(0);
+  const [turnDirection, setTurnDirection] = useState<"next" | "previous" | null>(null);
   const orderedStickers = [...stickers].sort(compareAlbumStickersByNumber);
   const spreadCount = Math.max(1, Math.ceil(orderedStickers.length / STICKERS_PER_ALBUM_SPREAD));
   const currentSpreadIndex = Math.min(spreadIndex, spreadCount - 1);
@@ -132,6 +134,38 @@ function CollectionSection({
   );
   const canGoBack = currentSpreadIndex > 0;
   const canGoForward = currentSpreadIndex < spreadCount - 1;
+  const isTurningPage = turnDirection !== null;
+
+  useEffect(() => {
+    if (turnDirection === null) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setTurnDirection(null);
+    }, ALBUM_PAGE_TURN_MS);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [turnDirection]);
+
+  function turnPage(direction: "next" | "previous"): void {
+    if (isTurningPage) {
+      return;
+    }
+
+    if (direction === "previous" && !canGoBack) {
+      return;
+    }
+
+    if (direction === "next" && !canGoForward) {
+      return;
+    }
+
+    setTurnDirection(direction);
+    setSpreadIndex((current) =>
+      direction === "next" ? Math.min(spreadCount - 1, current + 1) : Math.max(0, current - 1),
+    );
+  }
 
   return (
     <section
@@ -156,7 +190,10 @@ function CollectionSection({
         <span style={{ width: `${completion}%` }} />
       </div>
 
-      <div className="album-book" aria-label={`${title}, paginas ${currentSpreadIndex + 1}`}>
+      <div
+        className={`album-book ${turnDirection ? `album-book--turning-${turnDirection}` : ""}`}
+        aria-label={`${title}, paginas ${currentSpreadIndex + 1}`}
+      >
         <AlbumBookPage side="left" stickers={leftPageStickers} />
         <div className="album-book-spine" aria-hidden="true" />
         <AlbumBookPage side="right" stickers={rightPageStickers} />
@@ -166,8 +203,8 @@ function CollectionSection({
         <button
           type="button"
           className="album-page-arrow"
-          onClick={() => setSpreadIndex((current) => Math.max(0, current - 1))}
-          disabled={!canGoBack}
+          onClick={() => turnPage("previous")}
+          disabled={!canGoBack || isTurningPage}
           aria-label="Pagina anterior"
         >
           {"<"}
@@ -178,8 +215,8 @@ function CollectionSection({
         <button
           type="button"
           className="album-page-arrow"
-          onClick={() => setSpreadIndex((current) => Math.min(spreadCount - 1, current + 1))}
-          disabled={!canGoForward}
+          onClick={() => turnPage("next")}
+          disabled={!canGoForward || isTurningPage}
           aria-label="Pagina siguiente"
         >
           {">"}
