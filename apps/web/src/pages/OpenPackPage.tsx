@@ -29,7 +29,7 @@ export function OpenPackPage(): React.JSX.Element {
   }
 
   return (
-    <main className="page open-pack-page">
+    <main className="page open-pack-page experience-open-pack">
       <section className="open-pack-hero open-pack-hero--featured">
         <div className="open-pack-hero-copy">
           <p className="eyebrow">Sobres</p>
@@ -48,13 +48,17 @@ export function OpenPackPage(): React.JSX.Element {
       </section>
 
       <section className={`pack-actions-card pack-actions-card--${packEnvelopeState}`}>
+        <span className="pack-stand-awning" aria-hidden="true" />
         <div className="daily-pack-stage" aria-hidden="true">
+          <span className="pack-object-shadow" />
           <div className={`daily-pack-visual daily-pack-visual--${packEnvelopeState}`}>
             <span className="daily-pack-visual-flap" />
             <span className="daily-pack-visual-body" />
             <span className="daily-pack-visual-seal">SL</span>
             <span className="daily-pack-visual-shine" />
           </div>
+          <span className="pack-flying-card pack-flying-card--one" />
+          <span className="pack-flying-card pack-flying-card--two" />
           <span className="daily-pack-visual-label">{packEnvelopeLabel}</span>
         </div>
 

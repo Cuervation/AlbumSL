@@ -2,62 +2,75 @@ import { Link } from "react-router-dom";
 
 export function HomePage(): React.JSX.Element {
   return (
-    <main className="page hero-page album-hub-page">
-      <section className="hero-content album-hub-hero">
-        <div>
+    <main className="page hero-page album-hub-page experience-shell">
+      <section className="experience-stage" aria-labelledby="album-hub-title">
+        <div className="experience-skyline" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
+
+        <div className="album-hub-hero">
           <p className="eyebrow">San Lorenzo de Almagro</p>
-          <h1>Album virtual azulgrana</h1>
+          <h1 id="album-hub-title">Tu album azulgrana</h1>
           <p>
-            Entrá al ritual de coleccionar: revisá tus figus, completá la Libertadores 2014 y abrí
-            el sobre diario desde un mismo lugar.
+            Entra a la cancha: revisa tus figus, abri sobres y completa la Libertadores 2014 desde
+            un hub con espiritu de juego.
           </p>
+        </div>
+
+        <div className="experience-objects" aria-label="Accesos principales del album">
+          <Link
+            className="experience-card experience-card--figus"
+            to="/duplicates"
+            aria-label="Abrir Mis Figus"
+          >
+            <span className="experience-card-kicker">Inventario</span>
+            <span className="figus-stack" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+            <span className="experience-card-title">Mis Figus</span>
+            <span className="experience-card-copy">Tus cromos repetidos y listos para mirar.</span>
+          </Link>
+
+          <Link
+            className="experience-card experience-card--album experience-card--featured"
+            to="/album"
+            aria-label="Abrir Mi Album"
+          >
+            <span className="experience-card-kicker">Coleccion</span>
+            <span className="album-object" aria-hidden="true">
+              <span className="album-object-cover">SL</span>
+              <span className="album-object-page" />
+            </span>
+            <span className="experience-card-title">Mi Album</span>
+            <span className="experience-card-copy">Pega figuritas y persegui el 100% campeon.</span>
+          </Link>
+
+          <Link
+            className="experience-card experience-card--packs"
+            to="/open-pack"
+            aria-label="Abrir Sobres"
+          >
+            <span className="experience-card-kicker">Sobre diario</span>
+            <span className="pack-object" aria-hidden="true">
+              <span />
+            </span>
+            <span className="experience-card-title">Abrir Sobres</span>
+            <span className="experience-card-copy">Reclama y abri tu sobre del dia.</span>
+          </Link>
         </div>
       </section>
 
-      <section className="album-hub-grid" aria-label="Accesos principales del album">
-        {HUB_LINKS.map((item) => (
-          <Link
-            key={item.title}
-            className={`album-hub-card album-hub-card--${item.variant}`}
-            to={item.to}
-          >
-            <span className="album-hub-card-kicker">{item.kicker}</span>
-            <span className="album-hub-card-icon" aria-hidden="true">
-              {item.icon}
-            </span>
-            <span className="album-hub-card-title">{item.title}</span>
-            <span className="album-hub-card-copy">{item.copy}</span>
-            <span className="album-hub-card-action">Entrar</span>
-          </Link>
-        ))}
-      </section>
+      <nav className="experience-bottom-nav" aria-label="Navegacion principal de experiencia">
+        <Link to="/">Inicio</Link>
+        <Link to="/duplicates">Mis Figus</Link>
+        <Link to="/album">Mi Album</Link>
+        <Link to="/open-pack">Abrir Sobres</Link>
+        <Link to="/dashboard">Mas</Link>
+      </nav>
     </main>
   );
 }
-
-const HUB_LINKS = [
-  {
-    title: "Mis Figus",
-    copy: "Mirá tus figuritas y repetidas.",
-    kicker: "Inventario",
-    icon: "FIGUS",
-    to: "/duplicates",
-    variant: "figus",
-  },
-  {
-    title: "Mi Álbum",
-    copy: "Pegá figuritas y completá la colección.",
-    kicker: "Colección",
-    icon: "ALBUM",
-    to: "/album",
-    variant: "album",
-  },
-  {
-    title: "Abrir Sobres",
-    copy: "Reclamá y abrí tu sobre diario.",
-    kicker: "Sobre diario",
-    icon: "SOBRE",
-    to: "/open-pack",
-    variant: "packs",
-  },
-] as const;

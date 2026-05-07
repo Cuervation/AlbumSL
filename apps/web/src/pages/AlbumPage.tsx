@@ -20,7 +20,7 @@ export function AlbumPage(): React.JSX.Element {
   const libertadoresProgress = getCollectionProgress(libertadoresStickers);
 
   return (
-    <main className="page album-page">
+    <main className="page album-page experience-album-page">
       <section className="album-hero album-hero--featured">
         <div className="album-hero-copy">
           <p className="eyebrow">Mi Album</p>
@@ -191,7 +191,7 @@ function CollectionSection({
       </div>
 
       <div
-        className={`album-book ${turnDirection ? `album-book--turning-${turnDirection}` : ""}`}
+        className={`album-book album-object ${turnDirection ? `album-book--turning-${turnDirection}` : ""}`}
         aria-label={`${title}, paginas ${currentSpreadIndex + 1}`}
       >
         <AlbumBookPage side="left" stickers={leftPageStickers} />

@@ -2088,3 +2088,604 @@ a {
     transition: none;
   }
 }
+
+/* PR27: immersive AlbumSL experience shell */
+.experience-shell {
+  --sl-blue: #071a43;
+  --sl-red: #dc2626;
+  --sl-gold: #f59e0b;
+  --sl-cream: #fff7ed;
+  align-items: stretch;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255, 255, 255, 0.28), transparent 28%),
+    radial-gradient(circle at 20% 20%, rgba(245, 158, 11, 0.2), transparent 20%),
+    linear-gradient(180deg, rgba(7, 26, 67, 0.98), rgba(7, 26, 67, 0.9) 50%, #06112d),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 2px, transparent 2px 56px);
+  color: #ffffff;
+  display: grid;
+  gap: clamp(18px, 3vw, 28px);
+  min-height: calc(100vh - 72px);
+  overflow: hidden;
+  padding: clamp(18px, 4vw, 44px);
+  position: relative;
+}
+
+.experience-shell::before {
+  background:
+    linear-gradient(180deg, transparent 0 58%, rgba(220, 38, 38, 0.32) 58% 64%, transparent 64%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.18) 0 42px,
+      rgba(220, 38, 38, 0.2) 42px 84px
+    );
+  clip-path: polygon(0 18%, 100% 0, 100% 58%, 0 72%);
+  content: "";
+  inset: 0 0 auto;
+  min-height: 42%;
+  opacity: 0.5;
+  pointer-events: none;
+  position: absolute;
+}
+
+.experience-shell::after {
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(34, 197, 94, 0.58),
+      rgba(21, 128, 61, 0.48) 48%,
+      transparent 49%
+    ),
+    linear-gradient(90deg, transparent 0 48%, rgba(255, 255, 255, 0.22) 48% 52%, transparent 52%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 70px);
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-radius: 50% 50% 0 0 / 22% 22% 0 0;
+  bottom: -18%;
+  content: "";
+  height: 45%;
+  left: 3%;
+  opacity: 0.75;
+  pointer-events: none;
+  position: absolute;
+  right: 3%;
+}
+
+.experience-stage {
+  align-self: center;
+  isolation: isolate;
+  margin: 0 auto;
+  max-width: 1220px;
+  min-height: min(720px, calc(100vh - 190px));
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.experience-skyline {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, 1fr);
+  inset: 6% 4% auto;
+  opacity: 0.72;
+  position: absolute;
+}
+
+.experience-skyline span {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.04));
+  border-radius: 999px;
+  height: 10px;
+}
+
+.album-hub-page .album-hub-hero {
+  align-items: center;
+  display: grid;
+  justify-items: center;
+  margin: 0 auto;
+  max-width: 760px;
+  padding-top: clamp(18px, 5vw, 54px);
+  text-align: center;
+}
+
+.album-hub-page .album-hub-hero h1 {
+  color: #ffffff;
+  font-size: clamp(3rem, 9vw, 7rem);
+  letter-spacing: -0.08em;
+  line-height: 0.82;
+  margin: 0 0 18px;
+  text-shadow: 0 12px 42px rgba(0, 0, 0, 0.38);
+}
+
+.album-hub-page .album-hub-hero p:not(.eyebrow) {
+  color: rgba(255, 255, 255, 0.86);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 660px;
+}
+
+.experience-objects {
+  align-items: end;
+  display: grid;
+  gap: clamp(14px, 3vw, 28px);
+  grid-template-columns: minmax(180px, 0.82fr) minmax(240px, 1.22fr) minmax(180px, 0.82fr);
+  margin-top: clamp(24px, 5vw, 56px);
+  perspective: 1200px;
+}
+
+.experience-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 247, 237, 0.9)),
+    repeating-linear-gradient(45deg, transparent 0 18px, rgba(7, 26, 67, 0.05) 18px 20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 30px;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 6px rgba(255, 255, 255, 0.38);
+  color: var(--sl-blue);
+  display: grid;
+  min-height: 410px;
+  overflow: hidden;
+  padding: clamp(18px, 2.4vw, 28px);
+  position: relative;
+  text-decoration: none;
+  transform: rotateY(8deg) rotateZ(-2deg);
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.experience-card--featured {
+  min-height: 500px;
+  transform: translateY(-18px);
+}
+
+.experience-card--packs {
+  transform: rotateY(-8deg) rotateZ(2deg);
+}
+
+.experience-card:hover,
+.experience-card:focus-visible {
+  box-shadow:
+    0 42px 96px rgba(0, 0, 0, 0.44),
+    0 0 0 5px rgba(245, 158, 11, 0.28),
+    inset 0 0 0 6px rgba(255, 255, 255, 0.42);
+  transform: translateY(-8px) scale(1.015);
+}
+
+.experience-card:focus-visible,
+.experience-bottom-nav a:focus-visible,
+.album-page-arrow:focus-visible,
+.pack-actions button:focus-visible,
+.ghost-button:focus-visible,
+.primary-link:focus-visible,
+.duplicate-card:focus-visible,
+.album-slot:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 4px;
+}
+
+.experience-card::before {
+  background: linear-gradient(90deg, var(--sl-blue), var(--sl-red), var(--sl-blue));
+  content: "";
+  height: 10px;
+  inset: 0 0 auto;
+  position: absolute;
+}
+
+.experience-card::after {
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.3), transparent 62%);
+  content: "";
+  height: 240px;
+  position: absolute;
+  right: -90px;
+  top: -80px;
+  width: 240px;
+}
+
+.experience-card-kicker {
+  color: var(--sl-red);
+  font-size: 0.78rem;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  position: relative;
+  text-transform: uppercase;
+  z-index: 1;
+}
+
+.experience-card-title {
+  align-self: end;
+  display: block;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 1000;
+  letter-spacing: -0.07em;
+  line-height: 0.92;
+  position: relative;
+  z-index: 1;
+}
+
+.experience-card-copy {
+  color: #475569;
+  display: block;
+  font-weight: 800;
+  line-height: 1.45;
+  margin-top: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.figus-stack,
+.experience-card .album-object,
+.pack-object {
+  align-self: center;
+  justify-self: center;
+  position: relative;
+  z-index: 1;
+}
+
+.figus-stack {
+  height: 190px;
+  width: 160px;
+}
+
+.figus-stack span {
+  background:
+    linear-gradient(145deg, #ffffff, #f8fafc),
+    linear-gradient(135deg, var(--sl-blue), var(--sl-red));
+  border: 6px solid #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 18px 38px rgba(7, 26, 67, 0.2);
+  height: 170px;
+  left: 18px;
+  position: absolute;
+  top: 10px;
+  width: 118px;
+}
+
+.figus-stack span::before {
+  background:
+    linear-gradient(135deg, rgba(7, 26, 67, 0.94), rgba(220, 38, 38, 0.86)),
+    repeating-linear-gradient(45deg, transparent 0 9px, rgba(255, 255, 255, 0.12) 9px 12px);
+  border-radius: 13px;
+  content: "";
+  inset: 10px 10px 44px;
+  position: absolute;
+}
+
+.figus-stack span:nth-child(1) {
+  transform: rotate(-14deg) translateX(-24px);
+}
+
+.figus-stack span:nth-child(2) {
+  transform: rotate(2deg);
+}
+
+.figus-stack span:nth-child(3) {
+  transform: rotate(13deg) translateX(26px);
+}
+
+.experience-card .album-object {
+  height: 250px;
+  transform: rotate(-5deg);
+  width: 230px;
+}
+
+.album-object-cover,
+.album-object-page {
+  border-radius: 22px;
+  box-shadow: 0 24px 48px rgba(7, 26, 67, 0.28);
+  position: absolute;
+}
+
+.album-object-cover {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(7, 26, 67, 0.98), rgba(220, 38, 38, 0.92)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0 12px, transparent 12px 24px);
+  border: 7px solid #ffffff;
+  color: #ffffff;
+  display: grid;
+  font-size: 4rem;
+  font-weight: 1000;
+  inset: 22px 22px 0 0;
+  place-items: center;
+  text-shadow: 0 6px 20px rgba(0, 0, 0, 0.38);
+  z-index: 2;
+}
+
+.album-object-page {
+  background:
+    linear-gradient(135deg, #fff7ed, #ffffff),
+    repeating-linear-gradient(0deg, transparent 0 18px, rgba(7, 26, 67, 0.08) 18px 20px);
+  inset: 0 0 22px 28px;
+  transform: rotate(8deg);
+}
+
+.pack-object {
+  background:
+    linear-gradient(145deg, var(--sl-blue) 0 48%, var(--sl-red) 48% 100%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.13) 0 10px, transparent 10px 18px);
+  border: 7px solid #ffffff;
+  border-radius: 26px;
+  box-shadow: 0 26px 52px rgba(7, 26, 67, 0.28);
+  height: 235px;
+  transform: rotate(7deg);
+  width: 175px;
+}
+
+.pack-object::before {
+  background: linear-gradient(135deg, var(--sl-red), var(--sl-blue));
+  clip-path: polygon(0 0, 100% 0, 50% 62%);
+  content: "";
+  inset: 0 0 auto;
+  height: 58%;
+  position: absolute;
+}
+
+.pack-object span {
+  align-items: center;
+  background: linear-gradient(135deg, #fef3c7, var(--sl-gold));
+  border: 4px solid #ffffff;
+  border-radius: 999px;
+  display: grid;
+  height: 58px;
+  left: 50%;
+  place-items: center;
+  position: absolute;
+  top: 47%;
+  transform: translate(-50%, -50%);
+  width: 58px;
+}
+
+.pack-object span::before {
+  color: var(--sl-blue);
+  content: "SL";
+  font-weight: 1000;
+}
+
+.experience-bottom-nav {
+  align-self: end;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 999px;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.28);
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  justify-self: center;
+  max-width: min(760px, 100%);
+  padding: 8px;
+  position: sticky;
+  z-index: 3;
+}
+
+.experience-bottom-nav a {
+  border-radius: 999px;
+  color: #071a43;
+  font-size: clamp(0.78rem, 2vw, 0.95rem);
+  font-weight: 1000;
+  padding: 12px 16px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.experience-bottom-nav a:hover {
+  background: #071a43;
+  color: #ffffff;
+}
+
+.experience-open-pack {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(245, 158, 11, 0.24), transparent 24%),
+    radial-gradient(circle at 84% 14%, rgba(220, 38, 38, 0.16), transparent 24%),
+    linear-gradient(180deg, #071a43 0 310px, #eef2ff 310px 100%);
+}
+
+.experience-open-pack .open-pack-hero h1,
+.experience-open-pack .open-pack-hero p,
+.experience-open-pack .open-pack-hero .eyebrow {
+  color: #ffffff;
+}
+
+.experience-open-pack .pack-actions-card {
+  border: 0;
+  border-radius: 32px;
+  box-shadow:
+    0 32px 86px rgba(7, 26, 67, 0.22),
+    inset 0 0 0 8px rgba(255, 255, 255, 0.36);
+  margin-top: 42px;
+  padding: clamp(24px, 4vw, 42px);
+}
+
+.pack-stand-awning {
+  background: repeating-linear-gradient(90deg, #071a43 0 46px, #dc2626 46px 92px);
+  border-radius: 28px 28px 10px 10px;
+  height: 42px;
+  inset: 0 0 auto;
+  position: absolute;
+}
+
+.pack-object-shadow {
+  background: radial-gradient(ellipse, rgba(7, 26, 67, 0.22), transparent 68%);
+  bottom: 28px;
+  height: 30px;
+  position: absolute;
+  width: 180px;
+}
+
+.pack-flying-card {
+  background: linear-gradient(145deg, #ffffff, #fff7ed);
+  border: 4px solid #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(7, 26, 67, 0.16);
+  height: 76px;
+  position: absolute;
+  top: 24px;
+  width: 54px;
+}
+
+.pack-flying-card::before {
+  background: linear-gradient(135deg, #071a43, #dc2626);
+  border-radius: 8px;
+  content: "";
+  inset: 8px 8px 22px;
+  position: absolute;
+}
+
+.pack-flying-card--one {
+  right: 28px;
+  transform: rotate(17deg);
+}
+
+.pack-flying-card--two {
+  left: 24px;
+  transform: rotate(-18deg);
+}
+
+.pack-actions-card--opening .pack-flying-card,
+.pack-actions-card--opened .pack-flying-card {
+  animation: pack-card-float 780ms ease-out both;
+}
+
+.pack-result-sticker:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.pack-result-sticker:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.pack-result-sticker:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+.pack-result-sticker:nth-child(5) {
+  animation-delay: 240ms;
+}
+
+.experience-album-page,
+.experience-figus-page {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(220, 38, 38, 0.14), transparent 23%),
+    radial-gradient(circle at 88% 12%, rgba(245, 158, 11, 0.2), transparent 22%),
+    linear-gradient(180deg, #f8fafc, #e8eefb);
+}
+
+.experience-album-page .album-hero,
+.experience-figus-page .album-hero {
+  background:
+    linear-gradient(135deg, rgba(7, 26, 67, 0.98), rgba(220, 38, 38, 0.9)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0 18px, transparent 18px 36px);
+  border-radius: 32px;
+  box-shadow: 0 28px 72px rgba(7, 26, 67, 0.2);
+  color: #ffffff;
+  padding: clamp(22px, 4vw, 36px);
+}
+
+.experience-album-page .album-hero h1,
+.experience-album-page .album-hero p,
+.experience-album-page .album-hero .eyebrow,
+.experience-figus-page .album-hero h1,
+.experience-figus-page .album-hero p,
+.experience-figus-page .album-hero .eyebrow {
+  color: #ffffff;
+}
+
+.album-book.album-object {
+  border-color: #071a43;
+  border-radius: 30px;
+  box-shadow:
+    0 34px 94px rgba(7, 26, 67, 0.28),
+    0 18px 0 rgba(7, 26, 67, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.76);
+  transform: perspective(1400px) rotateX(3deg);
+}
+
+.album-book.album-object .album-slot {
+  border: 2px dashed rgba(7, 26, 67, 0.22);
+  box-shadow:
+    inset 0 0 0 6px rgba(255, 255, 255, 0.78),
+    0 10px 24px rgba(7, 26, 67, 0.08);
+}
+
+.album-book.album-object .album-slot.missing {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 247, 237, 0.72)),
+    repeating-linear-gradient(45deg, transparent 0 12px, rgba(7, 26, 67, 0.06) 12px 14px);
+}
+
+.experience-figus-page .duplicates-summary div,
+.experience-figus-page .duplicate-card,
+.experience-figus-page .duplicates-empty-state {
+  box-shadow:
+    0 18px 44px rgba(7, 26, 67, 0.1),
+    inset 0 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.experience-figus-page .duplicate-card {
+  border-radius: 22px;
+  padding: 10px;
+}
+
+.experience-figus-page .sticker-placeholder {
+  border: 6px solid #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 14px 28px rgba(7, 26, 67, 0.16);
+  min-height: 190px;
+}
+
+@keyframes pack-card-float {
+  from {
+    opacity: 0;
+    transform: translateY(34px) rotate(0deg) scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 860px) {
+  .experience-shell {
+    min-height: calc(100vh - 136px);
+    padding-bottom: 18px;
+  }
+
+  .experience-stage {
+    min-height: auto;
+  }
+
+  .experience-objects {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .experience-card,
+  .experience-card--featured,
+  .experience-card--packs {
+    min-height: 310px;
+    transform: none;
+  }
+
+  .experience-card:hover,
+  .experience-card:focus-visible {
+    transform: translateY(-4px);
+  }
+
+  .experience-bottom-nav {
+    justify-content: flex-start;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .experience-open-pack .pack-actions-card {
+    padding-top: 54px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience-card,
+  .experience-bottom-nav a,
+  .pack-flying-card {
+    animation: none;
+    transition: none;
+  }
+}

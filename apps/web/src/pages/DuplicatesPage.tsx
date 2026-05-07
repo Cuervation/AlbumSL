@@ -14,11 +14,11 @@ export function DuplicatesPage(): React.JSX.Element {
   );
 
   return (
-    <main className="page album-page">
+    <main className="page album-page experience-figus-page">
       <section className="album-hero album-hero--featured">
         <div className="album-hero-copy">
-          <p className="eyebrow">Mis repetidas</p>
-          <h1>Figuritas para futuros intercambios</h1>
+          <p className="eyebrow">Mis Figus</p>
+          <h1>Inventario de cromos azulgranas</h1>
           <p>
             Una repetida es una figurita que ya tenes pegada o disponible mas de una vez. Por ahora
             solo las mostramos; los intercambios quedan para mas adelante.
