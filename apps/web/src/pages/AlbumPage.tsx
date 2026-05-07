@@ -146,34 +146,33 @@ function CollectionSection({
 }): React.JSX.Element {
   const completion = progress.total > 0 ? Math.round((progress.pasted / progress.total) * 100) : 0;
   const [spreadIndex, setSpreadIndex] = useState(0);
+  const [pendingSpreadIndex, setPendingSpreadIndex] = useState<number | null>(null);
   const [turnDirection, setTurnDirection] = useState<"next" | "previous" | null>(null);
   const orderedStickers = [...stickers].sort(compareAlbumStickersByNumber);
   const spreadCount = Math.max(1, Math.ceil(orderedStickers.length / STICKERS_PER_ALBUM_SPREAD));
   const currentSpreadIndex = Math.min(spreadIndex, spreadCount - 1);
-  const spreadStartIndex = currentSpreadIndex * STICKERS_PER_ALBUM_SPREAD;
-  const leftPageStickers = orderedStickers.slice(
-    spreadStartIndex,
-    spreadStartIndex + STICKERS_PER_ALBUM_SIDE,
-  );
-  const rightPageStickers = orderedStickers.slice(
-    spreadStartIndex + STICKERS_PER_ALBUM_SIDE,
-    spreadStartIndex + STICKERS_PER_ALBUM_SPREAD,
-  );
+  const targetSpreadIndex =
+    pendingSpreadIndex === null ? null : Math.min(pendingSpreadIndex, spreadCount - 1);
+  const currentSpread = getAlbumSpread(orderedStickers, currentSpreadIndex);
+  const targetSpread =
+    targetSpreadIndex === null ? null : getAlbumSpread(orderedStickers, targetSpreadIndex);
   const canGoBack = currentSpreadIndex > 0;
   const canGoForward = currentSpreadIndex < spreadCount - 1;
-  const isTurningPage = turnDirection !== null;
+  const isTurningPage = turnDirection !== null && targetSpread !== null;
 
   useEffect(() => {
-    if (turnDirection === null) {
+    if (turnDirection === null || targetSpreadIndex === null) {
       return;
     }
 
     const timeoutId = window.setTimeout(() => {
+      setSpreadIndex(targetSpreadIndex);
+      setPendingSpreadIndex(null);
       setTurnDirection(null);
     }, ALBUM_PAGE_TURN_MS);
 
     return () => window.clearTimeout(timeoutId);
-  }, [turnDirection]);
+  }, [targetSpreadIndex, turnDirection]);
 
   function turnPage(direction: "next" | "previous"): void {
     if (isTurningPage) {
@@ -188,10 +187,13 @@ function CollectionSection({
       return;
     }
 
+    const nextSpreadIndex =
+      direction === "next"
+        ? Math.min(spreadCount - 1, currentSpreadIndex + 1)
+        : Math.max(0, currentSpreadIndex - 1);
+
+    setPendingSpreadIndex(nextSpreadIndex);
     setTurnDirection(direction);
-    setSpreadIndex((current) =>
-      direction === "next" ? Math.min(spreadCount - 1, current + 1) : Math.max(0, current - 1),
-    );
   }
 
   return (
@@ -218,12 +220,31 @@ function CollectionSection({
       </div>
 
       <div
-        className={`album-book album-object ${turnDirection ? `album-book--turning-${turnDirection}` : ""}`}
+        className={`album-book album-object ${
+          isTurningPage ? `album-book--turning-${turnDirection}` : ""
+        }`}
         aria-label={`${title}, paginas ${currentSpreadIndex + 1}`}
       >
-        <AlbumBookPage side="left" stickers={leftPageStickers} />
+        {targetSpread ? (
+          <div
+            className={`album-book-target-spread album-book-target-spread--${turnDirection}`}
+            aria-hidden="true"
+          >
+            <AlbumBookPage side="left" stickers={targetSpread.leftPageStickers} inert />
+            <div className="album-book-spine" aria-hidden="true" />
+            <AlbumBookPage side="right" stickers={targetSpread.rightPageStickers} inert />
+          </div>
+        ) : null}
+        <AlbumBookPage side="left" stickers={currentSpread.leftPageStickers} />
         <div className="album-book-spine" aria-hidden="true" />
-        <AlbumBookPage side="right" stickers={rightPageStickers} />
+        <AlbumBookPage side="right" stickers={currentSpread.rightPageStickers} />
+        {targetSpread && turnDirection ? (
+          <AlbumTurnSheet
+            direction={turnDirection}
+            currentSpread={currentSpread}
+            targetSpread={targetSpread}
+          />
+        ) : null}
       </div>
 
       <div className="album-page-nav" aria-label="Navegacion de paginas del album">
@@ -256,16 +277,56 @@ function CollectionSection({
 function AlbumBookPage({
   side,
   stickers,
+  inert = false,
 }: {
   readonly side: "left" | "right";
   readonly stickers: readonly AlbumStickerView[];
+  readonly inert?: boolean;
 }): React.JSX.Element {
   return (
     <div className={`album-book-page album-book-page--${side}`}>
       <div className="album-grid album-slot-grid album-slot-grid--libertadores album-book-slots">
         {stickers.map((albumSticker) => (
-          <AlbumStickerCard key={albumSticker.sticker.id} albumSticker={albumSticker} />
+          <AlbumStickerCard
+            key={albumSticker.sticker.id}
+            albumSticker={albumSticker}
+            inert={inert}
+          />
         ))}
+      </div>
+    </div>
+  );
+}
+
+function AlbumTurnSheet({
+  direction,
+  currentSpread,
+  targetSpread,
+}: {
+  readonly direction: "next" | "previous";
+  readonly currentSpread: AlbumSpread;
+  readonly targetSpread: AlbumSpread;
+}): React.JSX.Element {
+  const frontStickers =
+    direction === "next" ? currentSpread.rightPageStickers : currentSpread.leftPageStickers;
+  const backStickers =
+    direction === "next" ? targetSpread.leftPageStickers : targetSpread.rightPageStickers;
+
+  return (
+    <div className={`album-turn-sheet album-turn-sheet--${direction}`} aria-hidden="true">
+      <div className="album-turn-sheet-face album-turn-sheet-face--front">
+        <AlbumBookPage
+          side={direction === "next" ? "right" : "left"}
+          stickers={frontStickers}
+          inert
+        />
+      </div>
+      <div className="album-turn-sheet-face album-turn-sheet-face--back">
+        <AlbumBookPage
+          side={direction === "next" ? "left" : "right"}
+          stickers={backStickers}
+          inert
+        />
       </div>
     </div>
   );
@@ -292,6 +353,11 @@ interface CollectionProgress {
   readonly pasted: number;
 }
 
+interface AlbumSpread {
+  readonly leftPageStickers: readonly AlbumStickerView[];
+  readonly rightPageStickers: readonly AlbumStickerView[];
+}
+
 function getCollectionProgress(stickers: readonly AlbumStickerView[]): CollectionProgress {
   return stickers.reduce<CollectionProgress>(
     (progress, albumSticker) => ({
@@ -307,6 +373,24 @@ function getCollectionProgress(stickers: readonly AlbumStickerView[]): Collectio
   );
 }
 
+function getAlbumSpread(
+  orderedStickers: readonly AlbumStickerView[],
+  spreadIndex: number,
+): AlbumSpread {
+  const spreadStartIndex = spreadIndex * STICKERS_PER_ALBUM_SPREAD;
+
+  return {
+    leftPageStickers: orderedStickers.slice(
+      spreadStartIndex,
+      spreadStartIndex + STICKERS_PER_ALBUM_SIDE,
+    ),
+    rightPageStickers: orderedStickers.slice(
+      spreadStartIndex + STICKERS_PER_ALBUM_SIDE,
+      spreadStartIndex + STICKERS_PER_ALBUM_SPREAD,
+    ),
+  };
+}
+
 function compareAlbumStickersByNumber(first: AlbumStickerView, second: AlbumStickerView): number {
   return Number(first.sticker.number) - Number(second.sticker.number);
 }
@@ -317,8 +401,10 @@ function isLibertadores2014Sticker(albumSticker: AlbumStickerView): boolean {
 
 function AlbumStickerCard({
   albumSticker,
+  inert = false,
 }: {
   readonly albumSticker: AlbumStickerView;
+  readonly inert?: boolean;
 }): React.JSX.Element {
   const { sticker } = albumSticker;
   const statusClassName = getAlbumStatusClassName(albumSticker.status);
@@ -332,6 +418,7 @@ function AlbumStickerCard({
       className={`album-slot album-sticker-slot ${statusClassName} ${rarityClassName} ${extraClassName}`}
       to={`/album/${sticker.id}`}
       aria-label={`Figurita ${sticker.number}: ${sticker.title}. ${slotHint}`}
+      tabIndex={inert ? -1 : undefined}
     >
       <span className="album-slot-number">#{sticker.number}</span>
       <div className="album-slot-art">
