@@ -29,15 +29,12 @@ export function OpenPackPage(): React.JSX.Element {
   }
 
   return (
-    <main className="page open-pack-page experience-open-pack">
+    <main className="page open-pack-page experience-open-pack app-experience-shell">
       <section className="open-pack-hero open-pack-hero--featured">
         <div className="open-pack-hero-copy">
           <p className="eyebrow">Sobres</p>
           <h1>Sobre diario azulgrana</h1>
-          <p>
-            Reclama tu sobre diario, abrilo y sumale cinco figuritas a tu coleccion. AlbumSL valida
-            la apertura antes de entregar el resultado.
-          </p>
+          <p>Abrilo, mira las cartas salir y suma cinco figuritas a tu coleccion.</p>
         </div>
 
         <aside className={`claim-badge claim-badge--${claimVisualState.variant}`}>
@@ -47,7 +44,7 @@ export function OpenPackPage(): React.JSX.Element {
         </aside>
       </section>
 
-      <section className={`pack-actions-card pack-actions-card--${packEnvelopeState}`}>
+      <section className={`pack-actions-card pack-stand pack-actions-card--${packEnvelopeState}`}>
         <span className="pack-stand-awning" aria-hidden="true" />
         <div className="daily-pack-stage" aria-hidden="true">
           <span className="pack-object-shadow" />

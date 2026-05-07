@@ -2,7 +2,7 @@ import { type AlbumStickerView } from "@albumsl/domain";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { getAlbumStatusClassName } from "../features/album/album-view-labels";
+import { getAlbumStatusClassName, getAlbumStatusLabel } from "../features/album/album-view-labels";
 import { useAlbumData } from "../features/album/useAlbumData";
 
 const STICKERS_PER_ALBUM_SIDE = 6;
@@ -20,7 +20,7 @@ export function AlbumPage(): React.JSX.Element {
   const libertadoresProgress = getCollectionProgress(libertadoresStickers);
 
   return (
-    <main className="page album-page experience-album-page">
+    <main className="page album-page experience-album-page album-game-screen">
       <section className="album-hero album-hero--featured">
         <div className="album-hero-copy">
           <p className="eyebrow">Mi Album</p>
@@ -30,14 +30,19 @@ export function AlbumPage(): React.JSX.Element {
             el album.
           </p>
         </div>
-        <button
-          type="button"
-          className="ghost-button"
-          onClick={() => void refresh()}
-          disabled={loading}
-        >
-          {loading ? "Actualizando..." : "Actualizar"}
-        </button>
+        <div className="album-hero-actions">
+          <Link className="album-back-link" to="/">
+            Volver al inicio
+          </Link>
+          <button
+            type="button"
+            className="ghost-button"
+            onClick={() => void refresh()}
+            disabled={loading}
+          >
+            {loading ? "Actualizando..." : "Actualizar"}
+          </button>
+        </div>
       </section>
 
       {loading ? <p className="state-message">Cargando tu album...</p> : null}
@@ -169,7 +174,7 @@ function CollectionSection({
 
   return (
     <section
-      className="album-collection-section album-collection-section--libertadores"
+      className="album-collection-section album-collection-section--libertadores album-spread-stage"
       aria-labelledby="libertadores-2014-title"
     >
       <div className="album-collection-header">
@@ -302,7 +307,7 @@ function AlbumStickerCard({
 
   return (
     <Link
-      className={`album-slot ${statusClassName} ${rarityClassName} ${extraClassName}`}
+      className={`album-slot album-sticker-slot ${statusClassName} ${rarityClassName} ${extraClassName}`}
       to={`/album/${sticker.id}`}
       aria-label={`Figurita ${sticker.number}: ${sticker.title}. ${slotHint}`}
     >
@@ -323,6 +328,12 @@ function AlbumStickerCard({
           {sticker.category} · {sticker.rarity}
         </p>
       </div>
+      <span className={`album-slot-state album-slot-state--${albumSticker.status.toLowerCase()}`}>
+        {getAlbumStatusLabel(albumSticker.status)}
+      </span>
+      {albumSticker.repeatedQuantity > 0 ? (
+        <span className="album-slot-repeat-badge">+{albumSticker.repeatedQuantity}</span>
+      ) : null}
     </Link>
   );
 }

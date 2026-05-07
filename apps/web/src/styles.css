@@ -2689,3 +2689,655 @@ a {
     transition: none;
   }
 }
+
+/* PR28: visual parity pass album app */
+.app-frame {
+  background: #071a43;
+  padding-bottom: 86px;
+}
+
+.topbar {
+  background: rgba(7, 26, 67, 0.78);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 58px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.brand {
+  letter-spacing: -0.04em;
+}
+
+.nav-links {
+  justify-content: center;
+}
+
+.nav-links a {
+  border-radius: 999px;
+  padding: 8px 10px;
+}
+
+.nav-links a.active,
+.nav-links a:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.bottom-dock {
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(238, 242, 255, 0.94)),
+    linear-gradient(90deg, #071a43, #dc2626);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  bottom: 14px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.34),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+  display: flex;
+  gap: 6px;
+  left: 50%;
+  max-width: min(760px, calc(100vw - 24px));
+  overflow-x: auto;
+  padding: 8px;
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 30;
+}
+
+.bottom-dock a {
+  border-radius: 999px;
+  color: #071a43;
+  flex: 0 0 auto;
+  font-size: clamp(0.78rem, 2vw, 0.95rem);
+  font-weight: 1000;
+  min-height: 42px;
+  padding: 11px 16px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.bottom-dock a.active,
+.bottom-dock a:hover {
+  background: linear-gradient(135deg, #071a43, #dc2626);
+  color: #ffffff;
+}
+
+.bottom-dock a:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 3px;
+}
+
+.app-experience-shell {
+  min-height: calc(100vh - 58px);
+  padding-bottom: 104px;
+}
+
+.stadium-backdrop {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.stadium-backdrop::before,
+.stadium-backdrop::after {
+  content: "";
+  position: absolute;
+}
+
+.stadium-backdrop::before {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.2) 0 26px,
+      rgba(220, 38, 38, 0.24) 26px 52px
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
+  clip-path: polygon(0 0, 100% 8%, 100% 42%, 0 34%);
+  inset: 0 0 auto;
+  height: 42%;
+  opacity: 0.72;
+}
+
+.stadium-backdrop::after {
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(22, 163, 74, 0.72),
+      rgba(21, 128, 61, 0.55) 46%,
+      transparent 47%
+    ),
+    linear-gradient(90deg, transparent 0 49%, rgba(255, 255, 255, 0.34) 49% 51%, transparent 51%);
+  border: 2px solid rgba(255, 255, 255, 0.36);
+  border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+  bottom: -16%;
+  height: 46%;
+  left: 4%;
+  right: 4%;
+}
+
+.app-stage {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: min(760px, calc(100vh - 176px));
+}
+
+.app-experience-shell .experience-objects {
+  align-self: center;
+  margin-top: clamp(18px, 3vw, 34px);
+}
+
+.app-experience-shell .experience-card {
+  backdrop-filter: blur(6px);
+  min-height: clamp(310px, 43vh, 480px);
+}
+
+.app-experience-shell .experience-card--featured {
+  min-height: clamp(390px, 52vh, 580px);
+}
+
+.album-game-screen {
+  background:
+    radial-gradient(circle at 16% 12%, rgba(245, 158, 11, 0.22), transparent 22%),
+    radial-gradient(circle at 82% 0%, rgba(220, 38, 38, 0.2), transparent 28%),
+    linear-gradient(180deg, #071a43 0 42%, #06112d 42% 100%);
+  color: #ffffff;
+  min-height: calc(100vh - 58px);
+  padding: clamp(16px, 3vw, 28px) clamp(14px, 3vw, 28px) 104px;
+}
+
+.album-game-screen::before {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.12) 0 44px,
+      rgba(220, 38, 38, 0.12) 44px 88px
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
+  clip-path: polygon(0 0, 100% 4%, 100% 28%, 0 34%);
+  content: "";
+  inset: 58px 0 auto;
+  height: 34vh;
+  pointer-events: none;
+  position: fixed;
+}
+
+.album-game-screen .album-hero {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 26px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+  gap: 14px;
+  margin-bottom: 14px;
+  max-width: 1280px;
+  padding: 16px clamp(16px, 3vw, 24px);
+  position: relative;
+  z-index: 1;
+}
+
+.album-game-screen .album-hero h1 {
+  font-size: clamp(1.9rem, 4vw, 3.4rem);
+  margin-bottom: 4px;
+}
+
+.album-game-screen .album-hero p {
+  max-width: 680px;
+}
+
+.album-hero-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.album-back-link {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: #ffffff;
+  font-weight: 1000;
+  min-height: 44px;
+  padding: 12px 16px;
+  text-decoration: none;
+}
+
+.album-game-screen .ghost-button {
+  background: #ffffff;
+  color: #071a43;
+}
+
+.album-game-screen .state-message,
+.album-game-screen .error-message,
+.album-game-screen .album-empty-state,
+.album-game-screen .album-progress-banner,
+.album-game-screen .album-progress-grid,
+.album-game-screen .album-collection-section {
+  position: relative;
+  z-index: 1;
+}
+
+.album-spread-stage {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(245, 158, 11, 0.24), transparent 18%),
+    linear-gradient(135deg, rgba(7, 26, 67, 0.98), rgba(220, 38, 38, 0.9)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.1) 0 22px, transparent 22px 44px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 34px;
+  box-shadow:
+    0 34px 96px rgba(0, 0, 0, 0.38),
+    inset 0 0 0 8px rgba(255, 255, 255, 0.08);
+  max-width: min(1320px, 100%);
+  padding: clamp(14px, 2vw, 24px);
+}
+
+.album-spread-stage .album-collection-header h2,
+.album-spread-stage .album-collection-header p,
+.album-spread-stage .album-collection-header .eyebrow {
+  color: #ffffff;
+}
+
+.album-spread-stage .collection-progress-pill {
+  background: linear-gradient(135deg, #f59e0b, #ffffff);
+  color: #071a43;
+}
+
+.album-spread-stage .collection-progress-pill span {
+  color: rgba(7, 26, 67, 0.72);
+}
+
+.album-book.album-object {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.34),
+      transparent 8%,
+      transparent 92%,
+      rgba(0, 0, 0, 0.34)
+    ),
+    linear-gradient(90deg, #0b2a66 0 49.4%, #dc2626 49.4% 50.6%, #7f1d1d 50.6% 100%);
+  border: 12px solid #ffffff;
+  border-radius: 36px;
+  box-shadow:
+    0 42px 110px rgba(0, 0, 0, 0.46),
+    0 18px 0 rgba(0, 0, 0, 0.22),
+    inset 0 0 0 2px rgba(245, 158, 11, 0.45);
+  min-height: min(68vh, 680px);
+  overflow: hidden;
+  transform: perspective(1500px) rotateX(3deg);
+}
+
+.album-book-page {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.16), transparent 22%),
+    linear-gradient(
+      135deg,
+      rgba(7, 26, 67, 0.96),
+      rgba(18, 52, 120, 0.92) 54%,
+      rgba(220, 38, 38, 0.9)
+    ),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.08) 0 2px, transparent 2px 34px);
+  min-height: min(66vh, 650px);
+  padding: clamp(12px, 2vw, 24px);
+}
+
+.album-book-page--right {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(245, 158, 11, 0.22), transparent 22%),
+    linear-gradient(
+      225deg,
+      rgba(7, 26, 67, 0.96),
+      rgba(220, 38, 38, 0.9) 54%,
+      rgba(18, 52, 120, 0.92)
+    ),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.08) 0 2px, transparent 2px 34px);
+}
+
+.album-book-spine {
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.44), rgba(255, 255, 255, 0.28), rgba(0, 0, 0, 0.44)),
+    linear-gradient(180deg, #f59e0b, #dc2626, #071a43);
+}
+
+.album-slot-grid--libertadores {
+  gap: clamp(9px, 1.3vw, 18px);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  height: 100%;
+}
+
+.album-sticker-slot {
+  aspect-ratio: 0.72;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08)),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.07) 0 9px, transparent 9px 18px);
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-radius: 18px;
+  box-shadow:
+    inset 0 0 0 5px rgba(255, 255, 255, 0.1),
+    0 16px 34px rgba(0, 0, 0, 0.18);
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: 0;
+  position: relative;
+}
+
+.album-sticker-slot.missing {
+  opacity: 1;
+}
+
+.album-sticker-slot .album-slot-art {
+  background:
+    radial-gradient(circle at 50% 34%, rgba(245, 158, 11, 0.22), transparent 28%),
+    linear-gradient(135deg, rgba(7, 26, 67, 0.84), rgba(220, 38, 38, 0.58));
+  border-radius: 14px 14px 8px 8px;
+  min-height: 0;
+}
+
+.album-sticker-slot .album-slot-art img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.album-sticker-slot .album-slot-empty-number {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: clamp(2rem, 5vw, 4.2rem);
+  text-shadow: 0 10px 24px rgba(0, 0, 0, 0.34);
+}
+
+.album-sticker-slot .album-slot-body {
+  background: rgba(3, 7, 18, 0.72);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  min-height: 56px;
+  padding: 9px 10px;
+}
+
+.album-sticker-slot .album-slot-body h2 {
+  color: #ffffff;
+  font-size: clamp(0.78rem, 1.2vw, 0.95rem);
+  min-height: auto;
+}
+
+.album-sticker-slot .album-slot-state,
+.album-slot-repeat-badge {
+  border-radius: 999px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.24);
+  font-size: 0.68rem;
+  font-weight: 1000;
+  letter-spacing: 0.04em;
+  position: absolute;
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+.album-sticker-slot .album-slot-state {
+  background: #ffffff;
+  color: #071a43;
+  left: 10px;
+  padding: 7px 9px;
+  top: 10px;
+}
+
+.album-sticker-slot .album-slot-state--pasted {
+  background: linear-gradient(135deg, #fef3c7, #f59e0b);
+}
+
+.album-sticker-slot .album-slot-state--collected {
+  background: linear-gradient(135deg, #dbeafe, #ffffff);
+}
+
+.album-slot-repeat-badge {
+  background: #dc2626;
+  color: #ffffff;
+  padding: 8px 10px;
+  right: 10px;
+  top: 10px;
+}
+
+.album-page-nav {
+  margin-top: 16px;
+}
+
+.album-page-arrow {
+  box-shadow:
+    0 18px 34px rgba(0, 0, 0, 0.32),
+    inset 0 0 0 4px rgba(255, 255, 255, 0.18);
+  font-size: 2rem;
+  height: 66px;
+  width: 66px;
+}
+
+.album-page-nav span {
+  background: rgba(255, 255, 255, 0.95);
+  color: #071a43;
+  min-width: 190px;
+}
+
+.album-game-screen .album-progress-banner {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  margin-top: 16px;
+  max-width: min(1320px, 100%);
+}
+
+.album-game-screen .album-progress-grid {
+  max-width: min(1320px, 100%);
+}
+
+.album-game-screen .album-progress-card {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.experience-open-pack {
+  min-height: calc(100vh - 58px);
+  padding-bottom: 104px;
+}
+
+.pack-stand {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(240px, 1fr) minmax(180px, 0.8fr);
+  min-height: min(56vh, 560px);
+}
+
+.pack-stand .daily-pack-stage {
+  flex-basis: auto;
+  min-height: 330px;
+}
+
+.pack-stand .daily-pack-visual {
+  flex-basis: 220px;
+  max-width: 220px;
+  width: 220px;
+}
+
+.pack-stand .pack-actions {
+  display: grid;
+  justify-items: stretch;
+}
+
+.pack-stand .pack-actions button {
+  border-radius: 999px;
+  box-shadow: 0 16px 30px rgba(7, 26, 67, 0.24);
+  font-size: 1rem;
+  min-height: 58px;
+  padding: 0 24px;
+}
+
+.pack-result-sticker {
+  transform-origin: bottom center;
+}
+
+.figus-inventory {
+  background:
+    radial-gradient(circle at 20% 8%, rgba(245, 158, 11, 0.2), transparent 22%),
+    linear-gradient(180deg, #071a43 0 280px, #e8eefb 280px 100%);
+  min-height: calc(100vh - 58px);
+  padding-bottom: 104px;
+}
+
+.figus-inventory .duplicates-grid {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  max-width: 1280px;
+}
+
+.figus-inventory .duplicate-card {
+  aspect-ratio: 0.72;
+  background: linear-gradient(180deg, #ffffff, #eef2ff), linear-gradient(135deg, #071a43, #dc2626);
+  border: 6px solid #ffffff;
+  border-radius: 24px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: 8px;
+}
+
+.figus-inventory .duplicate-card > div:last-child {
+  display: grid;
+  gap: 6px;
+  padding: 8px 4px 4px;
+}
+
+.figus-inventory .duplicate-card h2 {
+  color: #071a43;
+  font-size: 0.98rem;
+  line-height: 1.12;
+  margin: 0;
+}
+
+.figus-inventory .duplicate-card p {
+  color: #475569;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.figus-inventory .sticker-placeholder {
+  border: 0;
+  border-radius: 18px;
+  min-height: 0;
+}
+
+.figus-inventory .sticker-placeholder img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.duplicate-stack-badge {
+  background: linear-gradient(135deg, #dc2626, #071a43);
+  border-radius: 999px;
+  color: #ffffff;
+  justify-self: start;
+  padding: 7px 10px;
+}
+
+@media (max-width: 980px) {
+  .nav-links {
+    display: none;
+  }
+
+  .topbar {
+    min-height: 56px;
+    padding: 0 18px;
+  }
+
+  .page {
+    min-height: calc(100vh - 56px);
+  }
+
+  .pack-stand {
+    grid-template-columns: 1fr;
+  }
+
+  .album-book.album-object {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .album-book-page {
+    min-height: auto;
+  }
+
+  .album-book-page--right {
+    display: none;
+  }
+
+  .album-book-spine {
+    display: none;
+  }
+
+  .album-slot-grid--libertadores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .album-page-arrow {
+    height: 56px;
+    width: 56px;
+  }
+}
+
+@media (max-width: 560px) {
+  .bottom-dock {
+    bottom: 8px;
+    border-radius: 24px;
+    justify-content: flex-start;
+    padding: 7px;
+  }
+
+  .bottom-dock a {
+    font-size: 0.76rem;
+    min-height: 40px;
+    padding: 10px 12px;
+  }
+
+  .app-experience-shell .album-hub-hero h1 {
+    font-size: clamp(2.6rem, 18vw, 4.4rem);
+  }
+
+  .app-experience-shell .experience-card {
+    min-height: 260px;
+  }
+
+  .app-experience-shell .experience-card--featured {
+    min-height: 310px;
+  }
+
+  .experience-card .album-object {
+    height: 190px;
+    width: 170px;
+  }
+
+  .pack-object {
+    height: 190px;
+    width: 140px;
+  }
+
+  .album-game-screen,
+  .figus-inventory,
+  .experience-open-pack {
+    padding-inline: 12px;
+  }
+
+  .album-sticker-slot .album-slot-state {
+    font-size: 0.58rem;
+    max-width: calc(100% - 20px);
+  }
+
+  .album-sticker-slot .album-slot-body {
+    min-height: 50px;
+    padding: 7px;
+  }
+
+  .figus-inventory .duplicates-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottom-dock a,
+  .album-sticker-slot,
+  .pack-stand .daily-pack-visual {
+    transition: none;
+  }
+}

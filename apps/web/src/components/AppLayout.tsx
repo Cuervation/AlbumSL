@@ -31,6 +31,13 @@ export function AppLayout(): React.JSX.Element {
         {user ? <SignOutButton compact /> : null}
       </header>
       <Outlet />
+      <nav className="bottom-dock" aria-label="Navegacion principal de app">
+        <NavLink to="/">Inicio</NavLink>
+        <NavLink to="/duplicates">Mis Figus</NavLink>
+        <NavLink to="/album">Mi Album</NavLink>
+        <NavLink to="/open-pack">Sobres</NavLink>
+        <NavLink to="/dashboard">Mas</NavLink>
+      </nav>
     </div>
   );
 }

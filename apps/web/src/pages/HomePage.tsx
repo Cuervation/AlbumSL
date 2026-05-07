@@ -2,8 +2,9 @@ import { Link } from "react-router-dom";
 
 export function HomePage(): React.JSX.Element {
   return (
-    <main className="page hero-page album-hub-page experience-shell">
-      <section className="experience-stage" aria-labelledby="album-hub-title">
+    <main className="page hero-page album-hub-page experience-shell app-experience-shell">
+      <div className="stadium-backdrop" aria-hidden="true" />
+      <section className="experience-stage app-stage" aria-labelledby="album-hub-title">
         <div className="experience-skyline" aria-hidden="true">
           <span />
           <span />
@@ -63,14 +64,6 @@ export function HomePage(): React.JSX.Element {
           </Link>
         </div>
       </section>
-
-      <nav className="experience-bottom-nav" aria-label="Navegacion principal de experiencia">
-        <Link to="/">Inicio</Link>
-        <Link to="/duplicates">Mis Figus</Link>
-        <Link to="/album">Mi Album</Link>
-        <Link to="/open-pack">Abrir Sobres</Link>
-        <Link to="/dashboard">Mas</Link>
-      </nav>
     </main>
   );
 }

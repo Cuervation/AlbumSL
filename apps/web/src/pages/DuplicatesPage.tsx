@@ -14,7 +14,7 @@ export function DuplicatesPage(): React.JSX.Element {
   );
 
   return (
-    <main className="page album-page experience-figus-page">
+    <main className="page album-page experience-figus-page figus-inventory">
       <section className="album-hero album-hero--featured">
         <div className="album-hero-copy">
           <p className="eyebrow">Mis Figus</p>
@@ -65,7 +65,7 @@ export function DuplicatesPage(): React.JSX.Element {
         {duplicatedStickers.map((albumSticker) => (
           <Link
             key={albumSticker.sticker.id}
-            className="duplicate-card"
+            className="duplicate-card album-sticker-slot"
             to={`/album/${albumSticker.sticker.id}`}
           >
             <div className="sticker-placeholder">
@@ -87,7 +87,7 @@ export function DuplicatesPage(): React.JSX.Element {
               <p>
                 {albumSticker.sticker.category} · {albumSticker.sticker.rarity}
               </p>
-              <strong>{albumSticker.repeatedQuantity} copia(s)</strong>
+              <strong className="duplicate-stack-badge">x{albumSticker.repeatedQuantity}</strong>
             </div>
           </Link>
         ))}
