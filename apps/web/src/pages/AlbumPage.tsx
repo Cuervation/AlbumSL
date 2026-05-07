@@ -1,5 +1,5 @@
 import { type AlbumStickerView } from "@albumsl/domain";
-import { useEffect, useState } from "react";
+import { type AnimationEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { getAlbumStatusClassName, getAlbumStatusLabel } from "../features/album/album-view-labels";
@@ -7,7 +7,7 @@ import { useAlbumData } from "../features/album/useAlbumData";
 
 const STICKERS_PER_ALBUM_SIDE = 6;
 const STICKERS_PER_ALBUM_SPREAD = STICKERS_PER_ALBUM_SIDE * 2;
-const ALBUM_PAGE_TURN_MS = 560;
+const ALBUM_PAGE_TURN_FALLBACK_MS = 800;
 
 export function AlbumPage(): React.JSX.Element {
   const { albumStickers, progress, loading, error, refresh } = useAlbumData();
@@ -145,34 +145,62 @@ function CollectionSection({
   readonly stickers: readonly AlbumStickerView[];
 }): React.JSX.Element {
   const completion = progress.total > 0 ? Math.round((progress.pasted / progress.total) * 100) : 0;
-  const [spreadIndex, setSpreadIndex] = useState(0);
-  const [pendingSpreadIndex, setPendingSpreadIndex] = useState<number | null>(null);
+  const [displayedSpreadIndex, setDisplayedSpreadIndex] = useState(0);
+  const [targetSpreadIndex, setTargetSpreadIndex] = useState<number | null>(null);
   const [turnDirection, setTurnDirection] = useState<"next" | "previous" | null>(null);
   const orderedStickers = [...stickers].sort(compareAlbumStickersByNumber);
   const spreadCount = Math.max(1, Math.ceil(orderedStickers.length / STICKERS_PER_ALBUM_SPREAD));
-  const currentSpreadIndex = Math.min(spreadIndex, spreadCount - 1);
-  const targetSpreadIndex =
-    pendingSpreadIndex === null ? null : Math.min(pendingSpreadIndex, spreadCount - 1);
+  const currentSpreadIndex = Math.min(displayedSpreadIndex, spreadCount - 1);
+  const confirmedTargetSpreadIndex =
+    targetSpreadIndex === null ? null : Math.min(targetSpreadIndex, spreadCount - 1);
   const currentSpread = getAlbumSpread(orderedStickers, currentSpreadIndex);
   const targetSpread =
-    targetSpreadIndex === null ? null : getAlbumSpread(orderedStickers, targetSpreadIndex);
+    confirmedTargetSpreadIndex === null
+      ? null
+      : getAlbumSpread(orderedStickers, confirmedTargetSpreadIndex);
   const canGoBack = currentSpreadIndex > 0;
   const canGoForward = currentSpreadIndex < spreadCount - 1;
   const isTurningPage = turnDirection !== null && targetSpread !== null;
 
   useEffect(() => {
-    if (turnDirection === null || targetSpreadIndex === null) {
+    if (displayedSpreadIndex <= spreadCount - 1) {
+      return;
+    }
+
+    setDisplayedSpreadIndex(spreadCount - 1);
+  }, [displayedSpreadIndex, spreadCount]);
+
+  useEffect(() => {
+    if (!isTurningPage || confirmedTargetSpreadIndex === null) {
       return;
     }
 
     const timeoutId = window.setTimeout(() => {
-      setSpreadIndex(targetSpreadIndex);
-      setPendingSpreadIndex(null);
+      setDisplayedSpreadIndex(confirmedTargetSpreadIndex);
+      setTargetSpreadIndex(null);
       setTurnDirection(null);
-    }, ALBUM_PAGE_TURN_MS);
+    }, ALBUM_PAGE_TURN_FALLBACK_MS);
 
     return () => window.clearTimeout(timeoutId);
-  }, [targetSpreadIndex, turnDirection]);
+  }, [isTurningPage, confirmedTargetSpreadIndex]);
+
+  function confirmTurnPage(): void {
+    if (confirmedTargetSpreadIndex === null) {
+      return;
+    }
+
+    setDisplayedSpreadIndex(confirmedTargetSpreadIndex);
+    setTargetSpreadIndex(null);
+    setTurnDirection(null);
+  }
+
+  function handleTurnAnimationEnd(event: AnimationEvent<HTMLDivElement>): void {
+    if (event.currentTarget !== event.target) {
+      return;
+    }
+
+    confirmTurnPage();
+  }
 
   function turnPage(direction: "next" | "previous"): void {
     if (isTurningPage) {
@@ -192,7 +220,14 @@ function CollectionSection({
         ? Math.min(spreadCount - 1, currentSpreadIndex + 1)
         : Math.max(0, currentSpreadIndex - 1);
 
-    setPendingSpreadIndex(nextSpreadIndex);
+    if (prefersReducedMotion()) {
+      setDisplayedSpreadIndex(nextSpreadIndex);
+      setTargetSpreadIndex(null);
+      setTurnDirection(null);
+      return;
+    }
+
+    setTargetSpreadIndex(nextSpreadIndex);
     setTurnDirection(direction);
   }
 
@@ -220,7 +255,7 @@ function CollectionSection({
       </div>
 
       <div
-        className={`album-book album-object ${
+        className={`album-book album-object album-book-transition-stage ${
           isTurningPage ? `album-book--turning-${turnDirection}` : ""
         }`}
         aria-label={`${title}, paginas ${currentSpreadIndex + 1}`}
@@ -230,9 +265,19 @@ function CollectionSection({
             className={`album-book-target-spread album-book-target-spread--${turnDirection}`}
             aria-hidden="true"
           >
-            <AlbumBookPage side="left" stickers={targetSpread.leftPageStickers} inert />
+            <AlbumBookPage
+              side="left"
+              stickers={targetSpread.leftPageStickers}
+              imageLoading="eager"
+              inert
+            />
             <div className="album-book-spine" aria-hidden="true" />
-            <AlbumBookPage side="right" stickers={targetSpread.rightPageStickers} inert />
+            <AlbumBookPage
+              side="right"
+              stickers={targetSpread.rightPageStickers}
+              imageLoading="eager"
+              inert
+            />
           </div>
         ) : null}
         <AlbumBookPage side="left" stickers={currentSpread.leftPageStickers} />
@@ -243,6 +288,7 @@ function CollectionSection({
             direction={turnDirection}
             currentSpread={currentSpread}
             targetSpread={targetSpread}
+            onAnimationEnd={handleTurnAnimationEnd}
           />
         ) : null}
       </div>
@@ -277,10 +323,12 @@ function CollectionSection({
 function AlbumBookPage({
   side,
   stickers,
+  imageLoading = "lazy",
   inert = false,
 }: {
   readonly side: "left" | "right";
   readonly stickers: readonly AlbumStickerView[];
+  readonly imageLoading?: "eager" | "lazy";
   readonly inert?: boolean;
 }): React.JSX.Element {
   return (
@@ -290,6 +338,7 @@ function AlbumBookPage({
           <AlbumStickerCard
             key={albumSticker.sticker.id}
             albumSticker={albumSticker}
+            imageLoading={imageLoading}
             inert={inert}
           />
         ))}
@@ -302,10 +351,12 @@ function AlbumTurnSheet({
   direction,
   currentSpread,
   targetSpread,
+  onAnimationEnd,
 }: {
   readonly direction: "next" | "previous";
   readonly currentSpread: AlbumSpread;
   readonly targetSpread: AlbumSpread;
+  readonly onAnimationEnd: (event: AnimationEvent<HTMLDivElement>) => void;
 }): React.JSX.Element {
   const frontStickers =
     direction === "next" ? currentSpread.rightPageStickers : currentSpread.leftPageStickers;
@@ -313,11 +364,16 @@ function AlbumTurnSheet({
     direction === "next" ? targetSpread.leftPageStickers : targetSpread.rightPageStickers;
 
   return (
-    <div className={`album-turn-sheet album-turn-sheet--${direction}`} aria-hidden="true">
+    <div
+      className={`album-turn-sheet album-turn-sheet--${direction}`}
+      onAnimationEnd={onAnimationEnd}
+      aria-hidden="true"
+    >
       <div className="album-turn-sheet-face album-turn-sheet-face--front">
         <AlbumBookPage
           side={direction === "next" ? "right" : "left"}
           stickers={frontStickers}
+          imageLoading="eager"
           inert
         />
       </div>
@@ -325,6 +381,7 @@ function AlbumTurnSheet({
         <AlbumBookPage
           side={direction === "next" ? "left" : "right"}
           stickers={backStickers}
+          imageLoading="eager"
           inert
         />
       </div>
@@ -401,9 +458,11 @@ function isLibertadores2014Sticker(albumSticker: AlbumStickerView): boolean {
 
 function AlbumStickerCard({
   albumSticker,
+  imageLoading = "lazy",
   inert = false,
 }: {
   readonly albumSticker: AlbumStickerView;
+  readonly imageLoading?: "eager" | "lazy";
   readonly inert?: boolean;
 }): React.JSX.Element {
   const { sticker } = albumSticker;
@@ -426,7 +485,7 @@ function AlbumStickerCard({
           sticker.imageUrl.startsWith("placeholder://") ? (
             <span>#{sticker.number}</span>
           ) : (
-            <img src={sticker.imageUrl} alt={sticker.title} loading="lazy" />
+            <img src={sticker.imageUrl} alt={sticker.title} loading={imageLoading} />
           )
         ) : (
           <span className="album-slot-empty-number">#{sticker.number}</span>
@@ -445,6 +504,12 @@ function AlbumStickerCard({
         <span className="album-slot-repeat-badge">+{albumSticker.repeatedQuantity}</span>
       ) : null}
     </Link>
+  );
+}
+
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
   );
 }
 

@@ -3748,6 +3748,12 @@ a {
   content: none;
 }
 
+.album-book-transition-stage {
+  isolation: isolate;
+  perspective: 1400px;
+  transform-style: preserve-3d;
+}
+
 .album-book-target-spread,
 .album-turn-sheet {
   inset: 0;
@@ -3792,6 +3798,7 @@ a {
   overflow: visible;
   top: 0;
   transform-style: preserve-3d;
+  will-change: transform, filter;
   width: calc((100% - clamp(14px, 1.6vw, 26px)) / 2);
   z-index: 8;
 }
