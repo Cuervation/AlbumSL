@@ -3341,3 +3341,404 @@ a {
     transition: none;
   }
 }
+
+/* PR29: fullscreen game-like AlbumPage */
+.album-game-screen {
+  background:
+    radial-gradient(circle at 50% -18%, rgba(255, 255, 255, 0.24), transparent 28%),
+    radial-gradient(circle at 12% 18%, rgba(245, 158, 11, 0.24), transparent 22%),
+    radial-gradient(circle at 88% 10%, rgba(220, 38, 38, 0.3), transparent 24%),
+    linear-gradient(180deg, #071a43 0 58%, #050b1e 100%);
+  display: grid;
+  gap: clamp(10px, 1.5vw, 16px);
+  grid-template-rows: auto minmax(0, 1fr);
+  isolation: isolate;
+  min-height: calc(100vh - 58px);
+  overflow-x: clip;
+  padding: clamp(10px, 1.8vw, 22px) clamp(10px, 2.4vw, 26px) 96px;
+  position: relative;
+}
+
+.album-screen-backdrop {
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
+}
+
+.album-screen-backdrop::before,
+.album-screen-backdrop::after {
+  content: "";
+  position: absolute;
+}
+
+.album-screen-backdrop::before {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.18) 0 28px,
+      rgba(220, 38, 38, 0.28) 28px 56px
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent);
+  clip-path: polygon(0 0, 100% 8%, 100% 38%, 0 30%);
+  height: 42vh;
+  inset: 0 0 auto;
+  opacity: 0.72;
+}
+
+.album-screen-backdrop::after {
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(34, 197, 94, 0.58),
+      rgba(21, 128, 61, 0.34) 48%,
+      transparent 49%
+    ),
+    linear-gradient(90deg, transparent 0 49%, rgba(255, 255, 255, 0.25) 49% 51%, transparent 51%);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50% 50% 0 0 / 24% 24% 0 0;
+  bottom: -20vh;
+  height: 48vh;
+  left: 3vw;
+  right: 3vw;
+}
+
+.album-game-hud {
+  align-items: center;
+  backdrop-filter: blur(12px);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08)),
+    linear-gradient(90deg, rgba(7, 26, 67, 0.78), rgba(220, 38, 38, 0.34));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 28px;
+  display: grid;
+  gap: clamp(10px, 1.6vw, 18px);
+  grid-template-columns: minmax(220px, 1.1fr) minmax(150px, 0.45fr) minmax(250px, 0.8fr) auto;
+  margin: 0 auto;
+  max-width: min(1440px, 100%);
+  padding: clamp(12px, 1.8vw, 18px);
+}
+
+.album-game-hud .album-hero-copy h1 {
+  color: #ffffff;
+  font-size: clamp(2rem, 4.4vw, 4rem);
+  letter-spacing: -0.08em;
+  line-height: 0.9;
+  margin: 0;
+}
+
+.album-game-hud .album-hero-copy p {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.95rem;
+  line-height: 1.35;
+  margin: 6px 0 0;
+}
+
+.album-screen-progress {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 22px;
+  box-shadow: inset 0 0 0 1px rgba(7, 26, 67, 0.08);
+  color: #071a43;
+  display: grid;
+  justify-items: center;
+  padding: 12px;
+}
+
+.album-screen-progress strong {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: -0.08em;
+  line-height: 0.9;
+}
+
+.album-screen-progress span {
+  font-size: 0.72rem;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.album-screen-progress-meter {
+  background: rgba(7, 26, 67, 0.14);
+  border-radius: 999px;
+  height: 9px;
+  margin-top: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.album-screen-progress-meter span {
+  background: linear-gradient(90deg, #dc2626, #f59e0b);
+  display: block;
+  height: 100%;
+}
+
+.album-screen-stats {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.album-screen-stats span {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  color: rgba(255, 255, 255, 0.82);
+  display: grid;
+  font-size: 0.7rem;
+  font-weight: 900;
+  gap: 2px;
+  justify-items: center;
+  padding: 10px 8px;
+  text-transform: uppercase;
+}
+
+.album-screen-stats strong {
+  color: #ffffff;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.album-game-hud .album-hero-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.album-game-hud .album-back-link,
+.album-game-hud .ghost-button {
+  border-radius: 999px;
+  justify-content: center;
+  min-width: 108px;
+}
+
+.album-game-screen .state-message,
+.album-game-screen .error-message,
+.album-game-screen .album-empty-state {
+  max-width: min(980px, 100%);
+}
+
+.album-game-screen .album-progress-banner--compact,
+.album-game-screen .album-progress-grid {
+  display: none;
+}
+
+.album-game-screen .album-spread-stage {
+  align-self: stretch;
+  display: grid;
+  gap: 10px;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  margin: 0 auto;
+  max-width: min(1500px, 100%);
+  min-height: min(760px, calc(100vh - 235px));
+  padding: clamp(10px, 1.7vw, 20px);
+}
+
+.album-game-screen .album-spread-stage .album-collection-header {
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.album-game-screen .album-spread-stage .album-collection-header h2 {
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  line-height: 1;
+}
+
+.album-game-screen .album-spread-stage .album-collection-header p {
+  display: none;
+}
+
+.album-game-screen .collection-progress-meter {
+  background: rgba(255, 255, 255, 0.14);
+  height: 8px;
+  margin: 0;
+}
+
+.album-game-screen .album-book.album-object {
+  align-self: stretch;
+  border: clamp(8px, 1.2vw, 14px) solid rgba(255, 255, 255, 0.96);
+  border-radius: clamp(24px, 3vw, 44px);
+  grid-template-columns: minmax(0, 1fr) clamp(14px, 1.6vw, 26px) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.album-game-screen .album-book::before {
+  background:
+    radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.13), transparent 26%),
+    radial-gradient(circle at 88% 12%, rgba(245, 158, 11, 0.18), transparent 22%);
+}
+
+.album-game-screen .album-book-page {
+  display: grid;
+  min-height: 0;
+  padding: clamp(10px, 1.5vw, 22px);
+}
+
+.album-game-screen .album-book-slots {
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.album-game-screen .album-sticker-slot {
+  aspect-ratio: auto;
+  border-radius: clamp(14px, 1.6vw, 22px);
+  min-height: clamp(140px, 19vh, 240px);
+}
+
+.album-game-screen .album-sticker-slot .album-slot-art {
+  min-height: 0;
+}
+
+.album-game-screen .album-sticker-slot .album-slot-body {
+  background: linear-gradient(180deg, rgba(3, 7, 18, 0.78), rgba(3, 7, 18, 0.92));
+  min-height: 44px;
+}
+
+.album-game-screen .album-sticker-slot .album-slot-body h2 {
+  -webkit-line-clamp: 1;
+  font-size: clamp(0.72rem, 1vw, 0.9rem);
+  line-height: 1.1;
+}
+
+.album-game-screen .album-sticker-slot .album-slot-body p {
+  display: none;
+}
+
+.album-slot-number {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 999px;
+  color: #071a43;
+  font-size: 0.72rem;
+  font-weight: 1000;
+  left: 10px;
+  padding: 7px 9px;
+  position: absolute;
+  top: 10px;
+  z-index: 3;
+}
+
+.album-game-screen .album-sticker-slot .album-slot-state {
+  bottom: 54px;
+  left: 10px;
+  top: auto;
+}
+
+.album-game-screen .album-slot-repeat-badge {
+  right: 10px;
+  top: 10px;
+}
+
+.album-game-screen .album-page-nav {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 72px auto 72px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+.album-game-screen .album-page-arrow {
+  background:
+    linear-gradient(135deg, #ffffff, #dbeafe) padding-box,
+    linear-gradient(135deg, #f59e0b, #dc2626) border-box;
+  border: 3px solid transparent;
+  color: #071a43;
+  font-size: 2.3rem;
+  height: 72px;
+  width: 72px;
+}
+
+.album-game-screen .album-page-arrow:not(:disabled):hover {
+  transform: translateY(-2px) scale(1.03);
+}
+
+.album-game-screen .album-page-nav span {
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22);
+  font-size: 0.95rem;
+  min-width: 210px;
+}
+
+.album-game-screen .album-collection-section:not(.album-spread-stage) {
+  max-width: min(1500px, 100%);
+}
+
+@media (max-width: 1120px) {
+  .album-game-hud {
+    grid-template-columns: minmax(220px, 1fr) minmax(140px, 0.45fr);
+  }
+
+  .album-screen-stats,
+  .album-game-hud .album-hero-actions {
+    grid-column: span 1;
+  }
+
+  .album-game-screen .album-spread-stage {
+    min-height: min(740px, calc(100vh - 300px));
+  }
+}
+
+@media (max-width: 760px) {
+  .album-game-screen {
+    grid-template-rows: auto auto;
+    padding: 10px 10px 94px;
+  }
+
+  .album-game-hud {
+    border-radius: 22px;
+    grid-template-columns: 1fr;
+  }
+
+  .album-screen-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .album-game-hud .album-hero-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .album-game-screen .album-spread-stage {
+    border-radius: 24px;
+    min-height: auto;
+  }
+
+  .album-game-screen .album-book.album-object {
+    grid-template-columns: 1fr;
+  }
+
+  .album-game-screen .album-book-page--right,
+  .album-game-screen .album-book-spine {
+    display: none;
+  }
+
+  .album-game-screen .album-book-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(150px, 1fr));
+  }
+
+  .album-game-screen .album-sticker-slot {
+    min-height: 150px;
+  }
+
+  .album-game-screen .album-page-nav {
+    grid-template-columns: 58px auto 58px;
+  }
+
+  .album-game-screen .album-page-arrow {
+    font-size: 1.8rem;
+    height: 58px;
+    width: 58px;
+  }
+
+  .album-game-screen .album-page-nav span {
+    min-width: 138px;
+    padding-inline: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .album-game-screen .album-page-arrow,
+  .album-game-screen .album-sticker-slot {
+    transition: none;
+  }
+}

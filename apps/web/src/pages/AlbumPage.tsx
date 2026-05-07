@@ -21,18 +21,37 @@ export function AlbumPage(): React.JSX.Element {
 
   return (
     <main className="page album-page experience-album-page album-game-screen">
-      <section className="album-hero album-hero--featured">
+      <div className="album-screen-backdrop" aria-hidden="true" />
+      <section className="album-hero album-hero--featured album-game-hud">
         <div className="album-hero-copy">
           <p className="eyebrow">Mi Album</p>
-          <h1>Tu coleccion azulgrana</h1>
-          <p>
-            Mira que figuritas ya conseguiste, cuales pegaste y cuales todavia faltan para completar
-            el album.
-          </p>
+          <h1>Libertadores 2014</h1>
+          <p>Completa casilleros, pega figus y avanza pagina por pagina.</p>
+        </div>
+        <div className="album-screen-progress" aria-label="Progreso general del album">
+          <strong>{progress.completionPercentage}%</strong>
+          <span>completo</span>
+          <div className="album-screen-progress-meter" aria-hidden="true">
+            <span style={{ width: `${completion}%` }} />
+          </div>
+        </div>
+        <div className="album-screen-stats" aria-label="Resumen de coleccion">
+          <span>
+            <strong>{progress.collectedStickers}</strong>
+            Conseguidas
+          </span>
+          <span>
+            <strong>{progress.pastedStickers}</strong>
+            Pegadas
+          </span>
+          <span>
+            <strong>{progress.repeatedStickers}</strong>
+            Repetidas
+          </span>
         </div>
         <div className="album-hero-actions">
           <Link className="album-back-link" to="/">
-            Volver al inicio
+            Inicio
           </Link>
           <button
             type="button"
@@ -63,13 +82,16 @@ export function AlbumPage(): React.JSX.Element {
       {libertadoresStickers.length > 0 ? (
         <CollectionSection
           title="Libertadores 2014"
-          description="Pasa las paginas y completa los casilleros de la coleccion campeona."
+          description="Album principal"
           progress={libertadoresProgress}
           stickers={libertadoresStickers}
         />
       ) : null}
 
-      <section className="album-progress-banner" aria-label="Resumen visual del album">
+      <section
+        className="album-progress-banner album-progress-banner--compact"
+        aria-label="Resumen visual del album"
+      >
         <div className="album-progress-banner-copy">
           <p className="eyebrow">Progreso</p>
           <h2>{progress.completionPercentage}% completo</h2>
@@ -311,6 +333,7 @@ function AlbumStickerCard({
       to={`/album/${sticker.id}`}
       aria-label={`Figurita ${sticker.number}: ${sticker.title}. ${slotHint}`}
     >
+      <span className="album-slot-number">#{sticker.number}</span>
       <div className="album-slot-art">
         {shouldShowImage ? (
           sticker.imageUrl.startsWith("placeholder://") ? (
