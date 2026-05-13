@@ -13,3 +13,5 @@ firestore-debug.log
 ui-debug.log
 *.local
 *.log
+.firebaserc
+.atl/.skill-registry.cache.json

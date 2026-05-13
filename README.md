@@ -64,6 +64,16 @@ Las skills locales viven en `.codex/skills/` y resumen flujos repetidos de traba
 
 En proximos prompts se pueden invocar por nombre, por ejemplo: "usa `albumsl-qa-check`".
 
+## Gentle-AI / GGA opcional
+
+Gentle-AI y GGA se usan solo como tooling local opcional para ayudar con Codex, SDD, skills,
+memoria y revision de commits.
+
+- Guia local: `docs/GENTLE_AI.md`
+- Configuracion de review: `.gga`
+
+No forman parte del runtime ni del deploy.
+
 ## Comandos principales
 
 ```bash

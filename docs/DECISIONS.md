@@ -279,3 +279,13 @@ Motivo: El MVP necesita contenido coherente con las imagenes locales y un balanc
 Alternativas consideradas: Redisenar el algoritmo de sobres o ampliar masivamente el catalogo antes del smoke autenticado.
 Impacto: Los IDs, numeros y `sortOrder` quedan estables; solo cambia curacion editorial y documentacion del balance.
 Riesgos: Si el seed ya fue escrito en dev, hace falta dry-run y seed controlado para sincronizar los cambios editoriales.
+
+## DEC-029 - Usar Gentle-AI como tooling local opcional
+
+Fecha: 2026-05-12
+Estado: Aprobada
+Decision: Documentar Gentle-AI y GGA como tooling local opcional para asistir con Codex, SDD, skills, memoria y revision de commits, sin impactar runtime ni deploy.
+Motivo: El proyecto ya tiene guias locales para ese flujo y conviene dejar la decision explicita para que no se confunda con infraestructura productiva.
+Alternativas consideradas: Integrarlo al runtime, al package.json o al pipeline de deploy.
+Impacto: La adopcion queda optativa y acotada a herramientas locales y documentacion.
+Riesgos: Si no se mantiene claro el alcance, puede confundirse con una dependencia obligatoria del proyecto.
