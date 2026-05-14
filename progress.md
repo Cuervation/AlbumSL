@@ -24,3 +24,14 @@ Original prompt: Dale
 - Cleanup pass 2: removed the entire "Otras figuritas" section from AlbumPage because the user said it does not belong in the album screen.
 - Cleanup pass 3: removed the public Dashboard and Catalog screens, their routes, and nav links; login now lands on /album.
 - Layout pass: simplified the authenticated header to brand + cerrar sesion only, removed the bottom dock, and softened the album screen backdrop for a cleaner composition.
+- QA pack preview: `/open-pack?qaPreview=1` now starts with an always-available daily pack and a mocked open result, so testing does not depend on backend availability.
+- Modal-first pack flow: `OpenPackPage` now renders as a centered modal with backdrop, one primary "Abrir sobre" action, and results inside the same modal.
+- Reveal pass: the modal opening now has a short reveal sequence before the results appear, so the pack reads more like an actual opening instead of an instant swap.
+- Point 3 pass: the pack result is now held back briefly and then revealed from the real open-pack response, so the backend result lands inside the modal with a staged entrance.
+- Point 4 pass: the modal now supports "Abrir otro sobre" from the same result state when another pack is available, reusing the same reveal flow without leaving the modal.
+- Visual polish pass: reorganized the pack modal into a cleaner hero/status/stage layout, hid the initial open CTA after reveal, compacted the result grid to five balanced cards, and moved the next-pack CTA into the result summary.
+- Point 2 pass: the five figuritas now enter with staggered timing and travel offsets so the reveal reads as cards coming out of the sobre instead of appearing all at once.
+- Point 1 pass: gave the sobre a more physical opening with pre-tension, a stronger flap swing, a torn mouth/seam, burst glow/sparks, and a slightly longer staged opening before the figuritas reveal.
+- Point 2 refinement pass: tightened sticker flight origins and arcs so the first three cards launch higher and settle with a stronger overshoot before landing in the grid.
+- Point 3 pass: tightened the mobile pack experience with one-column hero flow, smaller stage, stacked summary actions, and a two-up compact sticker grid on small screens.
+- Point 4 pass: final QA visual cleanup removed the topbar from the pack experience so the modal reads cleanly on mobile and the reference composition is not interrupted by shell chrome.

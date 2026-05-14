@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "../auth/useAuth";
 import { getAlbumErrorMessage } from "./album-errors";
+import { isPreviewMode } from "../preview/preview-mode";
 import {
   getActiveAlbumStickers,
   getRecentPackOpenings,
@@ -102,11 +103,7 @@ export function useAlbumData(): AlbumDataState {
 }
 
 function isPreviewAlbumRequest(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    import.meta.env.DEV &&
-    new URLSearchParams(window.location.search).get("qaPreview") === "1"
-  );
+  return isPreviewMode();
 }
 
 function createPreviewAlbumState(): {

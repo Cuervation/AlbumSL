@@ -3,13 +3,33 @@ import { useState } from "react";
 
 import { getPackOpeningErrorMessage } from "./pack-opening-errors";
 import { claimDailyPack } from "./pack-opening.service";
+import { isPreviewMode } from "../preview/preview-mode";
+
+function createPreviewClaim(): ClaimDailyPackResponseDto {
+  return {
+    claimId: "qa-preview-daily-pack",
+    source: "DAILY",
+    status: "AVAILABLE",
+    expiresAt: "2026-05-15T00:00:00.000Z",
+  };
+}
 
 export function useDailyPack() {
-  const [claim, setClaim] = useState<ClaimDailyPackResponseDto | null>(null);
+  const [claim, setClaim] = useState<ClaimDailyPackResponseDto | null>(() =>
+    isPreviewMode() ? createPreviewClaim() : null,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function claimDaily(): Promise<ClaimDailyPackResponseDto | null> {
+    if (isPreviewMode()) {
+      const previewClaim = createPreviewClaim();
+      setClaim(previewClaim);
+      setError(null);
+      setLoading(false);
+      return previewClaim;
+    }
+
     setLoading(true);
     setError(null);
 

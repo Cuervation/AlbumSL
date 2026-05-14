@@ -9,6 +9,7 @@ import { firebaseAuth, firestoreDb, googleAuthProvider } from "../../lib/firebas
 import { getAuthErrorMessage } from "./auth-errors";
 import { AuthContext } from "./auth-context";
 import { createUserProfileIfMissing, getUserProfile } from "./user-profile.service";
+import { isPreviewMode } from "../preview/preview-mode";
 
 export interface AuthContextValue {
   readonly user: User | null;
@@ -127,14 +128,6 @@ export function AuthProvider({ children }: { readonly children: ReactNode }): Re
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-function isPreviewMode(): boolean {
-  return (
-    typeof window !== "undefined" &&
-    import.meta.env.DEV &&
-    new URLSearchParams(window.location.search).get("qaPreview") === "1"
-  );
 }
 
 function createPreviewUser(): User {
