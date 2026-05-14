@@ -7,7 +7,7 @@ export function LoginPage(): React.JSX.Element {
   const { user, error } = useAuth();
 
   if (user) {
-    return <Navigate replace to="/dashboard" />;
+    return <Navigate replace to="/album" />;
   }
 
   return (

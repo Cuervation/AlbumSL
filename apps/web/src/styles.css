@@ -42,8 +42,8 @@ a {
   display: flex;
   gap: 20px;
   justify-content: space-between;
-  min-height: 72px;
-  padding: 0 28px;
+  min-height: 64px;
+  padding: 0 22px;
 }
 
 .brand {
@@ -72,7 +72,7 @@ a {
 }
 
 .page {
-  min-height: calc(100vh - 72px);
+  min-height: calc(100vh - 64px);
   padding: 56px 28px;
 }
 
@@ -2693,7 +2693,7 @@ a {
 /* PR28: visual parity pass album app */
 .app-frame {
   background: #071a43;
-  padding-bottom: 86px;
+  padding-bottom: 0;
 }
 
 .topbar {
@@ -2848,19 +2848,7 @@ a {
 }
 
 .album-game-screen::before {
-  background:
-    repeating-linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.12) 0 44px,
-      rgba(220, 38, 38, 0.12) 44px 88px
-    ),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
-  clip-path: polygon(0 0, 100% 4%, 100% 28%, 0 34%);
-  content: "";
-  inset: 58px 0 auto;
-  height: 34vh;
-  pointer-events: none;
-  position: fixed;
+  display: none;
 }
 
 .album-game-screen .album-hero {
@@ -3387,20 +3375,7 @@ a {
 }
 
 .album-screen-backdrop::after {
-  background:
-    radial-gradient(
-      ellipse at center,
-      rgba(34, 197, 94, 0.58),
-      rgba(21, 128, 61, 0.34) 48%,
-      transparent 49%
-    ),
-    linear-gradient(90deg, transparent 0 49%, rgba(255, 255, 255, 0.25) 49% 51%, transparent 51%);
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  border-radius: 50% 50% 0 0 / 24% 24% 0 0;
-  bottom: -20vh;
-  height: 48vh;
-  left: 3vw;
-  right: 3vw;
+  display: none;
 }
 
 .album-game-hud {
@@ -3751,6 +3726,7 @@ a {
 .album-book-transition-stage {
   isolation: isolate;
   perspective: 1400px;
+  perspective-origin: 50% 50%;
   transform-style: preserve-3d;
 }
 
@@ -3765,7 +3741,17 @@ a {
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(14px, 1.6vw, 26px) minmax(0, 1fr);
   opacity: 0;
+  overflow: hidden;
   z-index: 1;
+}
+
+.album-book-target-spread::after {
+  content: "";
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 9;
 }
 
 .album-book--turning-next .album-book-target-spread,
@@ -3795,8 +3781,10 @@ a {
 
 .album-turn-sheet {
   bottom: 0;
+  filter: drop-shadow(-18px 20px 22px rgba(0, 0, 0, 0.28));
   overflow: visible;
   top: 0;
+  transform-box: border-box;
   transform-style: preserve-3d;
   will-change: transform, filter;
   width: calc((100% - clamp(14px, 1.6vw, 26px)) / 2);
@@ -3804,13 +3792,14 @@ a {
 }
 
 .album-turn-sheet--next {
-  animation: album-real-page-turn-next 620ms cubic-bezier(0.2, 0.7, 0.22, 1) both;
+  animation: album-real-page-turn-next 620ms cubic-bezier(0.18, 0.76, 0.18, 1) both;
   right: 0;
   transform-origin: left center;
 }
 
 .album-turn-sheet--previous {
-  animation: album-real-page-turn-previous 620ms cubic-bezier(0.2, 0.7, 0.22, 1) both;
+  animation: album-real-page-turn-previous 620ms cubic-bezier(0.18, 0.76, 0.18, 1) both;
+  filter: drop-shadow(18px 20px 22px rgba(0, 0, 0, 0.28));
   left: 0;
   transform-origin: right center;
 }
@@ -3818,7 +3807,9 @@ a {
 .album-turn-sheet-face {
   backface-visibility: hidden;
   border-radius: 0 clamp(18px, 2vw, 32px) clamp(18px, 2vw, 32px) 0;
-  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.34);
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.34),
+    inset -18px 0 24px rgba(255, 255, 255, 0.2);
   display: grid;
   inset: 0;
   overflow: hidden;
@@ -3828,6 +3819,28 @@ a {
 
 .album-turn-sheet--previous .album-turn-sheet-face {
   border-radius: clamp(18px, 2vw, 32px) 0 0 clamp(18px, 2vw, 32px);
+  box-shadow:
+    0 22px 48px rgba(0, 0, 0, 0.34),
+    inset 18px 0 24px rgba(255, 255, 255, 0.2);
+}
+
+.album-turn-sheet-face::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.9) 42%,
+    rgba(7, 26, 67, 0.22)
+  );
+  content: "";
+  inset: 0 0 0 auto;
+  pointer-events: none;
+  position: absolute;
+  width: clamp(18px, 2.4vw, 36px);
+}
+
+.album-turn-sheet--previous .album-turn-sheet-face::after {
+  inset: 0 auto 0 0;
+  transform: scaleX(-1);
 }
 
 .album-turn-sheet-face--front {
@@ -3855,34 +3868,44 @@ a {
 @keyframes album-real-page-turn-next {
   0% {
     filter: brightness(1);
-    transform: perspective(1400px) rotateY(0deg) translateX(0);
+    transform: perspective(1400px) rotateY(0deg) translateX(0) rotateZ(0deg);
   }
 
-  42% {
-    filter: brightness(0.95);
-    transform: perspective(1400px) rotateY(-84deg) translateX(-10px);
+  34% {
+    filter: brightness(0.99);
+    transform: perspective(1400px) rotateY(-54deg) translateX(-8px) rotateZ(-4deg);
+  }
+
+  62% {
+    filter: brightness(0.96);
+    transform: perspective(1400px) rotateY(-118deg) translateX(-18px) rotateZ(-6deg);
   }
 
   100% {
     filter: brightness(1.03);
-    transform: perspective(1400px) rotateY(-178deg) translateX(-22px);
+    transform: perspective(1400px) rotateY(-178deg) translateX(-28px) rotateZ(-1deg);
   }
 }
 
 @keyframes album-real-page-turn-previous {
   0% {
     filter: brightness(1);
-    transform: perspective(1400px) rotateY(0deg) translateX(0);
+    transform: perspective(1400px) rotateY(0deg) translateX(0) rotateZ(0deg);
   }
 
-  42% {
-    filter: brightness(0.95);
-    transform: perspective(1400px) rotateY(84deg) translateX(10px);
+  34% {
+    filter: brightness(0.99);
+    transform: perspective(1400px) rotateY(54deg) translateX(8px) rotateZ(4deg);
+  }
+
+  62% {
+    filter: brightness(0.96);
+    transform: perspective(1400px) rotateY(118deg) translateX(18px) rotateZ(6deg);
   }
 
   100% {
     filter: brightness(1.03);
-    transform: perspective(1400px) rotateY(178deg) translateX(22px);
+    transform: perspective(1400px) rotateY(178deg) translateX(28px) rotateZ(1deg);
   }
 }
 
@@ -3911,5 +3934,1390 @@ a {
 
   .album-turn-sheet {
     opacity: 0;
+  }
+}
+
+/* PR32: real magazine page surface, not a web-card grid */
+.album-magazine-page {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+.album-magazine-page::before {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.6), transparent 16%),
+    radial-gradient(circle at 86% 20%, rgba(245, 158, 11, 0.18), transparent 22%),
+    linear-gradient(126deg, transparent 0 46%, rgba(255, 255, 255, 0.24) 46% 48%, transparent 48%),
+    linear-gradient(135deg, rgba(7, 26, 67, 0.92) 0 16%, transparent 16%),
+    linear-gradient(28deg, rgba(220, 38, 38, 0.86) 0 30%, transparent 30%),
+    linear-gradient(150deg, transparent 0 58%, rgba(7, 26, 67, 0.84) 58% 100%);
+  content: "";
+  inset: 0;
+  opacity: 0.92;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+.album-magazine-page--right::before {
+  background:
+    radial-gradient(circle at 82% 16%, rgba(255, 255, 255, 0.58), transparent 16%),
+    radial-gradient(circle at 16% 20%, rgba(245, 158, 11, 0.2), transparent 22%),
+    linear-gradient(54deg, transparent 0 46%, rgba(255, 255, 255, 0.24) 46% 48%, transparent 48%),
+    linear-gradient(225deg, rgba(220, 38, 38, 0.88) 0 18%, transparent 18%),
+    linear-gradient(148deg, rgba(7, 26, 67, 0.86) 0 30%, transparent 30%),
+    linear-gradient(210deg, transparent 0 58%, rgba(220, 38, 38, 0.78) 58% 100%);
+}
+
+.album-magazine-page::after {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.42), transparent 18%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 18px);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.album-magazine-page--right::after {
+  background:
+    linear-gradient(270deg, rgba(255, 255, 255, 0.38), transparent 18%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 18px);
+}
+
+.album-magazine-header,
+.album-magazine-footer,
+.album-magazine-content,
+.album-magazine-slots,
+.album-magazine-watermark {
+  position: relative;
+  z-index: 2;
+}
+
+.album-magazine-header {
+  align-items: start;
+  display: flex;
+  gap: 14px;
+  justify-content: space-between;
+  margin-bottom: clamp(8px, 1.2vw, 16px);
+}
+
+.album-magazine-header p {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: clamp(0.66rem, 1vw, 0.8rem);
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  margin: 0 0 2px;
+  text-transform: uppercase;
+}
+
+.album-magazine-header h3 {
+  color: #ffffff;
+  font-size: clamp(1.15rem, 2.4vw, 2rem);
+  letter-spacing: -0.05em;
+  line-height: 0.92;
+  margin: 0;
+  max-width: 8.5em;
+  text-transform: uppercase;
+}
+
+.album-magazine-header > span,
+.album-magazine-footer span {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  color: #071a43;
+  font-size: clamp(0.62rem, 0.9vw, 0.74rem);
+  font-weight: 1000;
+  padding: 7px 10px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.album-magazine-watermark {
+  color: rgba(255, 255, 255, 0.16);
+  font-size: clamp(4.2rem, 9vw, 8.4rem);
+  font-weight: 1000;
+  inset: 50% auto auto 50%;
+  letter-spacing: -0.1em;
+  line-height: 1;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-50%, -50%) rotate(-13deg);
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.album-magazine-content {
+  align-items: stretch;
+  display: grid;
+  gap: clamp(10px, 1.2vw, 16px);
+  grid-template-columns: minmax(72px, 0.34fr) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.album-magazine-page--right .album-magazine-content {
+  grid-template-columns: minmax(0, 1fr) minmax(72px, 0.34fr);
+}
+
+.album-magazine-page--right .album-magazine-info-card {
+  order: 2;
+}
+
+.album-magazine-info-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.76)),
+    repeating-linear-gradient(0deg, transparent 0 16px, rgba(7, 26, 67, 0.08) 16px 18px);
+  border: 2px solid rgba(255, 255, 255, 0.86);
+  border-radius: clamp(12px, 1.4vw, 18px);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.14),
+    inset 0 0 0 1px rgba(7, 26, 67, 0.08);
+  color: #071a43;
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  min-height: 0;
+  overflow: hidden;
+  padding: clamp(10px, 1.2vw, 14px);
+  position: relative;
+}
+
+.album-magazine-info-card::before {
+  background: linear-gradient(180deg, #071a43, #dc2626, #f59e0b, #16a34a);
+  border-radius: 999px;
+  content: "";
+  inset: 10px 10px 10px auto;
+  position: absolute;
+  width: 12px;
+}
+
+.album-magazine-page--right .album-magazine-info-card::before {
+  inset: 10px auto 10px 10px;
+}
+
+.album-magazine-info-card strong {
+  font-size: clamp(1.15rem, 2.2vw, 2rem);
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+}
+
+.album-magazine-info-card span {
+  font-size: clamp(0.72rem, 1vw, 0.9rem);
+  font-weight: 1000;
+  line-height: 1.1;
+  max-width: 7em;
+  text-transform: uppercase;
+}
+
+.album-magazine-info-card small {
+  align-self: end;
+  background: #071a43;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 0.62rem;
+  font-weight: 1000;
+  padding: 6px 8px;
+}
+
+.album-magazine-slots {
+  align-self: stretch;
+  gap: clamp(8px, 1.1vw, 14px);
+  grid-template-areas:
+    "hero hero slot2"
+    "hero hero slot3"
+    "slot4 slot5 slot6";
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: 0.95fr 0.95fr 1fr;
+  min-height: 0;
+}
+
+.album-magazine-page--right .album-magazine-slots {
+  grid-template-areas:
+    "slot1 feature feature"
+    "slot2 feature feature"
+    "slot3 slot4 slot5";
+}
+
+.album-magazine-footer {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: clamp(8px, 1.2vw, 16px);
+}
+
+.album-magazine-footer span {
+  background: rgba(5, 7, 13, 0.82);
+  color: #ffffff;
+}
+
+.album-magazine-page .album-sticker-slot {
+  background: rgba(255, 255, 255, 0.82);
+  border: 2px solid rgba(255, 255, 255, 0.86);
+  border-radius: clamp(10px, 1.2vw, 16px);
+  box-shadow:
+    0 10px 20px rgba(0, 0, 0, 0.13),
+    inset 0 0 0 1px rgba(7, 26, 67, 0.08);
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.album-magazine-page .album-slot-position-1 {
+  grid-area: hero;
+}
+
+.album-magazine-page--right .album-slot-position-1 {
+  grid-area: slot1;
+}
+
+.album-magazine-page .album-slot-position-2 {
+  grid-area: slot2;
+}
+
+.album-magazine-page .album-slot-position-3 {
+  grid-area: slot3;
+}
+
+.album-magazine-page .album-slot-position-4 {
+  grid-area: slot4;
+}
+
+.album-magazine-page .album-slot-position-5 {
+  grid-area: slot5;
+}
+
+.album-magazine-page .album-slot-position-6 {
+  grid-area: slot6;
+}
+
+.album-magazine-page--right .album-slot-position-6 {
+  grid-area: feature;
+}
+
+.album-magazine-page .album-slot-position-1,
+.album-magazine-page--right .album-slot-position-6 {
+  transform: rotate(-1.2deg);
+}
+
+.album-magazine-page--right .album-slot-position-6 {
+  transform: rotate(1.2deg);
+}
+
+.album-magazine-page .album-sticker-slot:hover {
+  box-shadow:
+    0 14px 26px rgba(0, 0, 0, 0.18),
+    0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+.album-magazine-page .album-slot.missing {
+  opacity: 1;
+}
+
+.album-magazine-page .album-slot-art {
+  background:
+    linear-gradient(135deg, rgba(248, 250, 252, 0.95), rgba(226, 232, 240, 0.88)),
+    repeating-linear-gradient(45deg, transparent 0 10px, rgba(7, 26, 67, 0.05) 10px 12px);
+  border-radius: clamp(8px, 1vw, 12px);
+  margin: clamp(6px, 0.9vw, 10px);
+  min-height: 0;
+}
+
+.album-magazine-page .album-slot:not(.missing) .album-slot-art {
+  background: #ffffff;
+}
+
+.album-magazine-page .album-slot-body {
+  background: rgba(5, 7, 13, 0.82);
+  min-height: 0;
+  padding: clamp(7px, 0.8vw, 10px);
+}
+
+.album-magazine-page .album-slot-position-1 .album-slot-body,
+.album-magazine-page--right .album-slot-position-6 .album-slot-body {
+  background: linear-gradient(135deg, rgba(7, 26, 67, 0.9), rgba(220, 38, 38, 0.86));
+}
+
+.album-magazine-page .album-slot-body h2 {
+  color: #ffffff;
+  font-size: clamp(0.62rem, 0.9vw, 0.78rem);
+  letter-spacing: -0.02em;
+  min-height: 0;
+}
+
+.album-magazine-page .album-slot-number {
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.16);
+  left: clamp(8px, 1vw, 12px);
+  top: clamp(8px, 1vw, 12px);
+}
+
+.album-magazine-page .album-slot-state {
+  bottom: clamp(38px, 4.8vw, 52px);
+  left: clamp(8px, 1vw, 12px);
+}
+
+.album-turn-sheet .album-magazine-page {
+  border-radius: inherit;
+}
+
+@media (max-width: 760px) {
+  .album-magazine-header h3 {
+    font-size: 1.05rem;
+  }
+
+  .album-magazine-content,
+  .album-magazine-page--right .album-magazine-content {
+    grid-template-columns: 1fr;
+  }
+
+  .album-magazine-page--right .album-magazine-info-card {
+    order: 0;
+  }
+
+  .album-magazine-info-card {
+    min-height: 82px;
+  }
+
+  .album-magazine-slots {
+    grid-template-areas: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(3, minmax(140px, 1fr));
+  }
+
+  .album-magazine-page .album-sticker-slot {
+    grid-area: auto;
+  }
+}
+
+/* PR33: album viewer mode, closer to the reference video stage */
+.app-frame:has(.album-game-screen) {
+  padding-bottom: 0;
+}
+
+.app-frame:has(.album-game-screen) .topbar,
+.app-frame:has(.album-game-screen) .bottom-dock {
+  display: none;
+}
+
+.album-game-screen {
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 100vh;
+  overflow: hidden;
+  padding: clamp(8px, 1.2vw, 14px);
+}
+
+.album-game-screen .album-screen-backdrop {
+  opacity: 0.82;
+}
+
+.album-game-hud {
+  grid-template-columns: minmax(180px, 1fr) auto auto;
+  margin: 0 auto;
+  max-width: min(1120px, calc(100vw - 28px));
+  min-height: 0;
+  padding: 10px 14px;
+}
+
+.album-game-hud .album-hero-copy h1 {
+  font-size: clamp(1.2rem, 2.3vw, 2rem);
+  letter-spacing: -0.05em;
+}
+
+.album-game-hud .album-hero-copy p,
+.album-game-hud .album-screen-stats {
+  display: none;
+}
+
+.album-game-hud .album-screen-progress {
+  min-width: 108px;
+  padding: 8px 12px;
+}
+
+.album-game-hud .album-screen-progress strong {
+  font-size: 1.55rem;
+}
+
+.album-game-hud .album-hero-actions {
+  display: flex;
+}
+
+.album-game-hud .album-back-link,
+.album-game-hud .ghost-button {
+  min-height: 40px;
+  min-width: 88px;
+  padding-inline: 14px;
+}
+
+.album-game-screen .album-spread-stage {
+  align-self: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  gap: 6px;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: min(740px, calc(100vh - 112px));
+  margin-top: 4px;
+  max-width: min(1120px, calc(100vw - 26px));
+  min-height: 0;
+  padding: 0;
+}
+
+.album-game-screen .album-spread-stage .album-collection-header,
+.album-game-screen .album-spread-stage .collection-progress-meter {
+  display: none;
+}
+
+.album-game-screen .album-book.album-object {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 26px 34px rgba(0, 0, 0, 0.34));
+  grid-template-columns: minmax(0, 1fr) 18px minmax(0, 1fr);
+  overflow: visible;
+}
+
+.album-game-screen .album-book.album-object::before {
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0 49.2%,
+      rgba(255, 255, 255, 0.42) 49.2% 50.8%,
+      transparent 50.8%
+    ),
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0.26), transparent 58%);
+  border-radius: 34px;
+  content: "";
+  inset: -10px -12px;
+  opacity: 0.62;
+  position: absolute;
+  z-index: 0;
+}
+
+.album-game-screen .album-book.album-object > .album-book-page {
+  border: 12px solid #ffffff;
+  box-shadow:
+    inset 0 0 0 1px rgba(7, 26, 67, 0.18),
+    0 20px 28px rgba(0, 0, 0, 0.22);
+  z-index: 2;
+}
+
+.album-game-screen .album-book-page--left {
+  border-radius: 28px 4px 4px 28px;
+}
+
+.album-game-screen .album-book-page--right {
+  border-radius: 4px 28px 28px 4px;
+}
+
+.album-game-screen .album-book-spine {
+  background:
+    linear-gradient(90deg, rgba(5, 7, 13, 0.34), rgba(255, 255, 255, 0.66), rgba(5, 7, 13, 0.28)),
+    linear-gradient(180deg, #f59e0b, #7c2d12 52%, #071a43);
+  border-radius: 999px;
+  box-shadow:
+    0 0 22px rgba(0, 0, 0, 0.34),
+    inset 4px 0 10px rgba(255, 255, 255, 0.24),
+    inset -5px 0 12px rgba(0, 0, 0, 0.24);
+  z-index: 7;
+}
+
+.album-game-screen .album-magazine-page {
+  padding: clamp(12px, 1.3vw, 18px);
+}
+
+.album-game-screen .album-magazine-header h3 {
+  font-size: clamp(1rem, 1.9vw, 1.5rem);
+}
+
+.album-game-screen .album-magazine-header p,
+.album-game-screen .album-magazine-footer span,
+.album-game-screen .album-magazine-info-card small,
+.album-game-screen .album-magazine-header > span {
+  font-size: 0.58rem;
+}
+
+.album-game-screen .album-magazine-content {
+  gap: clamp(8px, 1vw, 12px);
+}
+
+.album-game-screen .album-magazine-info-card {
+  border-style: solid;
+  box-shadow:
+    inset 0 0 0 1px rgba(7, 26, 67, 0.08),
+    0 6px 10px rgba(0, 0, 0, 0.08);
+  opacity: 0.94;
+}
+
+.album-game-screen .album-sticker-slot {
+  background: rgba(255, 255, 255, 0.76);
+  border: 2px dashed rgba(255, 255, 255, 0.82);
+  box-shadow:
+    inset 0 0 0 1px rgba(7, 26, 67, 0.12),
+    inset 0 -18px 32px rgba(7, 26, 67, 0.08);
+  transition: none;
+}
+
+.album-game-screen .album-slot:not(.missing) {
+  background: rgba(255, 255, 255, 0.9);
+  border-style: solid;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.16),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.74);
+  transform: rotate(-0.7deg);
+}
+
+.album-game-screen .album-magazine-page--right .album-slot:not(.missing) {
+  transform: rotate(0.7deg);
+}
+
+.album-game-screen .album-slot-art {
+  margin: 5px;
+}
+
+.album-game-screen .album-slot-body {
+  background: rgba(5, 7, 13, 0.84);
+  padding: 6px 8px;
+}
+
+.album-game-screen .album-slot-body h2 {
+  font-size: clamp(0.58rem, 0.75vw, 0.7rem);
+}
+
+.album-game-screen .album-slot-state {
+  border: 1px solid rgba(7, 26, 67, 0.08);
+  bottom: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.14);
+  font-size: 0.52rem;
+  left: 8px;
+  padding: 5px 7px;
+  top: auto;
+  transform: translateY(-50%);
+}
+
+.album-game-screen .album-slot-repeat-badge,
+.album-game-screen .album-slot-number {
+  font-size: 0.58rem;
+  padding: 5px 7px;
+}
+
+.album-game-screen .album-slot-position-1 .album-slot-empty-number,
+.album-game-screen .album-slot-position-6 .album-slot-empty-number {
+  font-size: clamp(3rem, 5.5vw, 5.4rem);
+}
+
+.album-game-screen .album-page-nav {
+  bottom: 8px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 42px auto 42px;
+  justify-self: center;
+  margin-top: -2px;
+  position: relative;
+  z-index: 15;
+}
+
+.album-game-screen .album-page-arrow {
+  background: rgba(5, 7, 13, 0.92);
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.28);
+  color: #ffffff;
+  font-size: 1.25rem;
+  height: 42px;
+  width: 42px;
+}
+
+.album-game-screen .album-page-nav span {
+  background: #05070d;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.34);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  min-width: 168px;
+  padding: 10px 18px;
+  text-transform: uppercase;
+}
+
+.album-game-screen .album-turn-sheet {
+  filter: drop-shadow(-26px 22px 24px rgba(0, 0, 0, 0.34));
+  z-index: 20;
+}
+
+.album-game-screen .album-turn-sheet--previous {
+  filter: drop-shadow(26px 22px 24px rgba(0, 0, 0, 0.34));
+}
+
+.album-game-screen .album-turn-sheet-face {
+  overflow: hidden;
+}
+
+.album-game-screen .album-turn-sheet-face::before {
+  background:
+    radial-gradient(ellipse at right center, rgba(255, 255, 255, 0.82), transparent 48%),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.58), rgba(5, 7, 13, 0.18));
+  content: "";
+  inset: 0 0 0 auto;
+  opacity: 0.72;
+  pointer-events: none;
+  position: absolute;
+  width: 28%;
+  z-index: 20;
+}
+
+.album-game-screen .album-turn-sheet--previous .album-turn-sheet-face::before {
+  inset: 0 auto 0 0;
+  transform: scaleX(-1);
+}
+
+.album-game-screen .album-turn-sheet--next {
+  animation-duration: 820ms;
+}
+
+.album-game-screen .album-turn-sheet--previous {
+  animation-duration: 820ms;
+}
+
+@media (max-width: 1120px) {
+  .album-game-hud {
+    grid-template-columns: 1fr auto;
+  }
+
+  .album-game-hud .album-hero-actions {
+    display: none;
+  }
+
+  .album-game-screen .album-spread-stage {
+    height: min(720px, calc(100vh - 106px));
+  }
+}
+
+@media (max-width: 760px) {
+  .album-game-screen {
+    overflow: auto;
+    padding: 8px;
+  }
+
+  .album-game-hud {
+    grid-template-columns: 1fr;
+  }
+
+  .album-game-screen .album-spread-stage {
+    height: auto;
+    max-width: 100%;
+  }
+
+  .album-game-screen .album-book.album-object {
+    filter: none;
+  }
+}
+
+/* PR34: fidelity pass — bigger stage, flatter printed slots, stronger page curl */
+.album-game-screen {
+  padding: 6px clamp(6px, 0.9vw, 12px);
+}
+
+.album-game-hud {
+  background: rgba(5, 7, 13, 0.34);
+  border-radius: 18px;
+  max-width: min(980px, calc(100vw - 20px));
+  padding: 7px 12px;
+}
+
+.album-game-hud .album-hero-copy .eyebrow {
+  font-size: 0.62rem;
+}
+
+.album-game-hud .album-hero-copy h1 {
+  font-size: clamp(1rem, 1.8vw, 1.55rem);
+}
+
+.album-game-hud .album-screen-progress {
+  border-radius: 16px;
+  min-width: 92px;
+  padding: 6px 10px;
+}
+
+.album-game-hud .album-screen-progress strong {
+  font-size: 1.25rem;
+}
+
+.album-game-hud .album-screen-progress span {
+  font-size: 0.58rem;
+}
+
+.album-game-hud .album-back-link,
+.album-game-hud .ghost-button {
+  font-size: 0.72rem;
+  min-height: 34px;
+  min-width: 74px;
+  padding-inline: 11px;
+}
+
+.album-game-screen .album-spread-stage {
+  height: min(800px, calc(100vh - 76px));
+  max-width: min(1360px, calc(100vw - 12px));
+}
+
+.album-game-screen .album-book.album-object {
+  grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1fr);
+}
+
+.album-game-screen .album-book.album-object > .album-book-page {
+  border-width: clamp(8px, 0.9vw, 12px);
+}
+
+.album-game-screen .album-book-page--left {
+  border-radius: 18px 2px 2px 18px;
+}
+
+.album-game-screen .album-book-page--right {
+  border-radius: 2px 18px 18px 2px;
+}
+
+.album-game-screen .album-book-spine {
+  transform: scaleX(0.82);
+}
+
+.album-game-screen .album-magazine-page {
+  background:
+    linear-gradient(180deg, rgba(255, 251, 244, 0.96), rgba(243, 237, 225, 0.92)),
+    repeating-linear-gradient(0deg, rgba(7, 26, 67, 0.025) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(90deg, rgba(220, 38, 38, 0.018) 0 1px, transparent 1px 22px);
+  box-shadow:
+    inset 0 0 0 1px rgba(112, 88, 54, 0.18),
+    inset 0 24px 34px rgba(255, 255, 255, 0.34),
+    inset 0 -18px 28px rgba(59, 35, 14, 0.08);
+  padding: clamp(9px, 1vw, 14px);
+}
+
+.album-game-screen .album-magazine-page::before {
+  background:
+    radial-gradient(circle at 16% 15%, rgba(255, 255, 255, 0.24), transparent 14%),
+    linear-gradient(132deg, rgba(7, 26, 67, 0.88) 0 18%, transparent 18%),
+    linear-gradient(26deg, rgba(220, 38, 38, 0.72) 0 28%, transparent 28%),
+    linear-gradient(152deg, transparent 0 61%, rgba(7, 26, 67, 0.8) 61% 100%);
+  opacity: 0.9;
+}
+
+.album-game-screen .album-magazine-page--theme-final::before {
+  background:
+    radial-gradient(circle at 72% 12%, rgba(245, 158, 11, 0.18), transparent 18%),
+    linear-gradient(128deg, rgba(23, 37, 84, 0.9) 0 22%, transparent 22%),
+    linear-gradient(31deg, rgba(185, 28, 28, 0.78) 0 34%, transparent 34%),
+    linear-gradient(156deg, transparent 0 58%, rgba(120, 53, 15, 0.66) 58% 100%);
+}
+
+.album-game-screen .album-magazine-page--theme-plantel::before {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.2), transparent 15%),
+    linear-gradient(118deg, rgba(15, 23, 42, 0.9) 0 20%, transparent 20%),
+    linear-gradient(36deg, rgba(220, 38, 38, 0.62) 0 26%, transparent 26%),
+    repeating-linear-gradient(90deg, rgba(7, 26, 67, 0.12) 0 18px, transparent 18px 36px);
+}
+
+.album-game-screen .album-magazine-page--theme-boedo::before {
+  background:
+    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.22), transparent 16%),
+    linear-gradient(135deg, rgba(7, 26, 67, 0.88) 0 16%, transparent 16%),
+    linear-gradient(24deg, rgba(159, 18, 57, 0.7) 0 32%, transparent 32%),
+    linear-gradient(160deg, transparent 0 62%, rgba(30, 41, 59, 0.72) 62% 100%);
+}
+
+.album-game-screen .album-magazine-page::after {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.28), transparent 14%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 16px),
+    repeating-linear-gradient(90deg, rgba(5, 7, 13, 0.035) 0 1px, transparent 1px 28px);
+  opacity: 0.56;
+}
+
+.album-game-screen .album-magazine-header {
+  margin-bottom: 7px;
+}
+
+.album-game-screen .album-magazine-header > span,
+.album-game-screen .album-magazine-footer span {
+  background: linear-gradient(180deg, rgba(247, 241, 230, 0.96), rgba(233, 223, 207, 0.92));
+  border: 1px solid rgba(98, 74, 43, 0.16);
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+  color: #243553;
+  padding: 6px 9px;
+}
+
+.album-game-screen .album-magazine-page--theme-final .album-magazine-header > span,
+.album-game-screen .album-magazine-page--theme-final .album-magazine-footer span {
+  color: #7c2d12;
+}
+
+.album-game-screen .album-magazine-page--theme-plantel .album-magazine-header > span,
+.album-game-screen .album-magazine-page--theme-plantel .album-magazine-footer span {
+  color: #0f172a;
+}
+
+.album-game-screen .album-magazine-page--theme-boedo .album-magazine-header > span,
+.album-game-screen .album-magazine-page--theme-boedo .album-magazine-footer span {
+  color: #7f1d1d;
+}
+
+.album-game-screen .album-magazine-header h3 {
+  font-size: clamp(0.95rem, 1.55vw, 1.3rem);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+}
+
+.album-game-screen .album-magazine-info-card {
+  background:
+    linear-gradient(180deg, rgba(255, 249, 239, 0.94), rgba(238, 228, 211, 0.78)),
+    repeating-linear-gradient(0deg, transparent 0 12px, rgba(7, 26, 67, 0.06) 12px 14px);
+  border-color: rgba(127, 93, 52, 0.24);
+  border-width: 1px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.38),
+    0 4px 10px rgba(28, 20, 12, 0.08);
+  padding: clamp(8px, 0.9vw, 11px);
+}
+
+.album-game-screen .album-magazine-info-card::before {
+  inset-block: 8px;
+  width: 8px;
+}
+
+.album-game-screen .album-magazine-page--theme-final .album-magazine-info-card::before {
+  background: linear-gradient(180deg, #f59e0b, #dc2626, #071a43);
+}
+
+.album-game-screen .album-magazine-page--theme-plantel .album-magazine-info-card::before {
+  background: linear-gradient(180deg, #071a43, #475569, #dc2626);
+}
+
+.album-game-screen .album-magazine-page--theme-boedo .album-magazine-info-card::before {
+  background: linear-gradient(180deg, #7f1d1d, #dc2626, #111827);
+}
+
+.album-game-screen .album-magazine-page--theme-final .album-slot-body {
+  background:
+    linear-gradient(180deg, rgba(92, 45, 20, 0.9), rgba(34, 24, 18, 0.84)),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.035) 22px 23px);
+}
+
+.album-game-screen .album-magazine-page--theme-plantel .album-slot-body {
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.84)),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.035) 22px 23px);
+}
+
+.album-game-screen .album-magazine-page--theme-boedo .album-slot-body {
+  background:
+    linear-gradient(180deg, rgba(127, 29, 29, 0.88), rgba(24, 24, 27, 0.84)),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.035) 22px 23px);
+}
+
+.album-game-screen .album-magazine-slots {
+  gap: clamp(6px, 0.75vw, 10px);
+}
+
+.album-game-screen .album-sticker-slot,
+.album-game-screen .album-slot:not(.missing),
+.album-game-screen .album-magazine-page .album-sticker-slot:hover {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.26),
+    inset 0 -10px 18px rgba(7, 26, 67, 0.05);
+  transform: none;
+}
+
+.album-game-screen .album-sticker-slot {
+  background:
+    linear-gradient(180deg, rgba(248, 243, 233, 0.72), rgba(235, 227, 212, 0.62)),
+    repeating-linear-gradient(45deg, transparent 0 8px, rgba(7, 26, 67, 0.028) 8px 10px);
+  border: 1px dashed rgba(98, 73, 45, 0.34);
+  border-radius: 6px;
+}
+
+.album-game-screen .album-slot:not(.missing) {
+  background:
+    linear-gradient(180deg, rgba(251, 247, 238, 0.92), rgba(239, 230, 215, 0.86)),
+    repeating-linear-gradient(0deg, transparent 0 18px, rgba(7, 26, 67, 0.022) 18px 19px);
+  border: 1px solid rgba(111, 84, 54, 0.26);
+}
+
+.album-game-screen .album-slot-art {
+  background:
+    linear-gradient(135deg, rgba(240, 235, 226, 0.86), rgba(223, 216, 202, 0.72)),
+    repeating-linear-gradient(45deg, transparent 0 7px, rgba(7, 26, 67, 0.038) 7px 9px);
+  border-radius: 5px;
+  margin: 4px;
+}
+
+.album-game-screen .album-slot:not(.missing) .album-slot-art {
+  background: rgba(254, 251, 245, 0.84);
+}
+
+.album-game-screen .album-slot-body {
+  background:
+    linear-gradient(180deg, rgba(28, 32, 45, 0.88), rgba(20, 22, 31, 0.82)),
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(255, 255, 255, 0.035) 22px 23px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 5px 7px 6px;
+}
+
+.album-game-screen .album-slot-body h2 {
+  font-size: clamp(0.52rem, 0.66vw, 0.64rem);
+  letter-spacing: -0.03em;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
+}
+
+.album-game-screen .album-slot-number {
+  background: rgba(246, 240, 229, 0.92);
+  border: 1px solid rgba(92, 72, 45, 0.16);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.42);
+  color: #25324e;
+  font-size: 0.5rem;
+  font-weight: 1000;
+  left: 6px;
+  padding: 4px 6px;
+  top: 6px;
+}
+
+.album-game-screen .album-slot-state {
+  background: rgba(247, 240, 229, 0.88);
+  border: 1px solid rgba(97, 75, 48, 0.12);
+  border-radius: 4px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.34);
+  color: #394868;
+  font-size: 0.45rem;
+  left: 6px;
+  letter-spacing: 0.03em;
+  opacity: 0.92;
+  padding: 4px 6px;
+  text-transform: uppercase;
+}
+
+.album-game-screen .album-slot-repeat-badge {
+  background: linear-gradient(180deg, rgba(220, 38, 38, 0.92), rgba(159, 18, 57, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  box-shadow: 0 2px 5px rgba(68, 9, 27, 0.18);
+  font-size: 0.5rem;
+  padding: 5px 6px;
+  right: 6px;
+  top: 6px;
+}
+
+.album-game-screen .album-slot-empty-number {
+  color: rgba(255, 255, 255, 0.7);
+  opacity: 0.5;
+  text-shadow: none;
+}
+
+.album-game-screen .album-page-nav {
+  bottom: 2px;
+  grid-template-columns: 34px auto 34px;
+}
+
+.album-game-screen .album-page-arrow {
+  border-width: 1px;
+  font-size: 1rem;
+  height: 34px;
+  width: 34px;
+}
+
+.album-game-screen .album-page-nav span {
+  font-size: 0.64rem;
+  min-width: 132px;
+  padding: 8px 14px;
+}
+
+.album-game-screen .album-turn-sheet {
+  filter: drop-shadow(-42px 28px 30px rgba(0, 0, 0, 0.48));
+  width: calc(50% - 7px);
+}
+
+.album-game-screen .album-turn-sheet--previous {
+  filter: drop-shadow(42px 28px 30px rgba(0, 0, 0, 0.48));
+}
+
+.album-game-screen .album-turn-sheet::after {
+  background:
+    radial-gradient(ellipse at 96% 50%, rgba(255, 255, 255, 0.98), transparent 34%),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 250, 241, 0.54) 42%,
+      rgba(255, 255, 255, 0.98) 72%,
+      rgba(66, 52, 35, 0.22) 100%
+    ),
+    repeating-linear-gradient(0deg, rgba(92, 72, 45, 0.035) 0 1px, transparent 1px 14px);
+  border-radius: 0 18px 18px 0;
+  border-right: 7px solid rgba(255, 255, 255, 0.98);
+  box-shadow:
+    -26px 0 44px rgba(0, 0, 0, 0.26),
+    7px 0 0 rgba(235, 222, 202, 0.86),
+    13px 0 0 rgba(214, 199, 176, 0.54),
+    inset -54px 0 68px rgba(255, 255, 255, 0.58),
+    inset 22px 0 36px rgba(5, 7, 13, 0.12);
+  content: "";
+  inset: -1px -2px -1px auto;
+  opacity: 0.72;
+  pointer-events: none;
+  position: absolute;
+  width: 58%;
+  z-index: 40;
+}
+
+.album-game-screen .album-turn-sheet--previous::after {
+  background:
+    radial-gradient(ellipse at 4% 50%, rgba(255, 255, 255, 0.98), transparent 34%),
+    linear-gradient(
+      270deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      rgba(255, 250, 241, 0.54) 42%,
+      rgba(255, 255, 255, 0.98) 72%,
+      rgba(66, 52, 35, 0.22) 100%
+    ),
+    repeating-linear-gradient(0deg, rgba(92, 72, 45, 0.035) 0 1px, transparent 1px 14px);
+  border-left: 7px solid rgba(255, 255, 255, 0.98);
+  border-radius: 18px 0 0 18px;
+  border-right: 0;
+  box-shadow:
+    26px 0 44px rgba(0, 0, 0, 0.26),
+    -7px 0 0 rgba(235, 222, 202, 0.86),
+    -13px 0 0 rgba(214, 199, 176, 0.54),
+    inset 54px 0 68px rgba(255, 255, 255, 0.58),
+    inset -22px 0 36px rgba(5, 7, 13, 0.12);
+  inset: -1px auto -1px -2px;
+}
+
+.album-game-screen .album-turn-sheet--next {
+  left: calc(50% + 7px);
+  right: auto;
+  transform-origin: 0% 50%;
+  width: calc(50% - 7px);
+}
+
+.album-game-screen .album-turn-sheet--previous {
+  left: auto;
+  right: calc(50% + 7px);
+  transform-origin: 100% 50%;
+  width: calc(50% - 7px);
+}
+
+.album-game-screen .album-book-target-spread::after {
+  background:
+    radial-gradient(ellipse at 50% 48%, rgba(5, 7, 13, 0.18), transparent 36%),
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(5, 7, 13, 0.02) 38%,
+      rgba(5, 7, 13, 0.22) 49%,
+      rgba(5, 7, 13, 0.14) 57%,
+      transparent 76%
+    );
+  mix-blend-mode: multiply;
+  will-change: opacity, transform;
+}
+
+.album-game-screen .album-book--turning-next .album-book-target-spread::after {
+  animation: album-target-occlusion-next 820ms cubic-bezier(0.16, 0.72, 0.18, 1) both;
+}
+
+.album-game-screen .album-book--turning-previous .album-book-target-spread::after {
+  animation: album-target-occlusion-previous 820ms cubic-bezier(0.16, 0.72, 0.18, 1) both;
+}
+
+.album-game-screen .album-book--turning-next > .album-book-page--left {
+  animation: album-still-page-occlusion-next 820ms cubic-bezier(0.16, 0.72, 0.18, 1) both;
+}
+
+.album-game-screen .album-book--turning-previous > .album-book-page--right {
+  animation: album-still-page-occlusion-previous 820ms cubic-bezier(0.16, 0.72, 0.18, 1) both;
+}
+
+.album-game-screen .album-turn-sheet--next .album-turn-sheet-face--front,
+.album-game-screen .album-turn-sheet--previous .album-turn-sheet-face--front {
+  animation: album-turn-front-face-light 820ms cubic-bezier(0.16, 0.72, 0.18, 1) both;
+}
+
+.album-game-screen .album-turn-sheet--next .album-turn-sheet-face--back,
+.album-game-screen .album-turn-sheet--previous .album-turn-sheet-face--back {
+  animation: album-turn-back-face-light 820ms cubic-bezier(0.16, 0.72, 0.18, 1) both;
+}
+
+.album-game-screen .album-book.album-object > .album-book-spine {
+  background:
+    linear-gradient(90deg, rgba(5, 7, 13, 0.38), rgba(255, 255, 255, 0.74), rgba(5, 7, 13, 0.34)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.5) 0 1px, rgba(151, 122, 74, 0.38) 1px 3px),
+    linear-gradient(180deg, #f6d365, #9a3412 52%, #071a43);
+  box-shadow:
+    0 0 22px rgba(0, 0, 0, 0.34),
+    5px 0 0 rgba(255, 255, 255, 0.55),
+    -5px 0 0 rgba(255, 255, 255, 0.5),
+    11px 0 0 rgba(205, 187, 154, 0.38),
+    -11px 0 0 rgba(205, 187, 154, 0.34),
+    inset 4px 0 10px rgba(255, 255, 255, 0.24),
+    inset -5px 0 12px rgba(0, 0, 0, 0.24);
+  z-index: 28;
+}
+
+.album-game-screen .album-turn-sheet-face {
+  background:
+    linear-gradient(180deg, rgba(255, 250, 242, 0.98), rgba(238, 227, 210, 0.92)),
+    repeating-linear-gradient(0deg, rgba(7, 26, 67, 0.025) 0 1px, transparent 1px 14px);
+  border-right: 3px solid rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 28px 58px rgba(0, 0, 0, 0.5),
+    -22px 0 42px rgba(0, 0, 0, 0.22),
+    inset -46px 0 68px rgba(255, 255, 255, 0.42),
+    inset 24px 0 42px rgba(5, 7, 13, 0.18);
+}
+
+.album-game-screen .album-turn-sheet--previous .album-turn-sheet-face {
+  border-left: 3px solid rgba(255, 255, 255, 0.88);
+  border-right: 0;
+  box-shadow:
+    0 28px 58px rgba(0, 0, 0, 0.5),
+    22px 0 42px rgba(0, 0, 0, 0.22),
+    inset 46px 0 68px rgba(255, 255, 255, 0.42),
+    inset -24px 0 42px rgba(5, 7, 13, 0.18);
+}
+
+.album-game-screen .album-turn-sheet-face::before {
+  background:
+    radial-gradient(ellipse at right center, rgba(255, 255, 255, 0.98), transparent 48%),
+    linear-gradient(
+      90deg,
+      transparent 0 18%,
+      rgba(255, 255, 255, 0.46) 42%,
+      rgba(255, 255, 255, 0.92) 64%,
+      rgba(5, 7, 13, 0.24)
+    );
+  opacity: 0.98;
+  width: 52%;
+}
+
+.album-game-screen .album-turn-sheet-face::after {
+  background:
+    repeating-linear-gradient(90deg, rgba(160, 138, 104, 0.26) 0 1px, transparent 1px 5px),
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.98) 24%,
+      rgba(255, 245, 224, 0.96) 52%,
+      rgba(7, 26, 67, 0.34)
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), transparent 50%, rgba(0, 0, 0, 0.16));
+  width: clamp(54px, 5.4vw, 86px);
+}
+
+.album-game-screen .album-turn-sheet--previous .album-turn-sheet-face::before,
+.album-game-screen .album-turn-sheet--previous .album-turn-sheet-face::after {
+  transform: scaleX(-1);
+}
+
+.album-game-screen .album-turn-sheet--next {
+  animation-name: album-reference-page-turn-next;
+  animation-timing-function: cubic-bezier(0.16, 0.72, 0.18, 1);
+}
+
+.album-game-screen .album-turn-sheet--previous {
+  animation-name: album-reference-page-turn-previous;
+  animation-timing-function: cubic-bezier(0.16, 0.72, 0.18, 1);
+}
+
+@keyframes album-target-occlusion-next {
+  0% {
+    opacity: 0;
+    transform: translateX(18%) scaleX(0.72);
+  }
+
+  26% {
+    opacity: 0.16;
+    transform: translateX(8%) scaleX(0.9);
+  }
+
+  55% {
+    opacity: 0.38;
+    transform: translateX(-4%) scaleX(1.08);
+  }
+
+  78% {
+    opacity: 0.2;
+    transform: translateX(-14%) scaleX(0.88);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-24%) scaleX(0.72);
+  }
+}
+
+@keyframes album-target-occlusion-previous {
+  0% {
+    opacity: 0;
+    transform: translateX(-18%) scaleX(0.72);
+  }
+
+  26% {
+    opacity: 0.16;
+    transform: translateX(-8%) scaleX(0.9);
+  }
+
+  55% {
+    opacity: 0.38;
+    transform: translateX(4%) scaleX(1.08);
+  }
+
+  78% {
+    opacity: 0.2;
+    transform: translateX(14%) scaleX(0.88);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(24%) scaleX(0.72);
+  }
+}
+
+@keyframes album-still-page-occlusion-next {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  55% {
+    filter: brightness(0.9) contrast(0.985);
+  }
+
+  78% {
+    filter: brightness(0.94) contrast(0.99);
+  }
+}
+
+@keyframes album-still-page-occlusion-previous {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+
+  55% {
+    filter: brightness(0.9) contrast(0.985);
+  }
+
+  78% {
+    filter: brightness(0.94) contrast(0.99);
+  }
+}
+
+@keyframes album-turn-front-face-light {
+  0% {
+    filter: brightness(1);
+  }
+
+  42% {
+    filter: brightness(1.05) contrast(1.02);
+  }
+
+  68% {
+    filter: brightness(0.9) contrast(0.98);
+  }
+
+  100% {
+    filter: brightness(0.97);
+  }
+}
+
+@keyframes album-turn-back-face-light {
+  0% {
+    filter: brightness(0.78) contrast(0.94) saturate(0.9);
+  }
+
+  48% {
+    filter: brightness(0.84) contrast(0.95) saturate(0.92);
+  }
+
+  78% {
+    filter: brightness(0.97) contrast(0.99);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@keyframes album-reference-page-turn-next {
+  0% {
+    filter: brightness(1) drop-shadow(-22px 16px 16px rgba(0, 0, 0, 0.3));
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0) rotateZ(0deg) skewY(0deg);
+  }
+
+  26% {
+    filter: brightness(1.06) drop-shadow(-42px 24px 28px rgba(0, 0, 0, 0.42));
+    opacity: 1;
+    transform: rotateY(-18deg) translateX(0) rotateZ(-0.4deg) skewY(-0.2deg);
+  }
+
+  55% {
+    filter: brightness(0.94) drop-shadow(-62px 32px 38px rgba(0, 0, 0, 0.54));
+    opacity: 1;
+    transform: rotateY(-48deg) translateX(0) rotateZ(-1.2deg) skewY(-0.6deg);
+  }
+
+  78% {
+    filter: brightness(0.98) drop-shadow(-48px 28px 34px rgba(0, 0, 0, 0.44));
+    opacity: 0.96;
+    transform: rotateY(-108deg) translateX(0) rotateZ(-1.6deg) skewY(-0.4deg);
+  }
+
+  100% {
+    filter: brightness(1.02) drop-shadow(-18px 12px 18px rgba(0, 0, 0, 0.2));
+    opacity: 0;
+    transform: rotateY(-174deg) translateX(0) rotateZ(-0.4deg) skewY(0deg);
+  }
+}
+
+@keyframes album-reference-page-turn-previous {
+  0% {
+    filter: brightness(1) drop-shadow(22px 16px 16px rgba(0, 0, 0, 0.3));
+    opacity: 1;
+    transform: rotateY(0deg) translateX(0) rotateZ(0deg) skewY(0deg);
+  }
+
+  26% {
+    filter: brightness(1.06) drop-shadow(42px 24px 28px rgba(0, 0, 0, 0.42));
+    opacity: 1;
+    transform: rotateY(22deg) translateX(1px) rotateZ(1.4deg) skewY(0.4deg);
+  }
+
+  55% {
+    filter: brightness(0.94) drop-shadow(62px 32px 38px rgba(0, 0, 0, 0.54));
+    opacity: 1;
+    transform: rotateY(52deg) translateX(4px) rotateZ(3.2deg) skewY(1.2deg);
+  }
+
+  78% {
+    filter: brightness(0.98) drop-shadow(48px 28px 34px rgba(0, 0, 0, 0.44));
+    opacity: 0.96;
+    transform: rotateY(112deg) translateX(9px) rotateZ(4deg) skewY(0.8deg);
+  }
+
+  100% {
+    filter: brightness(1.02) drop-shadow(18px 12px 18px rgba(0, 0, 0, 0.2));
+    opacity: 0;
+    transform: rotateY(179deg) translateX(18px) rotateZ(1deg) skewY(0deg);
+  }
+}
+
+@media (max-width: 1120px) {
+  .album-game-screen .album-spread-stage {
+    height: min(780px, calc(100vh - 76px));
+    max-width: calc(100vw - 10px);
+  }
+}
+
+@media (max-width: 760px) {
+  .album-game-screen {
+    padding-bottom: 86px;
   }
 }

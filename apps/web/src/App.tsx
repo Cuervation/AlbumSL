@@ -10,19 +10,13 @@ import { LoginPage } from "./pages/LoginPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import "./styles.css";
 
+const AlbumPage = lazy(() =>
+  import("./pages/AlbumPage").then((module) => ({ default: module.AlbumPage })),
+);
 const AdminDashboardPage = lazy(() =>
   import("./pages/AdminDashboardPage").then((module) => ({
     default: module.AdminDashboardPage,
   })),
-);
-const AlbumPage = lazy(() =>
-  import("./pages/AlbumPage").then((module) => ({ default: module.AlbumPage })),
-);
-const CatalogPage = lazy(() =>
-  import("./pages/CatalogPage").then((module) => ({ default: module.CatalogPage })),
-);
-const DashboardPage = lazy(() =>
-  import("./pages/DashboardPage").then((module) => ({ default: module.DashboardPage })),
 );
 const DuplicatesPage = lazy(() =>
   import("./pages/DuplicatesPage").then((module) => ({ default: module.DuplicatesPage })),
@@ -43,16 +37,6 @@ export function App(): React.JSX.Element {
         <Route index element={<HomePage />} />
         <Route path="login" element={<LoginPage />} />
         <Route
-          path="dashboard"
-          element={
-            <AuthGuard>
-              <LazyRoute>
-                <DashboardPage />
-              </LazyRoute>
-            </AuthGuard>
-          }
-        />
-        <Route
           path="admin"
           element={
             <AuthGuard>
@@ -61,16 +45,6 @@ export function App(): React.JSX.Element {
                   <AdminDashboardPage />
                 </LazyRoute>
               </AdminGuard>
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="catalog"
-          element={
-            <AuthGuard>
-              <LazyRoute>
-                <CatalogPage />
-              </LazyRoute>
             </AuthGuard>
           }
         />

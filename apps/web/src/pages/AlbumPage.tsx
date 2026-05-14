@@ -7,16 +7,59 @@ import { useAlbumData } from "../features/album/useAlbumData";
 
 const STICKERS_PER_ALBUM_SIDE = 6;
 const STICKERS_PER_ALBUM_SPREAD = STICKERS_PER_ALBUM_SIDE * 2;
-const ALBUM_PAGE_TURN_FALLBACK_MS = 800;
+const ALBUM_PAGE_TURN_FALLBACK_MS = 840;
+const ALBUM_PAGE_THEMES = [
+  {
+    theme: "gloria",
+    leftTitle: "Gloria azulgrana",
+    rightTitle: "Equipo campeon",
+    leftKicker: "La copa eterna",
+    rightKicker: "Plantel campeon",
+    leftMark: "2014",
+    rightMark: "CASLA",
+    footerLeft: "Final",
+    footerRight: "Boedo",
+  },
+  {
+    theme: "final",
+    leftTitle: "Noche de copa",
+    rightTitle: "La final",
+    leftKicker: "Nuevo Gasometro",
+    rightKicker: "Historia grande",
+    leftMark: "22",
+    rightMark: "AGO",
+    footerLeft: "Semis",
+    footerRight: "Trofeo",
+  },
+  {
+    theme: "plantel",
+    leftTitle: "Plantel sagrado",
+    rightTitle: "Festejo eterno",
+    leftKicker: "Los nombres",
+    rightKicker: "La vuelta",
+    leftMark: "SL",
+    rightMark: "COPA",
+    footerLeft: "Equipo",
+    footerRight: "Ciclon",
+  },
+  {
+    theme: "boedo",
+    leftTitle: "Pueblo azulgrana",
+    rightTitle: "Boedo late",
+    leftKicker: "La hinchada",
+    rightKicker: "Identidad",
+    leftMark: "B°",
+    rightMark: "1908",
+    footerLeft: "Tablon",
+    footerRight: "Barrio",
+  },
+] as const;
 
 export function AlbumPage(): React.JSX.Element {
   const { albumStickers, progress, loading, error, refresh } = useAlbumData();
   const hasNoCollectedStickers = !loading && !error && progress.collectedStickers === 0;
   const completion = Math.max(0, Math.min(100, progress.completionPercentage));
   const libertadoresStickers = albumStickers.filter(isLibertadores2014Sticker);
-  const otherStickers = albumStickers.filter(
-    (albumSticker) => !isLibertadores2014Sticker(albumSticker),
-  );
   const libertadoresProgress = getCollectionProgress(libertadoresStickers);
 
   return (
@@ -112,23 +155,6 @@ export function AlbumPage(): React.JSX.Element {
         <ProgressCard label="Repetidas" value={progress.repeatedStickers} />
         <ProgressCard label="Completitud" value={`${progress.completionPercentage}%`} />
       </section>
-
-      {otherStickers.length > 0 ? (
-        <section className="album-collection-section" aria-label="Otras figuritas del album">
-          <div className="album-collection-header">
-            <div>
-              <p className="eyebrow">AlbumSL</p>
-              <h2>Otras figuritas</h2>
-              <p>Resto del catalogo azulgrana disponible con los mismos estados del album.</p>
-            </div>
-          </div>
-          <div className="album-grid album-slot-grid">
-            {otherStickers.map((albumSticker) => (
-              <AlbumStickerCard key={albumSticker.sticker.id} albumSticker={albumSticker} />
-            ))}
-          </div>
-        </section>
-      ) : null}
     </main>
   );
 }
@@ -158,6 +184,7 @@ function CollectionSection({
     confirmedTargetSpreadIndex === null
       ? null
       : getAlbumSpread(orderedStickers, confirmedTargetSpreadIndex);
+  const targetSpreadRenderIndex = confirmedTargetSpreadIndex ?? currentSpreadIndex;
   const canGoBack = currentSpreadIndex > 0;
   const canGoForward = currentSpreadIndex < spreadCount - 1;
   const isTurningPage = turnDirection !== null && targetSpread !== null;
@@ -268,6 +295,7 @@ function CollectionSection({
             <AlbumBookPage
               side="left"
               stickers={targetSpread.leftPageStickers}
+              spreadIndex={targetSpreadRenderIndex}
               imageLoading="eager"
               inert
             />
@@ -275,18 +303,29 @@ function CollectionSection({
             <AlbumBookPage
               side="right"
               stickers={targetSpread.rightPageStickers}
+              spreadIndex={targetSpreadRenderIndex}
               imageLoading="eager"
               inert
             />
           </div>
         ) : null}
-        <AlbumBookPage side="left" stickers={currentSpread.leftPageStickers} />
+        <AlbumBookPage
+          side="left"
+          stickers={currentSpread.leftPageStickers}
+          spreadIndex={currentSpreadIndex}
+        />
         <div className="album-book-spine" aria-hidden="true" />
-        <AlbumBookPage side="right" stickers={currentSpread.rightPageStickers} />
+        <AlbumBookPage
+          side="right"
+          stickers={currentSpread.rightPageStickers}
+          spreadIndex={currentSpreadIndex}
+        />
         {targetSpread && turnDirection ? (
           <AlbumTurnSheet
             direction={turnDirection}
+            currentSpreadIndex={currentSpreadIndex}
             currentSpread={currentSpread}
+            targetSpreadIndex={confirmedTargetSpreadIndex ?? currentSpreadIndex}
             targetSpread={targetSpread}
             onAnimationEnd={handleTurnAnimationEnd}
           />
@@ -304,7 +343,7 @@ function CollectionSection({
           {"<"}
         </button>
         <span>
-          Pagina {currentSpreadIndex + 1} / {spreadCount}
+          {getAlbumSpreadTitle(currentSpreadIndex)} · {currentSpreadIndex + 1}/{spreadCount}
         </span>
         <button
           type="button"
@@ -323,38 +362,75 @@ function CollectionSection({
 function AlbumBookPage({
   side,
   stickers,
+  spreadIndex,
   imageLoading = "lazy",
   inert = false,
 }: {
   readonly side: "left" | "right";
   readonly stickers: readonly AlbumStickerView[];
+  readonly spreadIndex: number;
   readonly imageLoading?: "eager" | "lazy";
   readonly inert?: boolean;
 }): React.JSX.Element {
+  const pageRange = getAlbumPageRangeLabel(stickers);
+  const theme = getAlbumPageTheme(spreadIndex);
+  const pageTitle = side === "left" ? theme.leftTitle : theme.rightTitle;
+  const pageKicker = side === "left" ? theme.leftKicker : theme.rightKicker;
+  const pageMark = side === "left" ? theme.leftMark : theme.rightMark;
+  const pageFooter = side === "left" ? theme.footerLeft : theme.footerRight;
+
   return (
-    <div className={`album-book-page album-book-page--${side}`}>
-      <div className="album-grid album-slot-grid album-slot-grid--libertadores album-book-slots">
-        {stickers.map((albumSticker) => (
-          <AlbumStickerCard
-            key={albumSticker.sticker.id}
-            albumSticker={albumSticker}
-            imageLoading={imageLoading}
-            inert={inert}
-          />
-        ))}
+    <article
+      className={`album-book-page album-book-page--${side} album-magazine-page album-magazine-page--${side} album-magazine-page--theme-${theme.theme}`}
+    >
+      <header className="album-magazine-header">
+        <div>
+          <p>Libertadores 2014</p>
+          <h3>{pageTitle}</h3>
+        </div>
+        <span>{pageRange}</span>
+      </header>
+      <div className="album-magazine-watermark" aria-hidden="true">
+        CASLA
       </div>
-    </div>
+      <div className="album-magazine-content">
+        <aside className="album-magazine-info-card" aria-hidden="true">
+          <strong>{pageMark}</strong>
+          <span>{pageKicker}</span>
+          <small>{pageRange}</small>
+        </aside>
+        <div className="album-grid album-slot-grid album-slot-grid--libertadores album-book-slots album-magazine-slots">
+          {stickers.map((albumSticker, stickerIndex) => (
+            <AlbumStickerCard
+              key={albumSticker.sticker.id}
+              albumSticker={albumSticker}
+              imageLoading={imageLoading}
+              inert={inert}
+              slotIndex={stickerIndex}
+            />
+          ))}
+        </div>
+      </div>
+      <footer className="album-magazine-footer">
+        <span>San Lorenzo</span>
+        <span>{pageFooter}</span>
+      </footer>
+    </article>
   );
 }
 
 function AlbumTurnSheet({
   direction,
+  currentSpreadIndex,
   currentSpread,
+  targetSpreadIndex,
   targetSpread,
   onAnimationEnd,
 }: {
   readonly direction: "next" | "previous";
+  readonly currentSpreadIndex: number;
   readonly currentSpread: AlbumSpread;
+  readonly targetSpreadIndex: number;
   readonly targetSpread: AlbumSpread;
   readonly onAnimationEnd: (event: AnimationEvent<HTMLDivElement>) => void;
 }): React.JSX.Element {
@@ -373,6 +449,7 @@ function AlbumTurnSheet({
         <AlbumBookPage
           side={direction === "next" ? "right" : "left"}
           stickers={frontStickers}
+          spreadIndex={currentSpreadIndex}
           imageLoading="eager"
           inert
         />
@@ -381,6 +458,7 @@ function AlbumTurnSheet({
         <AlbumBookPage
           side={direction === "next" ? "left" : "right"}
           stickers={backStickers}
+          spreadIndex={targetSpreadIndex}
           imageLoading="eager"
           inert
         />
@@ -452,6 +530,27 @@ function compareAlbumStickersByNumber(first: AlbumStickerView, second: AlbumStic
   return Number(first.sticker.number) - Number(second.sticker.number);
 }
 
+function getAlbumPageRangeLabel(stickers: readonly AlbumStickerView[]): string {
+  if (stickers.length === 0) {
+    return "Figus";
+  }
+
+  const firstStickerNumber = stickers[0]?.sticker.number ?? "";
+  const lastStickerNumber = stickers[stickers.length - 1]?.sticker.number ?? "";
+
+  return `#${firstStickerNumber} - #${lastStickerNumber}`;
+}
+
+function getAlbumSpreadTitle(spreadIndex: number): string {
+  const spreadTitles = ["Intro", "Campeones", "La final", "Leyendas", "Festejos", "Coleccion"];
+
+  return spreadTitles[spreadIndex] ?? `Pagina ${spreadIndex + 1}`;
+}
+
+function getAlbumPageTheme(spreadIndex: number): (typeof ALBUM_PAGE_THEMES)[number] {
+  return ALBUM_PAGE_THEMES[spreadIndex % ALBUM_PAGE_THEMES.length] ?? ALBUM_PAGE_THEMES[0];
+}
+
 function isLibertadores2014Sticker(albumSticker: AlbumStickerView): boolean {
   return albumSticker.sticker.tags.includes("libertadores-2014");
 }
@@ -460,10 +559,12 @@ function AlbumStickerCard({
   albumSticker,
   imageLoading = "lazy",
   inert = false,
+  slotIndex,
 }: {
   readonly albumSticker: AlbumStickerView;
   readonly imageLoading?: "eager" | "lazy";
   readonly inert?: boolean;
+  readonly slotIndex?: number;
 }): React.JSX.Element {
   const { sticker } = albumSticker;
   const statusClassName = getAlbumStatusClassName(albumSticker.status);
@@ -471,10 +572,12 @@ function AlbumStickerCard({
   const rarityClassName = `album-slot--${sticker.rarity.toLowerCase()}`;
   const slotHint = getAlbumSlotHint(albumSticker);
   const extraClassName = albumSticker.repeatedQuantity > 0 ? "album-slot--extra" : "";
+  const slotPositionClassName =
+    slotIndex === undefined ? "" : `album-slot-position-${slotIndex + 1}`;
 
   return (
     <Link
-      className={`album-slot album-sticker-slot ${statusClassName} ${rarityClassName} ${extraClassName}`}
+      className={`album-slot album-sticker-slot ${statusClassName} ${rarityClassName} ${extraClassName} ${slotPositionClassName}`}
       to={`/album/${sticker.id}`}
       aria-label={`Figurita ${sticker.number}: ${sticker.title}. ${slotHint}`}
       tabIndex={inert ? -1 : undefined}

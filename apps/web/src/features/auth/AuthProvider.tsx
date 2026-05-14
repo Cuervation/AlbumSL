@@ -21,6 +21,7 @@ export interface AuthContextValue {
 }
 
 export function AuthProvider({ children }: { readonly children: ReactNode }): React.JSX.Element {
+  const previewMode = isPreviewMode();
   const [user, setUser] = useState<User | null>(null);
   const [currentUserProfile, setCurrentUserProfile] = useState<UserProfileDto | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,6 +34,16 @@ export function AuthProvider({ children }: { readonly children: ReactNode }): Re
 
   useEffect(() => {
     let mounted = true;
+
+    if (previewMode) {
+      setUser(createPreviewUser());
+      setCurrentUserProfile(null);
+      setError(null);
+      setLoading(false);
+      return () => {
+        mounted = false;
+      };
+    }
 
     const unsubscribe = onAuthStateChanged(firebaseAuth, (nextUser) => {
       setLoading(true);
@@ -63,7 +74,7 @@ export function AuthProvider({ children }: { readonly children: ReactNode }): Re
       mounted = false;
       unsubscribe();
     };
-  }, [loadUserProfile]);
+  }, [loadUserProfile, previewMode]);
 
   const signInWithGoogle = useCallback(async (): Promise<void> => {
     setError(null);
@@ -116,4 +127,47 @@ export function AuthProvider({ children }: { readonly children: ReactNode }): Re
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+function isPreviewMode(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    import.meta.env.DEV &&
+    new URLSearchParams(window.location.search).get("qaPreview") === "1"
+  );
+}
+
+function createPreviewUser(): User {
+  return {
+    uid: "qa-preview-user",
+    email: "qa-preview@albumsl.local",
+    displayName: "QA Preview",
+    photoURL: null,
+    phoneNumber: null,
+    providerId: "password",
+    emailVerified: true,
+    isAnonymous: false,
+    metadata: {
+      creationTime: "2026-05-13T00:00:00.000Z",
+      lastSignInTime: "2026-05-13T00:00:00.000Z",
+    },
+    providerData: [],
+    refreshToken: "qa-preview-token",
+    tenantId: null,
+    delete: async () => {},
+    getIdToken: async () => "qa-preview-token",
+    getIdTokenResult: async () => ({
+      authTime: "2026-05-13T00:00:00.000Z",
+      claims: {},
+      expirationTime: "2026-05-13T00:00:00.000Z",
+      issuedAtTime: "2026-05-13T00:00:00.000Z",
+      signInProvider: "password",
+      signInSecondFactor: null,
+      token: "qa-preview-token",
+    }),
+    reload: async () => {},
+    toJSON: () => ({}),
+    proactiveRefresh: undefined,
+    stsTokenManager: undefined,
+  } as User;
 }
