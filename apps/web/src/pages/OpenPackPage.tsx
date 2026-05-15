@@ -7,6 +7,9 @@ import { useDailyPack } from "../features/pack-opening/useDailyPack";
 import { useOpenPack } from "../features/pack-opening/useOpenPack";
 import { isPreviewMode } from "../features/preview/preview-mode";
 
+const PACK_RESULT_REVEAL_DELAY_MS = 920;
+const PACK_OPENING_LOCK_MS = 980;
+
 export function OpenPackPage(): React.JSX.Element {
   const navigate = useNavigate();
   const dailyPack = useDailyPack();
@@ -16,10 +19,12 @@ export function OpenPackPage(): React.JSX.Element {
   const [revealedPackResult, setRevealedPackResult] = useState<OpenPackResponseDto | null>(null);
   const previewMode = isPreviewMode();
   const isBusy = dailyPack.loading || packOpening.loading;
+  const isActionLocked = isBusy || isEnvelopeOpening;
   const claimVisualState = getClaimVisualState(dailyPack.claim);
   const packEnvelopeState = getPackEnvelopeState(dailyPack.claim, isEnvelopeOpening || packOpening.loading);
   const packEnvelopeLabel = getPackEnvelopeLabel(packEnvelopeState);
-  const canOpenAnother = !isBusy && revealedPackResult !== null && dailyPack.claim?.status === "AVAILABLE";
+  const canOpenAnother =
+    !isActionLocked && revealedPackResult !== null && dailyPack.claim?.status === "AVAILABLE";
 
   useEffect(() => {
     if (!packOpening.result) {
@@ -30,7 +35,7 @@ export function OpenPackPage(): React.JSX.Element {
     setRevealedPackResult(null);
     const timeoutId = window.setTimeout(() => {
       setRevealedPackResult(packOpening.result);
-    }, 680);
+    }, PACK_RESULT_REVEAL_DELAY_MS);
 
     return () => window.clearTimeout(timeoutId);
   }, [packOpening.result]);
@@ -62,7 +67,7 @@ export function OpenPackPage(): React.JSX.Element {
     openingTimeoutRef.current = window.setTimeout(() => {
       setIsEnvelopeOpening(false);
       openingTimeoutRef.current = null;
-    }, 760);
+    }, PACK_OPENING_LOCK_MS);
 
     if (result) {
       dailyPack.setClaim(
@@ -134,15 +139,24 @@ export function OpenPackPage(): React.JSX.Element {
         {!revealedPackResult ? (
           <>
             <div className="pack-actions-copy">
-              <h2>Sobre diario</h2>
+              <h2>{getActionHeading(dailyPack.claim)}</h2>
               <p aria-live="polite" role="status">
                 {getClaimStateMessage(dailyPack.claim)}
               </p>
             </div>
 
             <div className="pack-actions pack-actions--single">
-              <button type="button" onClick={() => void handleOpenDailyPack()} disabled={isBusy}>
-                {packOpening.loading ? "Abriendo..." : "Abrir sobre"}
+              <button
+                type="button"
+                aria-busy={isActionLocked}
+                onClick={() => void handleOpenDailyPack()}
+                disabled={isActionLocked}
+              >
+                {getOpenButtonLabel({
+                  dailyPackLoading: dailyPack.loading,
+                  isEnvelopeOpening,
+                  packOpeningLoading: packOpening.loading,
+                })}
               </button>
             </div>
           </>
@@ -260,6 +274,38 @@ function getClaimStateMessage(claim: ClaimDailyPackResponseDto | null): string {
   return "El sobre diario no esta disponible en este momento.";
 }
 
+function getActionHeading(claim: ClaimDailyPackResponseDto | null): string {
+  if (!claim) {
+    return "Tu sobre de hoy";
+  }
+
+  if (claim.status === "AVAILABLE") {
+    return "Listo para abrir";
+  }
+
+  if (claim.status === "CONSUMED") {
+    return "Volvé mañana";
+  }
+
+  return "Sobre diario";
+}
+
+function getOpenButtonLabel(state: {
+  readonly dailyPackLoading: boolean;
+  readonly isEnvelopeOpening: boolean;
+  readonly packOpeningLoading: boolean;
+}): string {
+  if (state.dailyPackLoading) {
+    return "Preparando sobre...";
+  }
+
+  if (state.packOpeningLoading || state.isEnvelopeOpening) {
+    return "Abriendo...";
+  }
+
+  return "Abrir sobre";
+}
+
 function getClaimVisualState(claim: ClaimDailyPackResponseDto | null): {
   readonly variant: "empty" | "available" | "consumed";
   readonly title: string;
@@ -301,11 +347,11 @@ function formatDate(value: string | undefined): string {
 
 function getStickerFlightStyle(index: number): React.CSSProperties {
   const presets = [
-    { delay: "20ms", x: "132px", y: "-182px", rotation: "-18deg" },
-    { delay: "150ms", x: "96px", y: "-170px", rotation: "-10deg" },
-    { delay: "280ms", x: "60px", y: "-156px", rotation: "-2deg" },
-    { delay: "410ms", x: "28px", y: "-144px", rotation: "8deg" },
-    { delay: "540ms", x: "4px", y: "-130px", rotation: "14deg" },
+    { delay: "70ms", x: "142px", y: "-194px", rotation: "-19deg" },
+    { delay: "190ms", x: "104px", y: "-184px", rotation: "-11deg" },
+    { delay: "310ms", x: "62px", y: "-170px", rotation: "-2deg" },
+    { delay: "430ms", x: "26px", y: "-154px", rotation: "8deg" },
+    { delay: "550ms", x: "-6px", y: "-136px", rotation: "15deg" },
   ] as const;
 
   const preset = presets[index % presets.length] ?? presets[0];

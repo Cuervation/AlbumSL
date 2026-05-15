@@ -6,11 +6,13 @@ import { claimDailyPack } from "./pack-opening.service";
 import { isPreviewMode } from "../preview/preview-mode";
 
 function createPreviewClaim(): ClaimDailyPackResponseDto {
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
   return {
     claimId: "qa-preview-daily-pack",
     source: "DAILY",
     status: "AVAILABLE",
-    expiresAt: "2026-05-15T00:00:00.000Z",
+    expiresAt,
   };
 }
 
