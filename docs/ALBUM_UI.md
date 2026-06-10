@@ -7,7 +7,7 @@ conseguidas, faltantes, pegadas y repetidas sin permitir escrituras sensibles de
 
 ## Pantallas implementadas
 
-- `/album`: vista principal del album con resumen, filtros y grilla.
+- `/album`: vista principal estática, organizada en hojas con navegación inferior.
 - `/album/:stickerId`: detalle de figurita y accion segura para pegar.
 - `/duplicates`: vista de figuritas con copias disponibles/repetidas.
 - `Dashboard`: resumen liviano con accesos a abrir sobre, ver album y repetidas.
@@ -38,8 +38,9 @@ Estas escrituras siguen reservadas a Cloud Functions o procesos backend con Admi
 1. El usuario autenticado entra a `/album`.
 2. `useAlbumData` lee catalogo activo, inventario propio y resumen de album.
 3. `buildAlbumView` combina catalogo e inventario de forma pura.
-4. La UI muestra resumen, filtros y slots ordenados por `sortOrder` y `number`.
+4. La UI muestra los slots ordenados por `sortOrder` y `number`, distribuidos en hojas.
 5. Si no hay resumen materializado, la UI calcula un fallback local solo para visualizacion.
+6. Las flechas inferiores cambian de hoja inmediatamente, sin animaciones ni transiciones.
 
 ## Flujo para ver repetidas
 
@@ -54,14 +55,16 @@ copia disponible para pegar.
 
 ## Flujo para pegar figurita
 
-1. El usuario entra al detalle `/album/:stickerId`.
-2. La UI muestra el boton "Pegar en album" solo si `canPasteSticker(userSticker)` es verdadero.
+1. El usuario puede pegar una figurita disponible directamente desde su casillero en `/album`.
+2. La UI habilita la acción solo si `canPasteSticker(userSticker)` es verdadero.
 3. El frontend llama la callable function `pasteSticker({ stickerId })`.
 4. La function valida `request.auth`.
 5. `pasteStickerUseCase` corre dentro de `TransactionRunner`.
 6. El backend valida que la figurita exista en el inventario propio y que `pastedQuantity < quantity`.
 7. El backend incrementa `pastedQuantity`, recalcula `userAlbums/{uid}` y devuelve el progreso.
-8. La UI refresca los datos del album.
+8. La UI refresca la hoja actual del album.
+
+El detalle `/album/:stickerId` se conserva para consultar información de la figurita.
 
 El frontend nunca modifica `userStickers` ni `userAlbums` directamente.
 
@@ -87,7 +90,8 @@ etapa.
 
 - Mobile-first.
 - Estetica inicial azulgrana.
-- Tarjetas simples para acelerar validacion del producto.
+- Hojas estáticas sin animaciones ni transiciones.
+- Navegación inferior con flecha anterior, número de hoja y flecha siguiente.
 - Sin intercambio entre usuarios.
 - Sin modal complejo: el detalle vive en ruta propia.
 - Placeholders para figuritas no conseguidas.

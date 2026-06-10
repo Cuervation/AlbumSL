@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 
+import { CardGridLoadingSkeleton } from "../components/LoadingSkeleton";
 import { getAlbumStatusClassName, getAlbumStatusLabel } from "../features/album/album-view-labels";
 import { useAlbumData } from "../features/album/useAlbumData";
 
@@ -45,7 +46,7 @@ export function DuplicatesPage(): React.JSX.Element {
         </div>
       </section>
 
-      {loading ? <p className="state-message">Cargando repetidas...</p> : null}
+      {loading ? <CardGridLoadingSkeleton /> : null}
       {error ? (
         <p className="error-message" role="alert">
           {error}
@@ -61,7 +62,7 @@ export function DuplicatesPage(): React.JSX.Element {
         </div>
       ) : null}
 
-      <section className="duplicates-grid" aria-label="Figuritas repetidas">
+      <section className="duplicates-grid" aria-label="Figuritas repetidas" hidden={loading}>
         {duplicatedStickers.map((albumSticker) => (
           <Link
             key={albumSticker.sticker.id}

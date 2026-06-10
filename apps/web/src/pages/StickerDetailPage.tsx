@@ -1,6 +1,7 @@
 import { canPasteSticker, type AlbumStickerView } from "@albumsl/domain";
 import { Link, useParams } from "react-router-dom";
 
+import { StickerDetailLoadingSkeleton } from "../components/LoadingSkeleton";
 import { getAlbumStatusClassName, getAlbumStatusLabel } from "../features/album/album-view-labels";
 import { useAlbumData } from "../features/album/useAlbumData";
 import { usePasteSticker } from "../features/album/usePasteSticker";
@@ -26,7 +27,7 @@ export function StickerDetailPage(): React.JSX.Element {
   if (loading) {
     return (
       <main className="page album-page">
-        <p className="state-message">Cargando figurita...</p>
+        <StickerDetailLoadingSkeleton />
       </main>
     );
   }

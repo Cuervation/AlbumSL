@@ -7,7 +7,6 @@ import { useDailyPack } from "../features/pack-opening/useDailyPack";
 import { useOpenPack } from "../features/pack-opening/useOpenPack";
 import { isPreviewMode } from "../features/preview/preview-mode";
 
-const PACK_RESULT_REVEAL_DELAY_MS = 920;
 const PACK_OPENING_LOCK_MS = 980;
 
 export function OpenPackPage(): React.JSX.Element {
@@ -15,30 +14,21 @@ export function OpenPackPage(): React.JSX.Element {
   const dailyPack = useDailyPack();
   const packOpening = useOpenPack();
   const openingTimeoutRef = useRef<number | null>(null);
+  const resultSectionRef = useRef<HTMLElement | null>(null);
   const [isEnvelopeOpening, setIsEnvelopeOpening] = useState(false);
   const [revealedPackResult, setRevealedPackResult] = useState<OpenPackResponseDto | null>(null);
   const previewMode = isPreviewMode();
   const isBusy = dailyPack.loading || packOpening.loading;
   const isActionLocked = isBusy || isEnvelopeOpening;
+  const isEntryMode = revealedPackResult === null;
+  const entryMetaMessage = getEntryMetaMessage(dailyPack.claim);
   const claimVisualState = getClaimVisualState(dailyPack.claim);
-  const packEnvelopeState = getPackEnvelopeState(dailyPack.claim, isEnvelopeOpening || packOpening.loading);
+  const packEnvelopeState = getPackEnvelopeState(
+    dailyPack.claim,
+    isEnvelopeOpening || packOpening.loading,
+  );
   const packEnvelopeLabel = getPackEnvelopeLabel(packEnvelopeState);
-  const canOpenAnother =
-    !isActionLocked && revealedPackResult !== null && dailyPack.claim?.status === "AVAILABLE";
-
-  useEffect(() => {
-    if (!packOpening.result) {
-      setRevealedPackResult(null);
-      return;
-    }
-
-    setRevealedPackResult(null);
-    const timeoutId = window.setTimeout(() => {
-      setRevealedPackResult(packOpening.result);
-    }, PACK_RESULT_REVEAL_DELAY_MS);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [packOpening.result]);
+  const canOpenAnother = !isActionLocked && revealedPackResult !== null;
 
   useEffect(() => {
     return () => {
@@ -47,6 +37,17 @@ export function OpenPackPage(): React.JSX.Element {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!revealedPackResult) {
+      return;
+    }
+
+    resultSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [revealedPackResult]);
 
   async function handleOpenDailyPack(): Promise<void> {
     const claim =
@@ -66,6 +67,9 @@ export function OpenPackPage(): React.JSX.Element {
 
     openingTimeoutRef.current = window.setTimeout(() => {
       setIsEnvelopeOpening(false);
+      if (result) {
+        setRevealedPackResult(result);
+      }
       openingTimeoutRef.current = null;
     }, PACK_OPENING_LOCK_MS);
 
@@ -95,7 +99,7 @@ export function OpenPackPage(): React.JSX.Element {
       <div className="pack-modal-backdrop" aria-hidden="true" />
       <section
         className={`pack-modal pack-actions-card pack-stand pack-actions-card--${packEnvelopeState} ${
-          revealedPackResult ? "pack-modal--has-result" : ""
+          revealedPackResult ? "pack-modal--has-result" : "pack-modal--entry"
         }`}
         aria-label="Modal de sobre diario"
         role="dialog"
@@ -103,22 +107,27 @@ export function OpenPackPage(): React.JSX.Element {
       >
         <div className="pack-modal-header">
           <div className="open-pack-hero-copy">
-            <p className="eyebrow">Sobres</p>
-            <h1>Sobre diario azulgrana</h1>
-            <p>Abrilo y mirá salir las figuritas dentro del mismo modal.</p>
+            {!isEntryMode ? <p className="eyebrow">Resultado</p> : null}
+            <h1>{isEntryMode ? "Abrir sobre" : "Sobre diario azulgrana"}</h1>
+            {!isEntryMode ? <p>Abrilo y mirá salir las figuritas dentro del mismo modal.</p> : null}
           </div>
           <button type="button" className="ghost-button compact" onClick={() => navigate("/album")}>
             Cerrar
           </button>
         </div>
 
-        <aside className={`claim-badge claim-badge--${claimVisualState.variant}`}>
-          <span className="claim-badge-label">Estado del sobre</span>
-          <strong>{claimVisualState.title}</strong>
-          <p>{claimVisualState.description}</p>
-        </aside>
+        {!isEntryMode ? (
+          <aside className={`claim-badge claim-badge--${claimVisualState.variant}`}>
+            <span className="claim-badge-label">Estado del sobre</span>
+            <strong>{claimVisualState.title}</strong>
+            <p>{claimVisualState.description}</p>
+          </aside>
+        ) : null}
 
-        <div className={`daily-pack-stage daily-pack-stage--${packEnvelopeState}`} aria-hidden="true">
+        <div
+          className={`daily-pack-stage daily-pack-stage--${packEnvelopeState}`}
+          aria-hidden="true"
+        >
           <span className="pack-object-shadow" />
           <div className={`daily-pack-visual daily-pack-visual--${packEnvelopeState}`}>
             <span className="daily-pack-visual-flap" />
@@ -133,18 +142,13 @@ export function OpenPackPage(): React.JSX.Element {
           <span className="pack-opening-spark pack-opening-spark--two" />
           <span className="pack-flying-card pack-flying-card--one" />
           <span className="pack-flying-card pack-flying-card--two" />
-          <span className="daily-pack-visual-label">{packEnvelopeLabel}</span>
+          {!isEntryMode ? (
+            <span className="daily-pack-visual-label">{packEnvelopeLabel}</span>
+          ) : null}
         </div>
 
         {!revealedPackResult ? (
-          <>
-            <div className="pack-actions-copy">
-              <h2>{getActionHeading(dailyPack.claim)}</h2>
-              <p aria-live="polite" role="status">
-                {getClaimStateMessage(dailyPack.claim)}
-              </p>
-            </div>
-
+          <div className="pack-entry-footer">
             <div className="pack-actions pack-actions--single">
               <button
                 type="button"
@@ -159,7 +163,13 @@ export function OpenPackPage(): React.JSX.Element {
                 })}
               </button>
             </div>
-          </>
+
+            {entryMetaMessage ? (
+              <div className="pack-entry-meta" aria-live="polite" role="status">
+                <p>{entryMetaMessage}</p>
+              </div>
+            ) : null}
+          </div>
         ) : null}
 
         {dailyPack.error ? (
@@ -175,6 +185,7 @@ export function OpenPackPage(): React.JSX.Element {
 
         {revealedPackResult ? (
           <section
+            ref={resultSectionRef}
             className="pack-result-section pack-result-section--visible"
             aria-label="Resultado del sobre"
           >
@@ -193,8 +204,12 @@ export function OpenPackPage(): React.JSX.Element {
                   </span>
                 </div>
                 {canOpenAnother ? (
-                  <button type="button" className="ghost-button" onClick={() => void handleOpenAnother()}>
-                    {previewMode ? "Abrir otro sobre" : "Abrir siguiente sobre"}
+                  <button
+                    type="button"
+                    className="ghost-button"
+                    onClick={() => void handleOpenAnother()}
+                  >
+                    Abrir otro sobre
                   </button>
                 ) : null}
               </div>
@@ -258,36 +273,20 @@ function getPackEnvelopeLabel(state: "idle" | "ready" | "opening" | "opened"): s
   return "Sin reclamar";
 }
 
-function getClaimStateMessage(claim: ClaimDailyPackResponseDto | null): string {
+function getEntryMetaMessage(claim: ClaimDailyPackResponseDto | null): string | null {
   if (!claim) {
-    return "Todavia no reclamaste tu sobre diario. Empeza por reclamarlo.";
+    return "Reclama tu sobre diario para abrirlo.";
   }
 
   if (claim.status === "AVAILABLE") {
-    return `Tu sobre diario esta listo para abrir. Vence ${formatDate(claim.expiresAt)}.`;
+    return null;
   }
 
   if (claim.status === "CONSUMED") {
-    return "Ya abriste el sobre diario. Volve cuando tengas otro disponible.";
+    return "Pedí otro sobre para seguir probando.";
   }
 
   return "El sobre diario no esta disponible en este momento.";
-}
-
-function getActionHeading(claim: ClaimDailyPackResponseDto | null): string {
-  if (!claim) {
-    return "Tu sobre de hoy";
-  }
-
-  if (claim.status === "AVAILABLE") {
-    return "Listo para abrir";
-  }
-
-  if (claim.status === "CONSUMED") {
-    return "Volvé mañana";
-  }
-
-  return "Sobre diario";
 }
 
 function getOpenButtonLabel(state: {
@@ -363,4 +362,3 @@ function getStickerFlightStyle(index: number): React.CSSProperties {
     "--pack-sticker-rotation": preset.rotation,
   } as React.CSSProperties;
 }
-

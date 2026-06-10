@@ -137,7 +137,10 @@ function createPreviewAlbumState(): {
   };
 }
 
-function createPreviewUserSticker(stickerId: string, index: number): {
+function createPreviewUserSticker(
+  stickerId: string,
+  index: number,
+): {
   readonly stickerId: string;
   readonly quantity: number;
   readonly pastedQuantity: number;

@@ -1,13 +1,14 @@
-import { type AlbumStickerView } from "@albumsl/domain";
-import { type AnimationEvent, useEffect, useState } from "react";
+import { canPasteSticker, type AlbumStickerView } from "@albumsl/domain";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { getAlbumStatusClassName, getAlbumStatusLabel } from "../features/album/album-view-labels";
+import { AlbumLoadingSkeleton } from "../components/LoadingSkeleton";
+import { getAlbumStatusClassName } from "../features/album/album-view-labels";
 import { useAlbumData } from "../features/album/useAlbumData";
+import { usePasteSticker } from "../features/album/usePasteSticker";
 
 const STICKERS_PER_ALBUM_SIDE = 6;
 const STICKERS_PER_ALBUM_SPREAD = STICKERS_PER_ALBUM_SIDE * 2;
-const ALBUM_PAGE_TURN_FALLBACK_MS = 840;
 const ALBUM_PAGE_THEMES = [
   {
     theme: "gloria",
@@ -57,10 +58,18 @@ const ALBUM_PAGE_THEMES = [
 
 export function AlbumPage(): React.JSX.Element {
   const { albumStickers, progress, loading, error, refresh } = useAlbumData();
+  const pasteSticker = usePasteSticker();
   const hasNoCollectedStickers = !loading && !error && progress.collectedStickers === 0;
-  const completion = Math.max(0, Math.min(100, progress.completionPercentage));
   const libertadoresStickers = albumStickers.filter(isLibertadores2014Sticker);
   const libertadoresProgress = getCollectionProgress(libertadoresStickers);
+
+  async function handlePasteSticker(stickerId: string): Promise<void> {
+    const result = await pasteSticker.paste(stickerId);
+
+    if (result) {
+      await refresh();
+    }
+  }
 
   return (
     <main className="page album-page experience-album-page album-game-screen">
@@ -69,28 +78,7 @@ export function AlbumPage(): React.JSX.Element {
         <div className="album-hero-copy">
           <p className="eyebrow">Mi Album</p>
           <h1>Libertadores 2014</h1>
-          <p>Completa casilleros, pega figus y avanza pagina por pagina.</p>
-        </div>
-        <div className="album-screen-progress" aria-label="Progreso general del album">
-          <strong>{progress.completionPercentage}%</strong>
-          <span>completo</span>
-          <div className="album-screen-progress-meter" aria-hidden="true">
-            <span style={{ width: `${completion}%` }} />
-          </div>
-        </div>
-        <div className="album-screen-stats" aria-label="Resumen de coleccion">
-          <span>
-            <strong>{progress.collectedStickers}</strong>
-            Conseguidas
-          </span>
-          <span>
-            <strong>{progress.pastedStickers}</strong>
-            Pegadas
-          </span>
-          <span>
-            <strong>{progress.repeatedStickers}</strong>
-            Repetidas
-          </span>
+          <p>Elegí una figurita para pegarla y recorré el álbum hoja por hoja.</p>
         </div>
         <div className="album-hero-actions">
           <Link className="album-back-link" to="/">
@@ -107,7 +95,7 @@ export function AlbumPage(): React.JSX.Element {
         </div>
       </section>
 
-      {loading ? <p className="state-message">Cargando tu album...</p> : null}
+      {loading ? <AlbumLoadingSkeleton /> : null}
       {error ? (
         <p className="error-message" role="alert">
           {error}
@@ -128,33 +116,11 @@ export function AlbumPage(): React.JSX.Element {
           description="Album principal"
           progress={libertadoresProgress}
           stickers={libertadoresStickers}
+          loadingStickerId={pasteSticker.loadingStickerId}
+          pasteError={pasteSticker.error}
+          onPaste={(stickerId) => void handlePasteSticker(stickerId)}
         />
       ) : null}
-
-      <section
-        className="album-progress-banner album-progress-banner--compact"
-        aria-label="Resumen visual del album"
-      >
-        <div className="album-progress-banner-copy">
-          <p className="eyebrow">Progreso</p>
-          <h2>{progress.completionPercentage}% completo</h2>
-          <p>
-            {progress.collectedStickers} conseguidas, {progress.pastedStickers} pegadas y{" "}
-            {progress.repeatedStickers} repetidas.
-          </p>
-        </div>
-        <div className="album-progress-meter" aria-hidden="true">
-          <span style={{ width: `${completion}%` }} />
-        </div>
-      </section>
-
-      <section className="album-progress-grid" aria-label="Progreso del album">
-        <ProgressCard label="Total" value={progress.totalStickers} />
-        <ProgressCard label="Conseguidas" value={progress.collectedStickers} />
-        <ProgressCard label="Pegadas" value={progress.pastedStickers} />
-        <ProgressCard label="Repetidas" value={progress.repeatedStickers} />
-        <ProgressCard label="Completitud" value={`${progress.completionPercentage}%`} />
-      </section>
     </main>
   );
 }
@@ -164,76 +130,28 @@ function CollectionSection({
   description,
   progress,
   stickers,
+  loadingStickerId,
+  pasteError,
+  onPaste,
 }: {
   readonly title: string;
   readonly description: string;
   readonly progress: CollectionProgress;
   readonly stickers: readonly AlbumStickerView[];
+  readonly loadingStickerId: string | null;
+  readonly pasteError: string | null;
+  readonly onPaste: (stickerId: string) => void;
 }): React.JSX.Element {
   const completion = progress.total > 0 ? Math.round((progress.pasted / progress.total) * 100) : 0;
   const [displayedSpreadIndex, setDisplayedSpreadIndex] = useState(0);
-  const [targetSpreadIndex, setTargetSpreadIndex] = useState<number | null>(null);
-  const [turnDirection, setTurnDirection] = useState<"next" | "previous" | null>(null);
   const orderedStickers = [...stickers].sort(compareAlbumStickersByNumber);
   const spreadCount = Math.max(1, Math.ceil(orderedStickers.length / STICKERS_PER_ALBUM_SPREAD));
   const currentSpreadIndex = Math.min(displayedSpreadIndex, spreadCount - 1);
-  const confirmedTargetSpreadIndex =
-    targetSpreadIndex === null ? null : Math.min(targetSpreadIndex, spreadCount - 1);
   const currentSpread = getAlbumSpread(orderedStickers, currentSpreadIndex);
-  const targetSpread =
-    confirmedTargetSpreadIndex === null
-      ? null
-      : getAlbumSpread(orderedStickers, confirmedTargetSpreadIndex);
-  const targetSpreadRenderIndex = confirmedTargetSpreadIndex ?? currentSpreadIndex;
   const canGoBack = currentSpreadIndex > 0;
   const canGoForward = currentSpreadIndex < spreadCount - 1;
-  const isTurningPage = turnDirection !== null && targetSpread !== null;
-
-  useEffect(() => {
-    if (displayedSpreadIndex <= spreadCount - 1) {
-      return;
-    }
-
-    setDisplayedSpreadIndex(spreadCount - 1);
-  }, [displayedSpreadIndex, spreadCount]);
-
-  useEffect(() => {
-    if (!isTurningPage || confirmedTargetSpreadIndex === null) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setDisplayedSpreadIndex(confirmedTargetSpreadIndex);
-      setTargetSpreadIndex(null);
-      setTurnDirection(null);
-    }, ALBUM_PAGE_TURN_FALLBACK_MS);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [isTurningPage, confirmedTargetSpreadIndex]);
-
-  function confirmTurnPage(): void {
-    if (confirmedTargetSpreadIndex === null) {
-      return;
-    }
-
-    setDisplayedSpreadIndex(confirmedTargetSpreadIndex);
-    setTargetSpreadIndex(null);
-    setTurnDirection(null);
-  }
-
-  function handleTurnAnimationEnd(event: AnimationEvent<HTMLDivElement>): void {
-    if (event.currentTarget !== event.target) {
-      return;
-    }
-
-    confirmTurnPage();
-  }
 
   function turnPage(direction: "next" | "previous"): void {
-    if (isTurningPage) {
-      return;
-    }
-
     if (direction === "previous" && !canGoBack) {
       return;
     }
@@ -247,15 +165,7 @@ function CollectionSection({
         ? Math.min(spreadCount - 1, currentSpreadIndex + 1)
         : Math.max(0, currentSpreadIndex - 1);
 
-    if (prefersReducedMotion()) {
-      setDisplayedSpreadIndex(nextSpreadIndex);
-      setTargetSpreadIndex(null);
-      setTurnDirection(null);
-      return;
-    }
-
-    setTargetSpreadIndex(nextSpreadIndex);
-    setTurnDirection(direction);
+    setDisplayedSpreadIndex(nextSpreadIndex);
   }
 
   return (
@@ -282,77 +192,53 @@ function CollectionSection({
       </div>
 
       <div
-        className={`album-book album-object album-book-transition-stage ${
-          isTurningPage ? `album-book--turning-${turnDirection}` : ""
-        }`}
-        aria-label={`${title}, paginas ${currentSpreadIndex + 1}`}
+        className="album-book album-object"
+        aria-label={`${title}, hoja ${currentSpreadIndex + 1}`}
       >
-        {targetSpread ? (
-          <div
-            className={`album-book-target-spread album-book-target-spread--${turnDirection}`}
-            aria-hidden="true"
-          >
-            <AlbumBookPage
-              side="left"
-              stickers={targetSpread.leftPageStickers}
-              spreadIndex={targetSpreadRenderIndex}
-              imageLoading="eager"
-              inert
-            />
-            <div className="album-book-spine" aria-hidden="true" />
-            <AlbumBookPage
-              side="right"
-              stickers={targetSpread.rightPageStickers}
-              spreadIndex={targetSpreadRenderIndex}
-              imageLoading="eager"
-              inert
-            />
-          </div>
-        ) : null}
         <AlbumBookPage
           side="left"
           stickers={currentSpread.leftPageStickers}
           spreadIndex={currentSpreadIndex}
+          loadingStickerId={loadingStickerId}
+          onPaste={onPaste}
         />
         <div className="album-book-spine" aria-hidden="true" />
         <AlbumBookPage
           side="right"
           stickers={currentSpread.rightPageStickers}
           spreadIndex={currentSpreadIndex}
+          loadingStickerId={loadingStickerId}
+          onPaste={onPaste}
         />
-        {targetSpread && turnDirection ? (
-          <AlbumTurnSheet
-            direction={turnDirection}
-            currentSpreadIndex={currentSpreadIndex}
-            currentSpread={currentSpread}
-            targetSpreadIndex={confirmedTargetSpreadIndex ?? currentSpreadIndex}
-            targetSpread={targetSpread}
-            onAnimationEnd={handleTurnAnimationEnd}
-          />
-        ) : null}
       </div>
+
+      {pasteError ? (
+        <p className="error-message compact" role="alert">
+          {pasteError}
+        </p>
+      ) : null}
 
       <div className="album-page-nav" aria-label="Navegacion de paginas del album">
         <button
           type="button"
           className="album-page-arrow"
           onClick={() => turnPage("previous")}
-          disabled={!canGoBack || isTurningPage}
-          aria-label="Pagina anterior"
+          disabled={!canGoBack}
+          aria-label="Hoja anterior"
         >
-          {"<"}
+          {"←"}
         </button>
         <span>
-          {getAlbumSpreadTitle(currentSpreadIndex)} · {currentSpreadIndex + 1}/{spreadCount}
+          Hoja {currentSpreadIndex + 1} de {spreadCount}
         </span>
         <button
           type="button"
           className="album-page-arrow"
           onClick={() => turnPage("next")}
-          disabled={!canGoForward || isTurningPage}
-          aria-label="Pagina siguiente"
+          disabled={!canGoForward}
+          aria-label="Hoja siguiente"
         >
-          {">"}
+          {"→"}
         </button>
       </div>
     </section>
@@ -363,14 +249,14 @@ function AlbumBookPage({
   side,
   stickers,
   spreadIndex,
-  imageLoading = "lazy",
-  inert = false,
+  loadingStickerId,
+  onPaste,
 }: {
   readonly side: "left" | "right";
   readonly stickers: readonly AlbumStickerView[];
   readonly spreadIndex: number;
-  readonly imageLoading?: "eager" | "lazy";
-  readonly inert?: boolean;
+  readonly loadingStickerId: string | null;
+  readonly onPaste: (stickerId: string) => void;
 }): React.JSX.Element {
   const pageRange = getAlbumPageRangeLabel(stickers);
   const theme = getAlbumPageTheme(spreadIndex);
@@ -404,8 +290,8 @@ function AlbumBookPage({
             <AlbumStickerCard
               key={albumSticker.sticker.id}
               albumSticker={albumSticker}
-              imageLoading={imageLoading}
-              inert={inert}
+              loading={loadingStickerId === albumSticker.sticker.id}
+              onPaste={onPaste}
               slotIndex={stickerIndex}
             />
           ))}
@@ -415,69 +301,6 @@ function AlbumBookPage({
         <span>San Lorenzo</span>
         <span>{pageFooter}</span>
       </footer>
-    </article>
-  );
-}
-
-function AlbumTurnSheet({
-  direction,
-  currentSpreadIndex,
-  currentSpread,
-  targetSpreadIndex,
-  targetSpread,
-  onAnimationEnd,
-}: {
-  readonly direction: "next" | "previous";
-  readonly currentSpreadIndex: number;
-  readonly currentSpread: AlbumSpread;
-  readonly targetSpreadIndex: number;
-  readonly targetSpread: AlbumSpread;
-  readonly onAnimationEnd: (event: AnimationEvent<HTMLDivElement>) => void;
-}): React.JSX.Element {
-  const frontStickers =
-    direction === "next" ? currentSpread.rightPageStickers : currentSpread.leftPageStickers;
-  const backStickers =
-    direction === "next" ? targetSpread.leftPageStickers : targetSpread.rightPageStickers;
-
-  return (
-    <div
-      className={`album-turn-sheet album-turn-sheet--${direction}`}
-      onAnimationEnd={onAnimationEnd}
-      aria-hidden="true"
-    >
-      <div className="album-turn-sheet-face album-turn-sheet-face--front">
-        <AlbumBookPage
-          side={direction === "next" ? "right" : "left"}
-          stickers={frontStickers}
-          spreadIndex={currentSpreadIndex}
-          imageLoading="eager"
-          inert
-        />
-      </div>
-      <div className="album-turn-sheet-face album-turn-sheet-face--back">
-        <AlbumBookPage
-          side={direction === "next" ? "left" : "right"}
-          stickers={backStickers}
-          spreadIndex={targetSpreadIndex}
-          imageLoading="eager"
-          inert
-        />
-      </div>
-    </div>
-  );
-}
-
-function ProgressCard({
-  label,
-  value,
-}: {
-  readonly label: string;
-  readonly value: string | number;
-}): React.JSX.Element {
-  return (
-    <article className="album-progress-card">
-      <span>{label}</span>
-      <strong>{value}</strong>
     </article>
   );
 }
@@ -541,12 +364,6 @@ function getAlbumPageRangeLabel(stickers: readonly AlbumStickerView[]): string {
   return `#${firstStickerNumber} - #${lastStickerNumber}`;
 }
 
-function getAlbumSpreadTitle(spreadIndex: number): string {
-  const spreadTitles = ["Intro", "Campeones", "La final", "Leyendas", "Festejos", "Coleccion"];
-
-  return spreadTitles[spreadIndex] ?? `Pagina ${spreadIndex + 1}`;
-}
-
 function getAlbumPageTheme(spreadIndex: number): (typeof ALBUM_PAGE_THEMES)[number] {
   return ALBUM_PAGE_THEMES[spreadIndex % ALBUM_PAGE_THEMES.length] ?? ALBUM_PAGE_THEMES[0];
 }
@@ -557,13 +374,13 @@ function isLibertadores2014Sticker(albumSticker: AlbumStickerView): boolean {
 
 function AlbumStickerCard({
   albumSticker,
-  imageLoading = "lazy",
-  inert = false,
+  loading,
+  onPaste,
   slotIndex,
 }: {
   readonly albumSticker: AlbumStickerView;
-  readonly imageLoading?: "eager" | "lazy";
-  readonly inert?: boolean;
+  readonly loading: boolean;
+  readonly onPaste: (stickerId: string) => void;
   readonly slotIndex?: number;
 }): React.JSX.Element {
   const { sticker } = albumSticker;
@@ -574,21 +391,21 @@ function AlbumStickerCard({
   const extraClassName = albumSticker.repeatedQuantity > 0 ? "album-slot--extra" : "";
   const slotPositionClassName =
     slotIndex === undefined ? "" : `album-slot-position-${slotIndex + 1}`;
+  const className = `album-slot album-sticker-slot ${statusClassName} ${rarityClassName} ${extraClassName} ${slotPositionClassName}`;
+  const isAvailableToPaste =
+    albumSticker.userSticker !== null &&
+    albumSticker.userSticker !== undefined &&
+    canPasteSticker(albumSticker.userSticker);
 
-  return (
-    <Link
-      className={`album-slot album-sticker-slot ${statusClassName} ${rarityClassName} ${extraClassName} ${slotPositionClassName}`}
-      to={`/album/${sticker.id}`}
-      aria-label={`Figurita ${sticker.number}: ${sticker.title}. ${slotHint}`}
-      tabIndex={inert ? -1 : undefined}
-    >
+  const content = (
+    <>
       <span className="album-slot-number">#{sticker.number}</span>
       <div className="album-slot-art">
         {shouldShowImage ? (
           sticker.imageUrl.startsWith("placeholder://") ? (
             <span>#{sticker.number}</span>
           ) : (
-            <img src={sticker.imageUrl} alt={sticker.title} loading={imageLoading} />
+            <img src={sticker.imageUrl} alt={sticker.title} loading="lazy" />
           )
         ) : (
           <span className="album-slot-empty-number">#{sticker.number}</span>
@@ -600,19 +417,35 @@ function AlbumStickerCard({
           {sticker.category} · {sticker.rarity}
         </p>
       </div>
-      <span className={`album-slot-state album-slot-state--${albumSticker.status.toLowerCase()}`}>
-        {getAlbumStatusLabel(albumSticker.status)}
-      </span>
       {albumSticker.repeatedQuantity > 0 ? (
         <span className="album-slot-repeat-badge">+{albumSticker.repeatedQuantity}</span>
       ) : null}
-    </Link>
+    </>
   );
-}
 
-function prefersReducedMotion(): boolean {
+  if (isAvailableToPaste) {
+    return (
+      <button
+        type="button"
+        className={`${className} album-slot--paste-action`}
+        onClick={() => onPaste(sticker.id)}
+        disabled={loading}
+        aria-label={`Pegar figurita ${sticker.number}: ${sticker.title}`}
+      >
+        {content}
+        <span className="album-slot-paste-label">{loading ? "Pegando..." : "Pegar"}</span>
+      </button>
+    );
+  }
+
   return (
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    <Link
+      className={className}
+      to={`/album/${sticker.id}`}
+      aria-label={`Figurita ${sticker.number}: ${sticker.title}. ${slotHint}`}
+    >
+      {content}
+    </Link>
   );
 }
 
