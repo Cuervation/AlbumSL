@@ -1,14 +1,17 @@
 Original prompt: Dale
 
 ## Notes
+
 - Focus: keep the album page turn visually closer to the reference video.
 - Current known gap: right-turn still feels too projected to the left; left-turn is closer.
 
 ## TODO
+
 - Tighten the next-page turn origin so it reads as starting from the spine.
 - Re-check the result with Playwright screenshots.
 
 ## Updates
+
 - Reduced the right-turn spine offset and softened the next-page keyframes so the page stays closer to the lomo.
 - Validated with `npm.cmd --workspace @albumsl/web run typecheck` and `npm.cmd --workspace @albumsl/web run lint`.
 - Added a dev-only `qaPreview=1` path so Playwright can inspect the album in an authenticated preview without Firebase.

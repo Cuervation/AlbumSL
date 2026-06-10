@@ -28,15 +28,12 @@ Este agente protege el "que" y el "por que" antes de que otros agentes definan e
 - `packages/`
 - Archivos de configuracion de build o deploy.
 
-## Documentos que debe leer antes de trabajar
+## Lectura m?nima
 
 - `AGENTS.md`
-- `docs/PRODUCT_SPEC.md`
-- `docs/ROADMAP.md`
-- `docs/FEATURE_SLICES.md`
-- `docs/DECISIONS.md`
-- `docs/SECURITY_SPEC.md`
-- Documentos de feature relacionados, si existen.
+- `docs/AI_ROUTER.md`
+- archivos directamente afectados por la tarea
+  La documentaci?n adicional se lee ?nicamente seg?n el tipo de cambio indicado por `docs/AI_ROUTER.md`.
 
 ## Reglas especificas del agente
 

@@ -29,17 +29,12 @@ cliente.
 - `functions/`
 - `firestore.rules`
 
-## Documentos que debe leer antes de trabajar
+## Lectura m?nima
 
 - `AGENTS.md`
-- `docs/TECH_SPEC.md`
-- `docs/SECURITY_SPEC.md`
-- `docs/FEATURE_SLICES.md`
-- `docs/AUTH.md`
-- `docs/STICKER_CATALOG.md`
-- `docs/PACK_OPENING.md`
-- `docs/ALBUM_UI.md`
-- `docs/CONTRACTS.md`
+- `docs/AI_ROUTER.md`
+- archivos directamente afectados por la tarea
+  La documentaci?n adicional se lee ?nicamente seg?n el tipo de cambio indicado por `docs/AI_ROUTER.md`.
 
 ## Reglas especificas del agente
 

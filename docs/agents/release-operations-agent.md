@@ -33,14 +33,12 @@ en riesgo produccion.
 - `functions/src/`
 - `firestore.rules` sin Security Agent.
 
-## Documentos que debe leer antes de trabajar
+## Lectura m?nima
 
 - `AGENTS.md`
-- `docs/LOCAL_DEVELOPMENT.md`
-- `docs/TECH_SPEC.md`
-- `docs/SECURITY_SPEC.md`
-- `docs/FIRESTORE_SCHEMA.md`
-- `docs/DECISIONS.md`
+- `docs/AI_ROUTER.md`
+- archivos directamente afectados por la tarea
+  La documentaci?n adicional se lee ?nicamente seg?n el tipo de cambio indicado por `docs/AI_ROUTER.md`.
 
 ## Reglas especificas del agente
 

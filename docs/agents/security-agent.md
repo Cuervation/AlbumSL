@@ -31,15 +31,12 @@ escrituras sensibles no autorizadas.
 - Dataset de contenido editorial.
 - Configuracion de deploy sin Release / Operations Agent.
 
-## Documentos que debe leer antes de trabajar
+## Lectura m?nima
 
 - `AGENTS.md`
-- `docs/SECURITY_SPEC.md`
-- `docs/FIRESTORE_SCHEMA.md`
-- `docs/ARCHITECTURE.md`
-- `docs/PACK_OPENING.md`
-- `docs/AUTH.md`
-- `docs/ALBUM_UI.md`
+- `docs/AI_ROUTER.md`
+- archivos directamente afectados por la tarea
+  La documentaci?n adicional se lee ?nicamente seg?n el tipo de cambio indicado por `docs/AI_ROUTER.md`.
 
 ## Reglas especificas del agente
 

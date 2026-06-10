@@ -36,15 +36,12 @@ tecnicas alineadas con el objetivo de portabilidad.
 - `packages/application/src/`
 - `packages/infra-firebase/src/`
 
-## Documentos que debe leer antes de trabajar
+## Lectura m?nima
 
 - `AGENTS.md`
-- `docs/TECH_SPEC.md`
-- `docs/ARCHITECTURE.md`
-- `docs/REPO_STRUCTURE.md`
-- `docs/LOCAL_DEVELOPMENT.md`
-- `docs/DECISIONS.md`
-- `docs/SECURITY_SPEC.md`
+- `docs/AI_ROUTER.md`
+- archivos directamente afectados por la tarea
+  La documentaci?n adicional se lee ?nicamente seg?n el tipo de cambio indicado por `docs/AI_ROUTER.md`.
 
 ## Reglas especificas del agente
 
