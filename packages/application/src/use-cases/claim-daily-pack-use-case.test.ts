@@ -32,6 +32,31 @@ describe("claimDailyPackUseCase", () => {
     expect(secondClaim.id).toBe(firstClaim.id);
     expect(repository.size).toBe(1);
   });
+
+  it("can create multiple daily claims for QA when explicitly enabled", async () => {
+    const repository = new InMemoryPackClaimRepository();
+    const dependencies = { packClaimRepository: repository, clock: fixedClock() };
+
+    const firstClaim = await claimDailyPackUseCase(
+      {
+        userId: "user-1",
+        clientRequestId: "request-1",
+        allowMultipleClaimsPerDay: true,
+      },
+      dependencies,
+    );
+    const secondClaim = await claimDailyPackUseCase(
+      {
+        userId: "user-1",
+        clientRequestId: "request-2",
+        allowMultipleClaimsPerDay: true,
+      },
+      dependencies,
+    );
+
+    expect(secondClaim.id).not.toBe(firstClaim.id);
+    expect(repository.size).toBe(2);
+  });
 });
 
 class InMemoryPackClaimRepository implements Pick<PackClaimRepository, "findById" | "save"> {

@@ -6,6 +6,7 @@ import type { Clock, PackClaimRepository } from "../ports.js";
 export interface ClaimDailyPackInput {
   readonly userId: string;
   readonly clientRequestId?: string;
+  readonly allowMultipleClaimsPerDay?: boolean;
 }
 
 export interface ClaimDailyPackDependencies {
@@ -25,7 +26,10 @@ export async function claimDailyPackUseCase(
 
   const now = dependencies.clock.now();
   const dateKey = getUtcDateKey(now);
-  const claimId = createDailyClaimId(userId, dateKey);
+  const claimId = createDailyClaimId(
+    userId,
+    getDailyClaimIdKey(dateKey, input.clientRequestId, input.allowMultipleClaimsPerDay),
+  );
   const existingClaim = await dependencies.packClaimRepository.findById(claimId);
 
   if (existingClaim) {
@@ -61,4 +65,21 @@ function getNextUtcDayStart(date: Date): Date {
   return new Date(
     Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() + 1, 0, 0, 0, 0),
   );
+}
+
+function getDailyClaimIdKey(
+  dateKey: string,
+  clientRequestId: string | undefined,
+  allowMultipleClaimsPerDay: boolean | undefined,
+): string {
+  if (!allowMultipleClaimsPerDay) {
+    return dateKey;
+  }
+
+  const trimmedClientRequestId = clientRequestId?.trim();
+  if (!trimmedClientRequestId) {
+    return dateKey;
+  }
+
+  return `${dateKey}_${encodeURIComponent(trimmedClientRequestId).slice(0, 96)}`;
 }

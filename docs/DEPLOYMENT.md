@@ -98,6 +98,7 @@ FIREBASE_PROJECT_ID=albumsl-dev-cuervation
 GCLOUD_PROJECT=albumsl-dev-cuervation
 GOOGLE_APPLICATION_CREDENTIALS=/etc/secrets/albumsl-dev-cuervation-adminsdk.json
 ALBUMSL_ALLOWED_ORIGINS=https://albumsl-dev-cuervation.web.app,http://localhost:5173
+ALBUMSL_QA_UNLIMITED_DAILY_PACKS=true
 ```
 
 No configurar `PORT` manualmente en Render.

@@ -42,16 +42,17 @@ export const claimDailyPack = onCall<ClaimDailyPackRequestDto>(
     try {
       const authenticatedUserId = getAuthenticatedUserId(userId);
       const dependencies = createFunctionDependencies();
-      const claim = await claimDailyPackUseCase(
-        {
-          userId: authenticatedUserId,
-          clientRequestId: request.data?.clientRequestId,
-        },
-        {
-          packClaimRepository: dependencies.packClaimRepository,
-          clock: dependencies.clock,
-        },
-      );
+      const claimInput: Parameters<typeof claimDailyPackUseCase>[0] & {
+        readonly allowMultipleClaimsPerDay?: boolean;
+      } = {
+        userId: authenticatedUserId,
+        clientRequestId: request.data?.clientRequestId,
+        allowMultipleClaimsPerDay: isQaUnlimitedDailyPacksEnabled(),
+      };
+      const claim = await claimDailyPackUseCase(claimInput, {
+        packClaimRepository: dependencies.packClaimRepository,
+        clock: dependencies.clock,
+      });
 
       logInfo("function_success", {
         functionName,
@@ -73,6 +74,18 @@ export const claimDailyPack = onCall<ClaimDailyPackRequestDto>(
     }
   },
 );
+
+function isQaUnlimitedDailyPacksEnabled(): boolean {
+  const configuredValue = process.env.ALBUMSL_QA_UNLIMITED_DAILY_PACKS;
+
+  if (configuredValue !== undefined) {
+    return configuredValue === "true";
+  }
+
+  return (
+    (process.env.GCLOUD_PROJECT ?? process.env.FIREBASE_PROJECT_ID) === "albumsl-dev-cuervation"
+  );
+}
 
 export const openPack = onCall<OpenPackRequestDto>(
   async (request): Promise<OpenPackResponseDto> => {

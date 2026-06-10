@@ -238,16 +238,17 @@ async function defaultClaimDailyPack(
   request: ClaimDailyPackRequestDto,
 ): Promise<ClaimDailyPackResponseDto> {
   const dependencies = createApiDependencies();
-  const claim = await claimDailyPackUseCase(
-    {
-      userId: user.uid,
-      clientRequestId: request.clientRequestId,
-    },
-    {
-      packClaimRepository: dependencies.packClaimRepository,
-      clock: dependencies.clock,
-    },
-  );
+  const claimInput: Parameters<typeof claimDailyPackUseCase>[0] & {
+    readonly allowMultipleClaimsPerDay?: boolean;
+  } = {
+    userId: user.uid,
+    clientRequestId: request.clientRequestId,
+    allowMultipleClaimsPerDay: isQaUnlimitedDailyPacksEnabled(),
+  };
+  const claim = await claimDailyPackUseCase(claimInput, {
+    packClaimRepository: dependencies.packClaimRepository,
+    clock: dependencies.clock,
+  });
 
   return {
     claimId: claim.id,
@@ -255,6 +256,20 @@ async function defaultClaimDailyPack(
     status: claim.status,
     expiresAt: claim.expiresAt?.toISOString(),
   };
+}
+
+function isQaUnlimitedDailyPacksEnabled(): boolean {
+  const configuredValue = process.env.ALBUMSL_QA_UNLIMITED_DAILY_PACKS;
+
+  if (configuredValue !== undefined) {
+    return configuredValue === "true";
+  }
+
+  return getFirebaseProjectId() === "albumsl-dev-cuervation";
+}
+
+function getFirebaseProjectId(): string | undefined {
+  return process.env.FIREBASE_PROJECT_ID ?? process.env.GCLOUD_PROJECT;
 }
 
 async function defaultOpenPack(

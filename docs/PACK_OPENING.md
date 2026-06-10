@@ -18,6 +18,15 @@ figuritas ni escribe datos sensibles.
 Esto evita duplicados diarios y permite idempotencia simple aun si el usuario toca el boton mas de
 una vez.
 
+### Modo QA ilimitado
+
+- En el proyecto dev `albumsl-dev-cuervation`, cada solicitud con un `clientRequestId` nuevo crea
+  otro claim para poder abrir sobres sin límite durante las pruebas.
+- `ALBUMSL_QA_UNLIMITED_DAILY_PACKS=true|false` permite forzar explícitamente el comportamiento.
+- Producción conserva un único claim diario salvo habilitación explícita.
+- Cada sobre sigue consumiendo un claim propio dentro de la transacción; no se relajan ownership,
+  auditoría ni escrituras sensibles.
+
 ## Flujo De Apertura
 
 1. El usuario llama `openPack` con `source` y `claimId`.
