@@ -1,0 +1,32 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="base" x1="85" y1="72" x2="1510" y2="1140" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#16062E"/>
+      <stop offset=".52" stop-color="#061445"/>
+      <stop offset="1" stop-color="#011D58"/>
+    </linearGradient>
+    <radialGradient id="redGlow" cx="0" cy="0" r="1" gradientTransform="translate(470 480) rotate(38) scale(760 620)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D40053" stop-opacity=".82"/>
+      <stop offset="1" stop-color="#D40053" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="blueGlow" cx="0" cy="0" r="1" gradientTransform="translate(1350 730) rotate(132) scale(700 620)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#006CFF" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#006CFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ribbon" x1="0" y1="210" x2="950" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#35003E" stop-opacity=".15"/>
+      <stop offset=".48" stop-color="#E00051" stop-opacity=".58"/>
+      <stop offset="1" stop-color="#6A004F" stop-opacity=".05"/>
+    </linearGradient>
+    <pattern id="grain" width="8" height="8" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r=".7" fill="white" fill-opacity=".035"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="1200" fill="url(#base)"/>
+  <rect width="1600" height="1200" fill="url(#redGlow)"/>
+  <rect width="1600" height="1200" fill="url(#blueGlow)"/>
+  <path d="M-110 245C184 392 333 312 499 117C621 -27 761 -79 919 -45L589 377C430 578 207 690 -54 653L-110 245Z" fill="url(#ribbon)"/>
+  <path d="M-55 725C255 538 411 451 615 224" stroke="#E00051" stroke-opacity=".16" stroke-width="120"/>
+  <path d="M1175 -70C1367 172 1507 413 1645 720" stroke="#0059E8" stroke-opacity=".13" stroke-width="180"/>
+  <rect width="1600" height="1200" fill="url(#grain)"/>
+</svg>

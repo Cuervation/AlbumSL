@@ -1,5 +1,4 @@
 import {
-  AlbumStickerStatus,
   type AlbumStickerView,
   type StickerCategory,
   type StickerEra,
@@ -45,8 +44,7 @@ export function useAlbumFilters(albumStickers: readonly AlbumStickerView[]) {
         const matchesRarity = filters.rarity === "ALL" || sticker.rarity === filters.rarity;
         const matchesEra = filters.era === "ALL" || sticker.era === filters.era;
         const matchesStatus =
-          filters.status === AlbumStatusFilter.ALL ||
-          statusMatches(albumSticker.status, filters.status);
+          filters.status === AlbumStatusFilter.ALL || statusMatches(albumSticker, filters.status);
         const matchesSearch =
           deferredSearch.length === 0 ||
           sticker.title.toLowerCase().includes(deferredSearch) ||
@@ -77,20 +75,16 @@ export function useAlbumFilters(albumStickers: readonly AlbumStickerView[]) {
   };
 }
 
-function statusMatches(status: AlbumStickerView["status"], filter: AlbumStatusFilter): boolean {
+function statusMatches(albumSticker: AlbumStickerView, filter: AlbumStatusFilter): boolean {
   switch (filter) {
     case AlbumStatusFilter.COLLECTED:
-      return (
-        status === AlbumStickerStatus.COLLECTED ||
-        status === AlbumStickerStatus.PASTED ||
-        status === AlbumStickerStatus.REPEATED
-      );
+      return albumSticker.isCollected;
     case AlbumStatusFilter.PASTED:
-      return status === AlbumStickerStatus.PASTED || status === AlbumStickerStatus.REPEATED;
+      return albumSticker.isPasted;
     case AlbumStatusFilter.MISSING:
-      return status === AlbumStickerStatus.MISSING;
+      return !albumSticker.isCollected;
     case AlbumStatusFilter.REPEATED:
-      return status === AlbumStickerStatus.REPEATED;
+      return albumSticker.duplicateQuantity > 0;
     case AlbumStatusFilter.ALL:
       return true;
   }

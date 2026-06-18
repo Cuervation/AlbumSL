@@ -1,67 +1,30 @@
 import { canPasteSticker, type AlbumStickerView } from "@albumsl/domain";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 
 import { AlbumLoadingSkeleton } from "../components/LoadingSkeleton";
+import { getStickerSpreadIndex } from "../features/album/album-navigation";
 import { getAlbumStatusClassName } from "../features/album/album-view-labels";
 import { useAlbumData } from "../features/album/useAlbumData";
 import { usePasteSticker } from "../features/album/usePasteSticker";
 
-const STICKERS_PER_ALBUM_SIDE = 6;
+const STICKERS_PER_ALBUM_SIDE = 16;
 const STICKERS_PER_ALBUM_SPREAD = STICKERS_PER_ALBUM_SIDE * 2;
 const ALBUM_PAGE_THEMES = [
-  {
-    theme: "gloria",
-    leftTitle: "Gloria azulgrana",
-    rightTitle: "Equipo campeon",
-    leftKicker: "La copa eterna",
-    rightKicker: "Plantel campeon",
-    leftMark: "2014",
-    rightMark: "CASLA",
-    footerLeft: "Final",
-    footerRight: "Boedo",
-  },
-  {
-    theme: "final",
-    leftTitle: "Noche de copa",
-    rightTitle: "La final",
-    leftKicker: "Nuevo Gasometro",
-    rightKicker: "Historia grande",
-    leftMark: "22",
-    rightMark: "AGO",
-    footerLeft: "Semis",
-    footerRight: "Trofeo",
-  },
-  {
-    theme: "plantel",
-    leftTitle: "Plantel sagrado",
-    rightTitle: "Festejo eterno",
-    leftKicker: "Los nombres",
-    rightKicker: "La vuelta",
-    leftMark: "SL",
-    rightMark: "COPA",
-    footerLeft: "Equipo",
-    footerRight: "Ciclon",
-  },
-  {
-    theme: "boedo",
-    leftTitle: "Pueblo azulgrana",
-    rightTitle: "Boedo late",
-    leftKicker: "La hinchada",
-    rightKicker: "Identidad",
-    leftMark: "B°",
-    rightMark: "1908",
-    footerLeft: "Tablon",
-    footerRight: "Barrio",
-  },
+  { theme: "gloria" },
+  { theme: "final" },
+  { theme: "plantel" },
+  { theme: "boedo" },
 ] as const;
 
 export function AlbumPage(): React.JSX.Element {
+  const [searchParams] = useSearchParams();
   const { albumStickers, progress, loading, error, refresh } = useAlbumData();
   const pasteSticker = usePasteSticker();
   const hasNoCollectedStickers = !loading && !error && progress.collectedStickers === 0;
   const libertadoresStickers = albumStickers.filter(isLibertadores2014Sticker);
   const libertadoresProgress = getCollectionProgress(libertadoresStickers);
+  const focusedStickerId = searchParams.get("sticker");
 
   async function handlePasteSticker(stickerId: string): Promise<void> {
     const result = await pasteSticker.paste(stickerId);
@@ -116,6 +79,7 @@ export function AlbumPage(): React.JSX.Element {
           description="Album principal"
           progress={libertadoresProgress}
           stickers={libertadoresStickers}
+          focusedStickerId={focusedStickerId}
           loadingStickerId={pasteSticker.loadingStickerId}
           pasteError={pasteSticker.error}
           onPaste={(stickerId) => void handlePasteSticker(stickerId)}
@@ -130,6 +94,7 @@ function CollectionSection({
   description,
   progress,
   stickers,
+  focusedStickerId,
   loadingStickerId,
   pasteError,
   onPaste,
@@ -138,6 +103,7 @@ function CollectionSection({
   readonly description: string;
   readonly progress: CollectionProgress;
   readonly stickers: readonly AlbumStickerView[];
+  readonly focusedStickerId: string | null;
   readonly loadingStickerId: string | null;
   readonly pasteError: string | null;
   readonly onPaste: (stickerId: string) => void;
@@ -146,10 +112,19 @@ function CollectionSection({
   const [displayedSpreadIndex, setDisplayedSpreadIndex] = useState(0);
   const orderedStickers = [...stickers].sort(compareAlbumStickersByNumber);
   const spreadCount = Math.max(1, Math.ceil(orderedStickers.length / STICKERS_PER_ALBUM_SPREAD));
+  const focusedSpreadIndex = getStickerSpreadIndex(
+    orderedStickers,
+    focusedStickerId,
+    STICKERS_PER_ALBUM_SPREAD,
+  );
   const currentSpreadIndex = Math.min(displayedSpreadIndex, spreadCount - 1);
   const currentSpread = getAlbumSpread(orderedStickers, currentSpreadIndex);
   const canGoBack = currentSpreadIndex > 0;
   const canGoForward = currentSpreadIndex < spreadCount - 1;
+
+  useEffect(() => {
+    setDisplayedSpreadIndex(focusedSpreadIndex);
+  }, [focusedSpreadIndex]);
 
   function turnPage(direction: "next" | "previous"): void {
     if (direction === "previous" && !canGoBack) {
@@ -193,13 +168,14 @@ function CollectionSection({
 
       <div
         className="album-book album-object"
-        aria-label={`${title}, hoja ${currentSpreadIndex + 1}`}
+        aria-label={`${title}, página ${currentSpreadIndex + 1}`}
       >
         <AlbumBookPage
           side="left"
           stickers={currentSpread.leftPageStickers}
           spreadIndex={currentSpreadIndex}
           loadingStickerId={loadingStickerId}
+          focusedStickerId={focusedStickerId}
           onPaste={onPaste}
         />
         <div className="album-book-spine" aria-hidden="true" />
@@ -208,6 +184,7 @@ function CollectionSection({
           stickers={currentSpread.rightPageStickers}
           spreadIndex={currentSpreadIndex}
           loadingStickerId={loadingStickerId}
+          focusedStickerId={focusedStickerId}
           onPaste={onPaste}
         />
       </div>
@@ -224,21 +201,21 @@ function CollectionSection({
           className="album-page-arrow"
           onClick={() => turnPage("previous")}
           disabled={!canGoBack}
-          aria-label="Hoja anterior"
+          aria-label="Página anterior"
         >
-          {"←"}
+          {"‹"}
         </button>
         <span>
-          Hoja {currentSpreadIndex + 1} de {spreadCount}
+          Página {currentSpreadIndex + 1} de {spreadCount}
         </span>
         <button
           type="button"
           className="album-page-arrow"
           onClick={() => turnPage("next")}
           disabled={!canGoForward}
-          aria-label="Hoja siguiente"
+          aria-label="Página siguiente"
         >
-          {"→"}
+          {"›"}
         </button>
       </div>
     </section>
@@ -250,57 +227,42 @@ function AlbumBookPage({
   stickers,
   spreadIndex,
   loadingStickerId,
+  focusedStickerId,
   onPaste,
 }: {
   readonly side: "left" | "right";
   readonly stickers: readonly AlbumStickerView[];
   readonly spreadIndex: number;
   readonly loadingStickerId: string | null;
+  readonly focusedStickerId: string | null;
   readonly onPaste: (stickerId: string) => void;
 }): React.JSX.Element {
-  const pageRange = getAlbumPageRangeLabel(stickers);
   const theme = getAlbumPageTheme(spreadIndex);
-  const pageTitle = side === "left" ? theme.leftTitle : theme.rightTitle;
-  const pageKicker = side === "left" ? theme.leftKicker : theme.rightKicker;
-  const pageMark = side === "left" ? theme.leftMark : theme.rightMark;
-  const pageFooter = side === "left" ? theme.footerLeft : theme.footerRight;
 
   return (
     <article
       className={`album-book-page album-book-page--${side} album-magazine-page album-magazine-page--${side} album-magazine-page--theme-${theme.theme}`}
     >
       <header className="album-magazine-header">
-        <div>
-          <p>Libertadores 2014</p>
-          <h3>{pageTitle}</h3>
-        </div>
-        <span>{pageRange}</span>
+        <p>Libertadores 2014</p>
       </header>
       <div className="album-magazine-watermark" aria-hidden="true">
         CASLA
       </div>
       <div className="album-magazine-content">
-        <aside className="album-magazine-info-card" aria-hidden="true">
-          <strong>{pageMark}</strong>
-          <span>{pageKicker}</span>
-          <small>{pageRange}</small>
-        </aside>
         <div className="album-grid album-slot-grid album-slot-grid--libertadores album-book-slots album-magazine-slots">
           {stickers.map((albumSticker, stickerIndex) => (
             <AlbumStickerCard
               key={albumSticker.sticker.id}
               albumSticker={albumSticker}
               loading={loadingStickerId === albumSticker.sticker.id}
+              focused={focusedStickerId === albumSticker.sticker.id}
               onPaste={onPaste}
               slotIndex={stickerIndex}
             />
           ))}
         </div>
       </div>
-      <footer className="album-magazine-footer">
-        <span>San Lorenzo</span>
-        <span>{pageFooter}</span>
-      </footer>
     </article>
   );
 }
@@ -353,17 +315,6 @@ function compareAlbumStickersByNumber(first: AlbumStickerView, second: AlbumStic
   return Number(first.sticker.number) - Number(second.sticker.number);
 }
 
-function getAlbumPageRangeLabel(stickers: readonly AlbumStickerView[]): string {
-  if (stickers.length === 0) {
-    return "Figus";
-  }
-
-  const firstStickerNumber = stickers[0]?.sticker.number ?? "";
-  const lastStickerNumber = stickers[stickers.length - 1]?.sticker.number ?? "";
-
-  return `#${firstStickerNumber} - #${lastStickerNumber}`;
-}
-
 function getAlbumPageTheme(spreadIndex: number): (typeof ALBUM_PAGE_THEMES)[number] {
   return ALBUM_PAGE_THEMES[spreadIndex % ALBUM_PAGE_THEMES.length] ?? ALBUM_PAGE_THEMES[0];
 }
@@ -375,11 +326,13 @@ function isLibertadores2014Sticker(albumSticker: AlbumStickerView): boolean {
 function AlbumStickerCard({
   albumSticker,
   loading,
+  focused,
   onPaste,
   slotIndex,
 }: {
   readonly albumSticker: AlbumStickerView;
   readonly loading: boolean;
+  readonly focused: boolean;
   readonly onPaste: (stickerId: string) => void;
   readonly slotIndex?: number;
 }): React.JSX.Element {
@@ -388,10 +341,10 @@ function AlbumStickerCard({
   const shouldShowImage = albumSticker.isCollected || albumSticker.isPasted;
   const rarityClassName = `album-slot--${sticker.rarity.toLowerCase()}`;
   const slotHint = getAlbumSlotHint(albumSticker);
-  const extraClassName = albumSticker.repeatedQuantity > 0 ? "album-slot--extra" : "";
   const slotPositionClassName =
     slotIndex === undefined ? "" : `album-slot-position-${slotIndex + 1}`;
-  const className = `album-slot album-sticker-slot ${statusClassName} ${rarityClassName} ${extraClassName} ${slotPositionClassName}`;
+  const focusedClassName = focused ? "album-slot--focused" : "";
+  const className = `album-slot album-sticker-slot ${statusClassName} ${rarityClassName} ${slotPositionClassName} ${focusedClassName}`;
   const isAvailableToPaste =
     albumSticker.userSticker !== null &&
     albumSticker.userSticker !== undefined &&
@@ -399,16 +352,15 @@ function AlbumStickerCard({
 
   const content = (
     <>
-      <span className="album-slot-number">#{sticker.number}</span>
       <div className="album-slot-art">
         {shouldShowImage ? (
           sticker.imageUrl.startsWith("placeholder://") ? (
-            <span>#{sticker.number}</span>
+            <EmptyAlbumSlotMark stickerNumber={sticker.number} />
           ) : (
             <img src={sticker.imageUrl} alt={sticker.title} loading="lazy" />
           )
         ) : (
-          <span className="album-slot-empty-number">#{sticker.number}</span>
+          <EmptyAlbumSlotMark stickerNumber={sticker.number} />
         )}
       </div>
       <div className="album-slot-body">
@@ -417,9 +369,6 @@ function AlbumStickerCard({
           {sticker.category} · {sticker.rarity}
         </p>
       </div>
-      {albumSticker.repeatedQuantity > 0 ? (
-        <span className="album-slot-repeat-badge">+{albumSticker.repeatedQuantity}</span>
-      ) : null}
     </>
   );
 
@@ -433,7 +382,6 @@ function AlbumStickerCard({
         aria-label={`Pegar figurita ${sticker.number}: ${sticker.title}`}
       >
         {content}
-        <span className="album-slot-paste-label">{loading ? "Pegando..." : "Pegar"}</span>
       </button>
     );
   }
@@ -449,14 +397,29 @@ function AlbumStickerCard({
   );
 }
 
+function EmptyAlbumSlotMark({
+  stickerNumber,
+}: {
+  readonly stickerNumber: number;
+}): React.JSX.Element {
+  return (
+    <span className="album-slot-empty-mark" aria-hidden="true">
+      <span className="album-slot-empty-mark-main">CASLA</span>
+      <span className="album-slot-empty-mark-line" />
+      <span className="album-slot-empty-mark-detail">Boedo 1908</span>
+      <span className="album-slot-empty-number">#{stickerNumber}</span>
+    </span>
+  );
+}
+
 function getAlbumSlotHint(albumSticker: AlbumStickerView): string {
   if (!albumSticker.isCollected) {
     return "Faltante";
   }
 
-  if (albumSticker.isPasted && albumSticker.repeatedQuantity > 0) {
-    return `Pegada con ${albumSticker.repeatedQuantity} repetida${
-      albumSticker.repeatedQuantity === 1 ? "" : "s"
+  if (albumSticker.isPasted && albumSticker.duplicateQuantity > 0) {
+    return `Pegada con ${albumSticker.duplicateQuantity} repetida${
+      albumSticker.duplicateQuantity === 1 ? "" : "s"
     }`;
   }
 

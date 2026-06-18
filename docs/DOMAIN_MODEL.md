@@ -73,13 +73,16 @@ El dominio vive en `packages/domain`.
 - Una figurita esta conseguida si `quantity > 0`.
 - Una figurita esta pegada si `pastedQuantity > 0`.
 - `pastedQuantity` no puede superar `quantity`.
-- `repeatedQuantity = max(quantity - pastedQuantity, 0)`.
+- `pastedQuantity` no puede superar `1`: el album tiene un solo slot por figurita.
+- `duplicateQuantity = max(quantity - 1, 0)`.
+- `repeatedQuantity` queda como alias temporal de `duplicateQuantity` por compatibilidad.
 - El progreso se calcula sobre figuritas unicas pegadas.
 
 ## Helpers puros
 
 - `isStickerCollected(userSticker)`
 - `isStickerPasted(userSticker)`
+- `getDuplicateQuantity(userSticker)`
 - `getRepeatedQuantity(userSticker)`
 - `canPasteSticker(userSticker)`
 - `pasteSticker(userSticker)`
@@ -102,6 +105,7 @@ El dominio vive en `packages/domain`.
 - `calculateUpdatedUserStickers(previousUserStickers, pickedStickers)`
 - `validatePackConfig(config)`
 - `buildAlbumView(stickers, userStickers)`
+- `getStickerPlacementState(userSticker)`
 - `getStickerUserStatus(userSticker)`
 
 ## Validaciones
@@ -120,5 +124,6 @@ Los helpers de sobres no usan `Math.random` directamente. Reciben un random inye
 seleccion sea testeable y portable.
 
 `buildAlbumView` combina catalogo e inventario para construir slots de UI sin depender de React ni
-Firebase. Ordena por `sortOrder` y `number`, expone estado visual y mantiene la regla existente de
-`repeatedQuantity`.
+Firebase. Ordena por `sortOrder` y `number`, expone `placementState` (`MISSING`, `UNPASTED`,
+`PASTED`) y `duplicateQuantity`. Una figurita puede estar pegada y tener duplicadas al mismo
+tiempo; esos conceptos no son mutuamente excluyentes.

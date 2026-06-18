@@ -75,7 +75,10 @@ describe("pack selection", () => {
     expect(result.newCount).toBe(1);
     expect(result.repeatedCount).toBe(1);
     expect(result.stickers.map((item) => item.isNew)).toEqual([true, false]);
+    expect(result.stickers.map((item) => item.acquisitionState)).toEqual(["NEW", "DUPLICATE"]);
     expect(result.stickers.map((item) => item.quantityAfter)).toEqual([1, 2]);
+    expect(result.stickers.map((item) => item.duplicateQuantityAfter)).toEqual([0, 1]);
+    expect(result.stickers.map((item) => item.canPaste)).toEqual([true, true]);
   });
 
   it("calculateUpdatedUserStickers increments quantities and creates missing stickers", () => {

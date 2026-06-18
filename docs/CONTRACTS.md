@@ -33,7 +33,7 @@ esperados.
 - `PasteStickerResponseDto`
 
 `PasteStickerResponseDto` devuelve `stickerId`, `quantity`, `pastedQuantity`,
-`repeatedQuantity` y `albumProgress`.
+`placementState`, `duplicateQuantity`, `repeatedQuantity` y `albumProgress`.
 
 ## DTOs de sobres
 
@@ -49,7 +49,8 @@ esperados.
 
 `OpenPackResponseDto` devuelve `packOpeningId`, `source`, `stickers`, `newCount`,
 `repeatedCount` y `createdAt`. Cada sticker incluye datos publicos de catalogo (`imageUrl`, `era`,
-`rarity`, `category`, `tags`), `isNew` y `quantityAfter`.
+`rarity`, `category`, `tags`), `isNew`, `acquisitionState`, `quantityAfter`,
+`duplicateQuantityAfter` y `canPaste`.
 
 ## Errores API
 

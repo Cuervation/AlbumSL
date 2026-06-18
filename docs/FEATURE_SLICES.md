@@ -349,7 +349,9 @@ Estado implementado inicial:
 
 - pantalla protegida `/duplicates`
 - reutiliza `useAlbumData`
-- muestra slots con `repeatedQuantity > 0`
+- muestra todas las figuritas conseguidas sin filtros ni buscador
+- permite abrir el album en la hoja exacta de una figurita mediante drag and drop o seleccion
+- mantiene una bandeja local de hasta tres repetidas sin navegar ni modificar inventario
 - no implementa intercambio entre usuarios
 - no permite modificar cantidades desde frontend
 

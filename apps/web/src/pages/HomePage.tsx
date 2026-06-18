@@ -1,68 +1,90 @@
 import { Link } from "react-router-dom";
 
+import { AlbumHomeHeader } from "../components/home/AlbumHomeHeader";
+import {
+  HomeActionCard,
+  HomeCollectionCard,
+  HomeDashboardSkeleton,
+  HomeProgressCard,
+} from "../components/home/AlbumHomeCards";
+import { useAlbumData } from "../features/album/useAlbumData";
+import { useAuth } from "../features/auth/useAuth";
+
 export function HomePage(): React.JSX.Element {
+  const { user, currentUserProfile } = useAuth();
+  const { albumStickers, progress, loading, error } = useAlbumData();
+  const displayName = currentUserProfile?.displayName ?? user?.displayName ?? "Cuervo";
+  const collectedNotPasted = albumStickers.filter(
+    (albumSticker) => albumSticker.isCollected && !albumSticker.isPasted,
+  ).length;
+  const missingStickers = Math.max(progress.totalStickers - progress.collectedStickers, 0);
+
   return (
-    <main className="page hero-page album-hub-page experience-shell app-experience-shell">
-      <div className="stadium-backdrop" aria-hidden="true" />
-      <section className="experience-stage app-stage" aria-labelledby="album-hub-title">
-        <div className="experience-skyline" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
+    <main className="album-home-page">
+      <section className="album-home-shell" aria-label="Inicio AlbumSL">
+        <AlbumHomeHeader
+          displayName={displayName}
+          email={currentUserProfile?.email ?? user?.email ?? null}
+          photoURL={currentUserProfile?.photoURL ?? user?.photoURL ?? null}
+          authenticated={user !== null}
+        />
 
-        <div className="album-hub-hero">
-          <p className="eyebrow">San Lorenzo de Almagro</p>
-          <h1 id="album-hub-title">Tu album azulgrana</h1>
-          <p>
-            Entra a la cancha: revisa tus figus, abri sobres y completa la Libertadores 2014 desde
-            un hub con espiritu de juego.
-          </p>
-        </div>
+        {loading ? (
+          <HomeDashboardSkeleton />
+        ) : (
+          <>
+            {error ? (
+              <p className="album-home-alert" role="alert">
+                {error}
+              </p>
+            ) : null}
 
-        <div className="experience-objects" aria-label="Accesos principales del album">
-          <Link
-            className="experience-card experience-card--figus"
-            to="/duplicates"
-            aria-label="Abrir Mis Figus"
-          >
-            <span className="experience-card-kicker">Inventario</span>
-            <span className="figus-stack" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </span>
-            <span className="experience-card-title">Mis Figus</span>
-            <span className="experience-card-copy">Tus cromos repetidos y listos para mirar.</span>
-          </Link>
+            <div className="album-home-dashboard">
+              <section className="album-home-hero">
+                <p className="album-home-eyebrow">La pasión se colecciona</p>
+                <Link className="album-home-button album-home-button--red" to="/album">
+                  Ir a mi álbum
+                </Link>
+              </section>
 
-          <Link
-            className="experience-card experience-card--album experience-card--featured"
-            to="/album"
-            aria-label="Abrir Mi Album"
-          >
-            <span className="experience-card-kicker">Coleccion</span>
-            <span className="album-object" aria-hidden="true">
-              <span className="album-object-cover">SL</span>
-              <span className="album-object-page" />
-            </span>
-            <span className="experience-card-title">Mi Album</span>
-            <span className="experience-card-copy">Pega figuritas y persegui el 100% campeon.</span>
-          </Link>
+              <HomeProgressCard
+                percentage={progress.completionPercentage}
+                collected={progress.collectedStickers}
+                missing={missingStickers}
+              />
 
-          <Link
-            className="experience-card experience-card--packs"
-            to="/open-pack"
-            aria-label="Abrir Sobres"
-          >
-            <span className="experience-card-kicker">Sobre diario</span>
-            <span className="pack-object" aria-hidden="true">
-              <span />
-            </span>
-            <span className="experience-card-title">Abrir Sobres</span>
-            <span className="experience-card-copy">Reclama y abri tu sobre del dia.</span>
-          </Link>
-        </div>
+              <HomeCollectionCard
+                newCount={collectedNotPasted}
+                repeatedCount={progress.repeatedStickers}
+                pastedCount={progress.pastedStickers}
+              />
+
+              <HomeActionCard
+                className="album-home-action--exchange"
+                eyebrow="Zona de intercambio"
+                icon="exchange"
+                title={
+                  progress.repeatedStickers > 0
+                    ? `${progress.repeatedStickers} repetidas listas`
+                    : "Prepará tus repetidas"
+                }
+                description="Revisá tus cromos disponibles para futuros intercambios."
+                action="Ver mis repetidas"
+                to="/duplicates"
+              />
+
+              <HomeActionCard
+                className="album-home-action--packs"
+                eyebrow="Sobres"
+                icon="pack"
+                title="Tenés un sobre para abrir"
+                description="Abrilo y sumá nuevas figuritas a tu colección."
+                action="Abrir sobres"
+                to="/open-pack"
+              />
+            </div>
+          </>
+        )}
       </section>
     </main>
   );

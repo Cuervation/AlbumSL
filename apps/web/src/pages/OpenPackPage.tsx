@@ -219,13 +219,15 @@ export function OpenPackPage(): React.JSX.Element {
               {revealedPackResult.stickers.map((sticker, index) => (
                 <article
                   className={`pack-result-sticker ${
-                    sticker.isNew ? "pack-result-sticker--new" : "pack-result-sticker--repeated"
+                    sticker.acquisitionState === "NEW"
+                      ? "pack-result-sticker--new"
+                      : "pack-result-sticker--repeated"
                   }`}
                   key={`${sticker.stickerId}-${index}`}
                   style={getStickerFlightStyle(index)}
                 >
                   <span className="pack-result-sticker-badge">
-                    {sticker.isNew ? "Nueva" : "Repetida"}
+                    {sticker.acquisitionState === "NEW" ? "Nueva" : "Repetida"}
                   </span>
                   <StickerCatalogCard sticker={sticker} />
                 </article>

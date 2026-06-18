@@ -14,6 +14,8 @@ export interface PasteStickerResponseDto {
   readonly stickerId: string;
   readonly quantity: number;
   readonly pastedQuantity: number;
+  readonly placementState: "MISSING" | "UNPASTED" | "PASTED";
+  readonly duplicateQuantity: number;
   readonly repeatedQuantity: number;
   readonly albumProgress: AlbumProgressDto;
 }

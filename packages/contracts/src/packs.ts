@@ -25,7 +25,10 @@ export interface PackStickerResultDto {
   readonly category: StickerCategoryDto;
   readonly tags: readonly string[];
   readonly isNew: boolean;
+  readonly acquisitionState: "NEW" | "DUPLICATE";
   readonly quantityAfter: number;
+  readonly duplicateQuantityAfter: number;
+  readonly canPaste: boolean;
 }
 
 export interface OpenPackResponseDto {

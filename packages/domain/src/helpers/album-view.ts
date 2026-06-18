@@ -1,5 +1,10 @@
 import type { Sticker, UserSticker } from "../entities.js";
-import { getRepeatedQuantity, isStickerCollected, isStickerPasted } from "./user-stickers.js";
+import {
+  getDuplicateQuantity,
+  getRepeatedQuantity,
+  isStickerCollected,
+  isStickerPasted,
+} from "./user-stickers.js";
 
 export const AlbumStickerStatus = {
   MISSING: "MISSING",
@@ -10,11 +15,22 @@ export const AlbumStickerStatus = {
 
 export type AlbumStickerStatus = (typeof AlbumStickerStatus)[keyof typeof AlbumStickerStatus];
 
+export const AlbumStickerPlacementState = {
+  MISSING: "MISSING",
+  UNPASTED: "UNPASTED",
+  PASTED: "PASTED",
+} as const;
+
+export type AlbumStickerPlacementState =
+  (typeof AlbumStickerPlacementState)[keyof typeof AlbumStickerPlacementState];
+
 export interface AlbumStickerView {
   readonly sticker: Sticker;
   readonly userSticker?: UserSticker;
   readonly isCollected: boolean;
   readonly isPasted: boolean;
+  readonly placementState: AlbumStickerPlacementState;
+  readonly duplicateQuantity: number;
   readonly repeatedQuantity: number;
   readonly status: AlbumStickerStatus;
 }
@@ -31,7 +47,7 @@ export function buildAlbumView(
     .sort((left, right) => left.sortOrder - right.sortOrder || left.number - right.number)
     .map((sticker) => {
       const userSticker = userStickersByStickerId.get(sticker.id);
-      const repeatedQuantity = userSticker ? getRepeatedQuantity(userSticker) : 0;
+      const duplicateQuantity = userSticker ? getDuplicateQuantity(userSticker) : 0;
       const isCollected = userSticker ? isStickerCollected(userSticker) : false;
       const isPasted = userSticker ? isStickerPasted(userSticker) : false;
 
@@ -40,10 +56,26 @@ export function buildAlbumView(
         userSticker,
         isCollected,
         isPasted,
-        repeatedQuantity,
+        placementState: getStickerPlacementState(userSticker),
+        duplicateQuantity,
+        repeatedQuantity: duplicateQuantity,
         status: getStickerUserStatus(userSticker),
       };
     });
+}
+
+export function getStickerPlacementState(
+  userSticker: UserSticker | undefined,
+): AlbumStickerPlacementState {
+  if (!userSticker || !isStickerCollected(userSticker)) {
+    return AlbumStickerPlacementState.MISSING;
+  }
+
+  if (isStickerPasted(userSticker)) {
+    return AlbumStickerPlacementState.PASTED;
+  }
+
+  return AlbumStickerPlacementState.UNPASTED;
 }
 
 export function getStickerUserStatus(userSticker: UserSticker | undefined): AlbumStickerStatus {

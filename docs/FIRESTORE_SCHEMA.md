@@ -145,7 +145,7 @@ Seguridad:
 
 - los contadores son sensibles y no se aceptan updates desde cliente
 - la apertura de sobres recalcula el resumen desde el inventario actualizado
-- `pasteSticker` tambien recalcula el resumen desde backend despues de incrementar `pastedQuantity`
+- `pasteSticker` tambien recalcula el resumen desde backend despues de setear `pastedQuantity = 1`
 
 ## userStickers/{userId}/items/{stickerId}
 
@@ -160,6 +160,9 @@ Campos:
 - `firstCollectedAt`: timestamp
 - `lastCollectedAt`: timestamp
 - `updatedAt`: timestamp
+
+Regla de dominio: `pastedQuantity` representa el slot del album y solo puede ser `0` o `1`.
+Las copias repetidas se calculan como `max(quantity - 1, 0)`.
 
 Quien lee:
 
@@ -188,7 +191,7 @@ Seguridad:
 
 - el cliente no puede crear items ni incrementar `quantity`
 - el pegado debe pasar por Cloud Function
-- el cliente no puede incrementar `pastedQuantity` directamente
+- el cliente no puede modificar `pastedQuantity` directamente
 
 ## packClaims/{claimId}
 

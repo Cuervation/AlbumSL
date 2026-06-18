@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import type { Sticker } from "../entities.js";
 import { StickerCategory, StickerEra, StickerRarity } from "../enums.js";
-import { AlbumStickerStatus, buildAlbumView, getStickerUserStatus } from "./album-view.js";
+import {
+  AlbumStickerPlacementState,
+  AlbumStickerStatus,
+  buildAlbumView,
+  getStickerPlacementState,
+  getStickerUserStatus,
+} from "./album-view.js";
 
 describe("album view", () => {
   it("marks missing stickers", () => {
@@ -13,11 +19,17 @@ describe("album view", () => {
     expect(getStickerUserStatus({ stickerId: "s1", quantity: 1, pastedQuantity: 0 })).toBe(
       AlbumStickerStatus.COLLECTED,
     );
+    expect(getStickerPlacementState({ stickerId: "s1", quantity: 1, pastedQuantity: 0 })).toBe(
+      AlbumStickerPlacementState.UNPASTED,
+    );
   });
 
   it("marks pasted stickers", () => {
     expect(getStickerUserStatus({ stickerId: "s1", quantity: 1, pastedQuantity: 1 })).toBe(
       AlbumStickerStatus.PASTED,
+    );
+    expect(getStickerPlacementState({ stickerId: "s1", quantity: 1, pastedQuantity: 1 })).toBe(
+      AlbumStickerPlacementState.PASTED,
     );
   });
 
@@ -37,6 +49,8 @@ describe("album view", () => {
     expect(albumView[0]).toMatchObject({
       isCollected: true,
       isPasted: true,
+      placementState: AlbumStickerPlacementState.PASTED,
+      duplicateQuantity: 1,
       repeatedQuantity: 1,
       status: AlbumStickerStatus.REPEATED,
     });

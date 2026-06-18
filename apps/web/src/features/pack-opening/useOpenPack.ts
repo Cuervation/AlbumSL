@@ -1,24 +1,32 @@
 import type { OpenPackResponseDto, PackSourceDto } from "@albumsl/contracts";
+import { initialStickerSeed } from "@albumsl/domain";
 import { useState } from "react";
 
 import { getPackOpeningErrorMessage } from "./pack-opening-errors";
 import { openPack } from "./pack-opening.service";
-import { initialStickerSeed } from "@albumsl/domain";
 import { isPreviewMode } from "../preview/preview-mode";
 
 function createPreviewPackResult(source: PackSourceDto, claimId: string): OpenPackResponseDto {
-  const previewStickers = initialStickerSeed.slice(0, 5).map((sticker, index) => ({
-    stickerId: sticker.id,
-    number: sticker.number,
-    title: sticker.title,
-    imageUrl: sticker.imageUrl,
-    era: sticker.era,
-    rarity: sticker.rarity,
-    category: sticker.category,
-    tags: sticker.tags,
-    isNew: index < 3,
-    quantityAfter: index < 3 ? 1 : 2,
-  }));
+  const previewStickers = initialStickerSeed.slice(0, 5).map((sticker, index) => {
+    const isNew = index < 3;
+    const quantityAfter = isNew ? 1 : 2;
+
+    return {
+      stickerId: sticker.id,
+      number: sticker.number,
+      title: sticker.title,
+      imageUrl: sticker.imageUrl,
+      era: sticker.era,
+      rarity: sticker.rarity,
+      category: sticker.category,
+      tags: sticker.tags,
+      isNew,
+      acquisitionState: isNew ? "NEW" : "DUPLICATE",
+      quantityAfter,
+      duplicateQuantityAfter: Math.max(quantityAfter - 1, 0),
+      canPaste: true,
+    } as const;
+  });
 
   return {
     packOpeningId: `qa-preview-opening-${claimId}-${Date.now()}`,

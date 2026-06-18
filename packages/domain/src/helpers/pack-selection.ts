@@ -2,6 +2,7 @@ import { DEFAULT_PACK_SIZE } from "../constants.js";
 import type { Sticker, StickerId, UserSticker } from "../entities.js";
 import { StickerRarity, type PackSource } from "../enums.js";
 import { DomainValidationError, type DomainValidationResult } from "../errors.js";
+import { canPasteSticker, getDuplicateQuantity } from "./user-stickers.js";
 
 export type RarityWeights = Readonly<Record<StickerRarity, number>>;
 
@@ -23,7 +24,10 @@ export interface PickedSticker {
 export interface PackStickerResult {
   readonly sticker: Sticker;
   readonly isNew: boolean;
+  readonly acquisitionState: "NEW" | "DUPLICATE";
   readonly quantityAfter: number;
+  readonly duplicateQuantityAfter: number;
+  readonly canPaste: boolean;
 }
 
 export interface PackResult {
@@ -174,15 +178,29 @@ export function calculatePackResult(
   const runningQuantities = new Map(
     previousUserStickers.map((userSticker) => [userSticker.stickerId, userSticker.quantity]),
   );
+  const runningPastedQuantities = new Map(
+    previousUserStickers.map((userSticker) => [userSticker.stickerId, userSticker.pastedQuantity]),
+  );
   const stickerResults = pickedStickers.map((pickedSticker) => {
     const previousQuantity = runningQuantities.get(pickedSticker.stickerId) ?? 0;
+    const pastedQuantity = runningPastedQuantities.get(pickedSticker.stickerId) ?? 0;
     const quantityAfter = previousQuantity + 1;
     runningQuantities.set(pickedSticker.stickerId, quantityAfter);
+    const userStickerAfter = {
+      stickerId: pickedSticker.stickerId,
+      quantity: quantityAfter,
+      pastedQuantity,
+    };
+    const isNew = previousQuantity === 0;
+    const acquisitionState: PackStickerResult["acquisitionState"] = isNew ? "NEW" : "DUPLICATE";
 
     return {
       sticker: pickedSticker.sticker,
-      isNew: previousQuantity === 0,
+      isNew,
+      acquisitionState,
       quantityAfter,
+      duplicateQuantityAfter: getDuplicateQuantity(userStickerAfter),
+      canPaste: canPasteSticker(userStickerAfter),
     };
   });
 

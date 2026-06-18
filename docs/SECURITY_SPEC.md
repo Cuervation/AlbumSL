@@ -97,9 +97,9 @@
 - La identidad confiable sale de `request.auth.uid`, no del payload.
 - El backend lee `userStickers/{uid}/items/{stickerId}` dentro de una transaccion.
 - Si la figurita no existe para el usuario, devuelve `INSUFFICIENT_QUANTITY`.
-- Si `pastedQuantity >= quantity`, devuelve `INSUFFICIENT_QUANTITY`.
+- Si la figurita ya esta pegada (`pastedQuantity > 0`), devuelve `INSUFFICIENT_QUANTITY`.
 - Si el estado es invalido, devuelve `INVALID_ARGUMENT`.
-- El backend incrementa `pastedQuantity` y recalcula `userAlbums/{uid}`.
+- El backend setea `pastedQuantity = 1` y recalcula `userAlbums/{uid}`.
 - El frontend no puede pegar escribiendo directo en Firestore.
 
 ## Catalogo y seed

@@ -20,6 +20,10 @@ export function validateUserSticker(userSticker: UserSticker): DomainValidationR
     errors.push("pastedQuantity must be greater than or equal to 0");
   }
 
+  if (userSticker.pastedQuantity > 1) {
+    errors.push("pastedQuantity cannot be greater than 1");
+  }
+
   if (userSticker.pastedQuantity > userSticker.quantity) {
     errors.push("pastedQuantity cannot be greater than quantity");
   }
@@ -39,11 +43,19 @@ export function isStickerPasted(userSticker: UserSticker): boolean {
 }
 
 export function getRepeatedQuantity(userSticker: UserSticker): number {
-  return Math.max(userSticker.quantity - userSticker.pastedQuantity, 0);
+  return getDuplicateQuantity(userSticker);
+}
+
+export function getDuplicateQuantity(userSticker: UserSticker): number {
+  return Math.max(userSticker.quantity - 1, 0);
 }
 
 export function canPasteSticker(userSticker: UserSticker): boolean {
-  return validateUserSticker(userSticker).isValid && getRepeatedQuantity(userSticker) > 0;
+  return (
+    validateUserSticker(userSticker).isValid &&
+    isStickerCollected(userSticker) &&
+    !isStickerPasted(userSticker)
+  );
 }
 
 export function pasteSticker(userSticker: UserSticker): UserSticker {
@@ -61,6 +73,6 @@ export function pasteSticker(userSticker: UserSticker): UserSticker {
 
   return {
     ...userSticker,
-    pastedQuantity: userSticker.pastedQuantity + 1,
+    pastedQuantity: 1,
   };
 }

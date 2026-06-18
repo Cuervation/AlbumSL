@@ -1,6 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 
 import { claimDailyPackUseCase, openPackUseCase, pasteStickerUseCase } from "@albumsl/application";
+import { getDuplicateQuantity, getStickerPlacementState } from "@albumsl/domain";
 import {
   ApiErrorCode,
   type ApiErrorResponse,
@@ -304,7 +305,10 @@ async function defaultOpenPack(
       category: stickerResult.sticker.category,
       tags: stickerResult.sticker.tags,
       isNew: stickerResult.isNew,
+      acquisitionState: stickerResult.acquisitionState,
       quantityAfter: stickerResult.quantityAfter,
+      duplicateQuantityAfter: stickerResult.duplicateQuantityAfter,
+      canPaste: stickerResult.canPaste,
     })),
     newCount: result.newCount,
     repeatedCount: result.repeatedCount,
@@ -332,7 +336,9 @@ async function defaultPasteSticker(
     stickerId: result.userSticker.stickerId,
     quantity: result.userSticker.quantity,
     pastedQuantity: result.userSticker.pastedQuantity,
-    repeatedQuantity: Math.max(result.userSticker.quantity - result.userSticker.pastedQuantity, 0),
+    placementState: getStickerPlacementState(result.userSticker),
+    duplicateQuantity: getDuplicateQuantity(result.userSticker),
+    repeatedQuantity: getDuplicateQuantity(result.userSticker),
     albumProgress: {
       totalStickers: result.albumProgress.totalStickers,
       collectedStickers: result.albumProgress.collectedStickers,

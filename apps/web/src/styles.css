@@ -6882,6 +6882,1407 @@ a {
   z-index: 4;
 }
 
+/* Home principal: dashboard real sobre fondo decorativo independiente. */
+.app-frame--immersive-home {
+  background: #03091f;
+}
+
+.album-home-page {
+  background: #f5f5f4;
+  min-height: 100dvh;
+  padding: 12px;
+}
+
+.album-home-shell {
+  background-color: #07113c;
+  background-image:
+    linear-gradient(135deg, rgba(22, 6, 46, 0.18), rgba(1, 23, 77, 0.3)),
+    url("/album-home-background.svg");
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 26px;
+  box-shadow: 0 26px 70px rgba(2, 8, 30, 0.24);
+  color: #ffffff;
+  margin: 0 auto;
+  max-width: 1440px;
+  min-height: calc(100dvh - 24px);
+  overflow: hidden;
+  padding: clamp(18px, 2vw, 30px);
+  position: relative;
+}
+
+.album-home-shell::after {
+  background:
+    radial-gradient(circle at 19% 30%, rgba(244, 0, 91, 0.15), transparent 29%),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018), transparent 30%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.album-home-header,
+.album-home-dashboard,
+.album-home-alert {
+  position: relative;
+  z-index: 1;
+}
+
+.album-home-header {
+  align-items: center;
+  display: grid;
+  gap: clamp(14px, 2vw, 28px);
+  grid-template-columns: minmax(245px, 0.9fr) minmax(470px, 1.6fr) minmax(175px, 0.65fr);
+}
+
+.album-home-brand {
+  align-items: center;
+  color: #ffffff;
+  display: flex;
+  gap: 14px;
+  min-width: 0;
+  text-decoration: none;
+}
+
+.album-home-shield {
+  align-items: center;
+  background: linear-gradient(
+    90deg,
+    #071a43 0 18%,
+    #ffffff 18% 30%,
+    #d51645 30% 48%,
+    #071a43 48% 66%,
+    #ffffff 66% 78%,
+    #d51645 78%
+  );
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  border-radius: 42% 42% 52% 52% / 30% 30% 68% 68%;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.26),
+    inset 0 0 0 2px rgba(3, 13, 48, 0.62);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 66px;
+  justify-content: center;
+  position: relative;
+  width: 54px;
+}
+
+.album-home-shield::before {
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #071a43;
+  content: "";
+  height: 30px;
+  position: absolute;
+  width: 30px;
+}
+
+.album-home-shield span {
+  color: #071a43;
+  font-size: 0.66rem;
+  font-weight: 1000;
+  position: relative;
+  z-index: 1;
+}
+
+.album-home-brand-copy,
+.album-home-profile > span,
+.album-home-stat-copy,
+.album-home-action-copy > span:last-child {
+  display: grid;
+}
+
+.album-home-brand-copy strong {
+  font-size: clamp(1.08rem, 1.8vw, 1.65rem);
+  font-weight: 1000;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.album-home-brand-copy small {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.74rem;
+  letter-spacing: 0.035em;
+  margin-top: 5px;
+  text-transform: uppercase;
+}
+
+.album-home-nav {
+  align-items: center;
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  min-width: 0;
+}
+
+.album-home-nav a {
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 17px;
+  color: rgba(255, 255, 255, 0.7);
+  display: grid;
+  font-size: clamp(0.68rem, 1vw, 0.84rem);
+  font-weight: 700;
+  gap: 6px;
+  justify-items: center;
+  min-height: 70px;
+  min-width: 72px;
+  padding: 9px 11px;
+  text-decoration: none;
+}
+
+.album-home-nav a.active,
+.album-home-nav a:hover {
+  background: linear-gradient(145deg, rgba(222, 8, 82, 0.95), rgba(190, 3, 68, 0.88));
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 30px rgba(219, 0, 80, 0.2);
+  color: #ffffff;
+}
+
+.album-home-nav a:focus-visible,
+.album-home-brand:focus-visible,
+.album-home-profile:focus-visible,
+.album-home-button:focus-visible,
+.album-home-collection-row:focus-visible {
+  outline: 3px solid #f43f5e;
+  outline-offset: 3px;
+}
+
+.album-home-nav svg,
+.album-home-stat-icon svg,
+.album-home-action-icon svg {
+  fill: none;
+  height: 25px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 25px;
+}
+
+.album-home-profile {
+  align-items: center;
+  background: rgba(2, 12, 48, 0.42);
+  border: 1px solid rgba(66, 115, 255, 0.2);
+  border-radius: 20px;
+  color: #ffffff;
+  display: flex;
+  gap: 11px;
+  justify-self: end;
+  max-width: 210px;
+  min-height: 70px;
+  padding: 9px 13px;
+  text-decoration: none;
+}
+
+.album-home-profile .user-avatar {
+  border: 2px solid #e548ca;
+  height: 45px;
+  width: 45px;
+}
+
+.album-home-profile .user-avatar-fallback {
+  font-size: 1rem;
+}
+
+.album-home-profile strong {
+  font-size: 0.9rem;
+  max-width: 112px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.album-home-profile small {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.7rem;
+  margin-top: 3px;
+}
+
+.album-home-alert {
+  background: rgba(127, 29, 29, 0.72);
+  border: 1px solid rgba(254, 202, 202, 0.32);
+  border-radius: 12px;
+  color: #fee2e2;
+  margin: 16px 0 0;
+  padding: 10px 14px;
+}
+
+.album-home-dashboard {
+  display: grid;
+  gap: clamp(14px, 1.4vw, 20px);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  margin-top: clamp(20px, 2.4vw, 34px);
+}
+
+.album-home-hero {
+  align-content: center;
+  display: grid;
+  grid-column: 1 / span 3;
+  justify-items: start;
+  min-width: 0;
+  padding: clamp(10px, 2.5vw, 30px) clamp(4px, 1.4vw, 18px);
+}
+
+.album-home-eyebrow {
+  color: #fb7185;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.album-home-hero h1 {
+  font-size: clamp(2rem, 3.6vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+  margin: 0;
+}
+
+.album-home-hero h1 span {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.album-home-button {
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: clamp(0.82rem, 1.25vw, 1.05rem);
+  font-weight: 900;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 28px;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.album-home-hero .album-home-button {
+  margin-top: clamp(22px, 3vw, 42px);
+  width: min(100%, 290px);
+}
+
+.album-home-button--red {
+  background: linear-gradient(90deg, #c20b48, #ef1554);
+  box-shadow: 0 12px 28px rgba(220, 0, 75, 0.18);
+}
+
+.album-home-button--blue {
+  background: linear-gradient(90deg, #123db8, #075ef1);
+  box-shadow: 0 12px 28px rgba(0, 79, 255, 0.16);
+}
+
+.album-home-panel {
+  background:
+    linear-gradient(150deg, rgba(22, 10, 57, 0.77), rgba(0, 26, 75, 0.77)),
+    linear-gradient(90deg, rgba(224, 0, 82, 0.08), rgba(0, 92, 255, 0.08));
+  border: 1px solid rgba(158, 45, 201, 0.48);
+  border-radius: 26px;
+  box-shadow: inset 0 0 40px rgba(0, 10, 50, 0.18);
+  min-width: 0;
+  padding: clamp(20px, 2.3vw, 34px);
+}
+
+.album-home-panel h2 {
+  font-size: clamp(1.05rem, 1.7vw, 1.45rem);
+  letter-spacing: -0.03em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.album-home-progress {
+  align-items: center;
+  display: grid;
+  grid-column: 4 / span 4;
+  justify-items: center;
+}
+
+.album-home-progress-ring {
+  --album-progress: 0deg;
+  align-items: center;
+  aspect-ratio: 1;
+  background:
+    radial-gradient(circle, #10103c 0 56%, transparent 57%),
+    conic-gradient(
+      from 0deg,
+      #ff513d 0deg,
+      #ed1958 calc(var(--album-progress) * 0.62),
+      #a622e7 var(--album-progress),
+      rgba(128, 31, 139, 0.38) var(--album-progress) 360deg
+    );
+  border-radius: 50%;
+  box-shadow:
+    0 0 42px rgba(225, 0, 91, 0.16),
+    inset 0 0 22px rgba(255, 255, 255, 0.04);
+  display: flex;
+  justify-content: center;
+  margin: clamp(14px, 2vh, 26px) 0;
+  width: min(70%, 250px);
+}
+
+.album-home-progress-ring span {
+  display: grid;
+  justify-items: center;
+}
+
+.album-home-progress-ring strong {
+  font-size: clamp(2.6rem, 5vw, 4.5rem);
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+}
+
+.album-home-progress-ring small {
+  font-size: 0.82rem;
+  margin-top: 8px;
+  text-transform: uppercase;
+}
+
+.album-home-progress-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  text-align: center;
+  width: 100%;
+}
+
+.album-home-progress-stats div + div {
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.album-home-progress-stats dt {
+  font-size: clamp(1.65rem, 3vw, 2.25rem);
+  font-weight: 900;
+}
+
+.album-home-progress-stats dd {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.82rem;
+  margin: 5px 0 0;
+}
+
+.album-home-collection {
+  border-color: rgba(0, 100, 255, 0.72);
+  display: grid;
+  gap: 18px;
+  grid-column: 8 / span 5;
+}
+
+.album-home-collection-list {
+  display: grid;
+  gap: 10px;
+}
+
+.album-home-collection-row {
+  align-items: center;
+  background: rgba(2, 17, 58, 0.68);
+  border: 1px solid rgba(68, 99, 217, 0.14);
+  border-radius: 18px;
+  color: #ffffff;
+  display: grid;
+  gap: 15px;
+  grid-template-columns: 70px minmax(0, 1fr) auto;
+  min-height: 82px;
+  overflow: hidden;
+  padding-right: 18px;
+  text-decoration: none;
+}
+
+.album-home-stat-icon {
+  align-items: center;
+  align-self: stretch;
+  background: linear-gradient(145deg, rgba(6, 90, 244, 0.9), rgba(32, 24, 118, 0.74));
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+}
+
+.album-home-collection-row:nth-child(2) .album-home-stat-icon,
+.album-home-collection-row:nth-child(3) .album-home-stat-icon {
+  background: linear-gradient(145deg, rgba(217, 8, 81, 0.9), rgba(52, 14, 87, 0.74));
+}
+
+.album-home-stat-copy strong {
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  line-height: 1;
+}
+
+.album-home-stat-copy small {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.82rem;
+  margin-top: 4px;
+}
+
+.album-home-chevron {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.album-home-collection .album-home-button {
+  align-self: end;
+  width: 100%;
+}
+
+.album-home-action {
+  align-content: space-between;
+  border-color: rgba(67, 77, 214, 0.58);
+  display: grid;
+  gap: 18px;
+  grid-row: 2;
+}
+
+.album-home-action--exchange {
+  grid-column: 1 / span 6;
+}
+
+.album-home-action--packs {
+  border-color: rgba(0, 92, 255, 0.48);
+  grid-column: 7 / span 6;
+}
+
+.album-home-action-copy {
+  align-items: center;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.album-home-action-icon {
+  align-items: center;
+  background: linear-gradient(145deg, #114bd4, #075ff6);
+  border-radius: 19px;
+  box-shadow: 0 10px 28px rgba(0, 80, 255, 0.2);
+  display: flex;
+  height: 70px;
+  justify-content: center;
+  width: 70px;
+}
+
+.album-home-action--packs .album-home-action-icon {
+  background: linear-gradient(145deg, #d70c4f, #ff7528);
+}
+
+.album-home-action-copy strong {
+  font-size: clamp(1rem, 1.65vw, 1.3rem);
+}
+
+.album-home-action-copy small {
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 0.84rem;
+  line-height: 1.45;
+  margin-top: 7px;
+}
+
+.album-home-dashboard--skeleton {
+  min-height: 690px;
+}
+
+.album-home-skeleton {
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.11)),
+    rgba(5, 18, 62, 0.58);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 26px;
+  display: block;
+}
+
+.album-home-skeleton--1 {
+  grid-column: 1 / span 3;
+}
+
+.album-home-skeleton--2 {
+  grid-column: 4 / span 4;
+}
+
+.album-home-skeleton--3 {
+  grid-column: 8 / span 5;
+}
+
+.album-home-skeleton--4 {
+  grid-column: 1 / span 6;
+}
+
+.album-home-skeleton--5 {
+  grid-column: 7 / span 6;
+}
+
+@media (min-width: 1081px) {
+  .album-home-shell {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: calc(100dvh - 24px);
+    min-height: 760px;
+  }
+
+  .album-home-dashboard {
+    grid-template-rows: minmax(410px, 1.22fr) minmax(210px, 0.62fr);
+    min-height: 0;
+  }
+}
+
+@media (max-width: 1080px) {
+  .album-home-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .album-home-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .album-home-profile {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .album-home-hero {
+    grid-column: 1 / span 6;
+  }
+
+  .album-home-progress {
+    grid-column: 7 / span 6;
+  }
+
+  .album-home-collection {
+    grid-column: 1 / -1;
+  }
+
+  .album-home-action {
+    grid-row: auto;
+  }
+
+  .album-home-dashboard--skeleton {
+    min-height: 900px;
+  }
+}
+
+@media (max-width: 700px) {
+  .album-home-page {
+    padding: 0;
+  }
+
+  .album-home-shell {
+    border: 0;
+    border-radius: 0;
+    min-height: 100dvh;
+    padding: 16px 13px 24px;
+  }
+
+  .album-home-brand-copy strong {
+    font-size: 1rem;
+  }
+
+  .album-home-brand-copy small,
+  .album-home-profile > span {
+    display: none;
+  }
+
+  .album-home-shield {
+    height: 52px;
+    width: 43px;
+  }
+
+  .album-home-profile {
+    border-radius: 50%;
+    min-height: auto;
+    padding: 4px;
+  }
+
+  .album-home-profile .user-avatar {
+    height: 42px;
+    width: 42px;
+  }
+
+  .album-home-nav a {
+    min-height: 62px;
+    min-width: 68px;
+    padding-inline: 8px;
+  }
+
+  .album-home-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .album-home-hero,
+  .album-home-progress,
+  .album-home-collection,
+  .album-home-action--exchange,
+  .album-home-action--packs,
+  .album-home-skeleton {
+    grid-column: 1;
+  }
+
+  .album-home-hero {
+    min-height: 390px;
+    padding: 24px 10px;
+  }
+
+  .album-home-hero h1 {
+    font-size: clamp(2.5rem, 13vw, 4rem);
+  }
+
+  .album-home-progress-ring {
+    width: min(74vw, 250px);
+  }
+
+  .album-home-panel {
+    border-radius: 22px;
+    padding: 22px 18px;
+  }
+
+  .album-home-action {
+    min-height: 245px;
+  }
+
+  .album-home-dashboard--skeleton {
+    min-height: 1300px;
+  }
+}
+
+/* Mis cromos: inventario draggable con destinos locales. */
+.sticker-library-page {
+  background: #f5f5f4;
+  min-height: 100dvh;
+  padding: 12px;
+}
+
+.sticker-library-shell {
+  background-color: #041034;
+  background-image:
+    linear-gradient(135deg, rgba(11, 4, 39, 0.24), rgba(0, 23, 73, 0.4)),
+    url("/album-home-background.svg");
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 26px;
+  box-shadow: 0 26px 70px rgba(2, 8, 30, 0.24);
+  color: #ffffff;
+  margin: 0 auto;
+  max-width: 1540px;
+  min-height: calc(100dvh - 24px);
+  overflow: hidden;
+  padding: clamp(18px, 2vw, 30px);
+  position: relative;
+}
+
+.sticker-library-shell::after {
+  background:
+    radial-gradient(circle at 7% 32%, rgba(222, 0, 82, 0.18), transparent 26%),
+    radial-gradient(circle at 72% 72%, rgba(0, 89, 232, 0.16), transparent 33%);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.sticker-library-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.sticker-library-heading {
+  align-items: end;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  margin: clamp(22px, 3vw, 38px) 4px 18px;
+}
+
+.sticker-library-heading h1 {
+  font-size: clamp(2.5rem, 4.8vw, 4.6rem);
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+
+.sticker-library-heading p {
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.45;
+  margin: 0;
+  max-width: 720px;
+}
+
+.sticker-library-eyebrow {
+  color: #fb7185 !important;
+  font-size: 0.73rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  margin-bottom: 11px !important;
+  text-transform: uppercase;
+}
+
+.sticker-library-refresh {
+  background: rgba(5, 25, 72, 0.66);
+  border: 1px solid rgba(65, 105, 226, 0.42);
+  border-radius: 999px;
+  color: #ffffff;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 900;
+  min-height: 44px;
+  padding: 0 18px;
+}
+
+.sticker-library-refresh:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.sticker-library-refresh:focus-visible,
+.sticker-inventory-card:focus-visible,
+.sticker-drop-panel > button:focus-visible,
+.exchange-sticker-item > button:focus-visible {
+  outline: 3px solid #fb7185;
+  outline-offset: 3px;
+}
+
+.sticker-library-summary {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 14px;
+}
+
+.sticker-library-summary article {
+  align-items: center;
+  background:
+    linear-gradient(145deg, rgba(14, 24, 70, 0.84), rgba(2, 21, 63, 0.78)), rgba(7, 26, 67, 0.76);
+  border: 1px solid rgba(42, 103, 246, 0.42);
+  border-radius: 18px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 58px minmax(0, 1fr);
+  min-height: 96px;
+  padding: 13px;
+}
+
+.sticker-library-summary article:nth-child(2) {
+  border-color: rgba(231, 19, 85, 0.58);
+}
+
+.sticker-library-summary article:nth-child(3) {
+  border-color: rgba(255, 99, 34, 0.56);
+}
+
+.sticker-library-summary article:nth-child(4) {
+  border-color: rgba(155, 78, 230, 0.52);
+}
+
+.sticker-library-summary article > span {
+  align-items: center;
+  background: linear-gradient(145deg, rgba(20, 81, 221, 0.72), rgba(22, 22, 102, 0.72));
+  border-radius: 14px;
+  display: flex;
+  height: 58px;
+  justify-content: center;
+}
+
+.sticker-library-summary article:nth-child(2) > span,
+.sticker-library-summary article:nth-child(3) > span {
+  background: linear-gradient(145deg, rgba(215, 10, 78, 0.72), rgba(75, 17, 90, 0.72));
+}
+
+.sticker-library-summary svg,
+.sticker-drop-panel-heading svg,
+.sticker-drop-zone > svg {
+  fill: none;
+  height: 30px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+  width: 30px;
+}
+
+.sticker-library-summary article > div {
+  display: grid;
+}
+
+.sticker-library-summary strong {
+  font-size: clamp(1.6rem, 3vw, 2.35rem);
+  line-height: 1;
+}
+
+.sticker-library-summary small {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.78rem;
+  margin-top: 6px;
+}
+
+.sticker-library-message {
+  background: rgba(8, 50, 120, 0.68);
+  border: 1px solid rgba(96, 165, 250, 0.34);
+  border-radius: 11px;
+  color: #dbeafe;
+  margin: 10px 0;
+  padding: 10px 14px;
+}
+
+.sticker-library-message--error {
+  background: rgba(127, 29, 29, 0.7);
+  border-color: rgba(254, 202, 202, 0.32);
+  color: #fee2e2;
+}
+
+.sticker-library-workspace {
+  background: rgba(1, 13, 48, 0.44);
+  border: 1px solid rgba(62, 92, 180, 0.22);
+  border-radius: 24px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 350px);
+  padding: 14px;
+}
+
+.sticker-inventory-panel {
+  background:
+    radial-gradient(circle at 84% 86%, rgba(0, 74, 210, 0.12), transparent 28%),
+    rgba(2, 18, 58, 0.46);
+  border: 1px solid rgba(49, 85, 168, 0.22);
+  border-radius: 19px;
+  min-width: 0;
+  padding: 16px;
+}
+
+.sticker-inventory-heading {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.sticker-inventory-heading h2 {
+  font-size: 1.2rem;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+}
+
+.sticker-inventory-heading p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+.sticker-inventory-heading > strong {
+  background: rgba(12, 47, 115, 0.62);
+  border: 1px solid rgba(79, 117, 211, 0.3);
+  border-radius: 999px;
+  color: #bfdbfe;
+  font-size: 0.72rem;
+  padding: 7px 10px;
+}
+
+.sticker-inventory-grid {
+  display: grid;
+  gap: 13px;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  max-height: min(650px, calc(100dvh - 390px));
+  min-height: 390px;
+  overflow-y: auto;
+  padding: 3px 8px 3px 3px;
+  scrollbar-color: rgba(45, 101, 229, 0.76) rgba(4, 17, 53, 0.54);
+  scrollbar-width: thin;
+}
+
+.sticker-inventory-card {
+  appearance: none;
+  aspect-ratio: 0.73;
+  background:
+    linear-gradient(160deg, rgba(238, 242, 255, 0.98), rgba(183, 198, 223, 0.96)), #e2e8f0;
+  border: 3px solid rgba(219, 228, 242, 0.92);
+  border-radius: 10px;
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.28),
+    inset 0 0 0 1px rgba(7, 26, 67, 0.52);
+  color: #071a43;
+  cursor: grab;
+  display: grid;
+  font: inherit;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 220px;
+  overflow: hidden;
+  padding: 4px;
+  position: relative;
+  text-align: left;
+}
+
+.sticker-inventory-card:active {
+  cursor: grabbing;
+}
+
+.sticker-inventory-card--selected {
+  border-color: #fb174f;
+  box-shadow:
+    0 0 0 3px rgba(251, 23, 79, 0.24),
+    0 14px 30px rgba(0, 0, 0, 0.36);
+}
+
+.sticker-inventory-number {
+  background: rgba(241, 245, 249, 0.94);
+  border-radius: 4px;
+  font-size: 0.62rem;
+  font-weight: 1000;
+  left: 8px;
+  padding: 3px 5px;
+  position: absolute;
+  top: 8px;
+  z-index: 2;
+}
+
+.sticker-inventory-art {
+  background: linear-gradient(145deg, #2f578a, #0b224d);
+  border-radius: 6px 6px 3px 3px;
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sticker-inventory-art img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.sticker-inventory-copy {
+  background: linear-gradient(180deg, rgba(9, 32, 73, 0.94), #061738);
+  color: #ffffff;
+  display: grid;
+  min-height: 52px;
+  padding: 8px 7px 16px;
+}
+
+.sticker-inventory-copy strong {
+  font-size: 0.72rem;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sticker-inventory-copy small {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.56rem;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.sticker-inventory-status {
+  background: #d90b51;
+  border-radius: 999px 0 0 999px;
+  bottom: 5px;
+  color: #ffffff;
+  font-size: 0.5rem;
+  font-weight: 1000;
+  padding: 4px 6px 4px 8px;
+  position: absolute;
+  right: 4px;
+  text-transform: uppercase;
+}
+
+.sticker-inventory-status--pasted {
+  background: #0f766e;
+}
+
+.sticker-inventory-status--repeated {
+  background: #c2410c;
+}
+
+.sticker-library-sidebar {
+  align-content: start;
+  display: grid;
+  gap: 14px;
+}
+
+.sticker-drop-panel {
+  background:
+    linear-gradient(145deg, rgba(33, 8, 57, 0.8), rgba(1, 25, 74, 0.86)), rgba(4, 18, 57, 0.82);
+  border: 1px solid rgba(213, 17, 83, 0.56);
+  border-radius: 19px;
+  display: grid;
+  gap: 14px;
+  padding: 17px;
+  scroll-margin-top: 20px;
+}
+
+.sticker-drop-panel--exchange {
+  border-color: rgba(0, 102, 255, 0.58);
+}
+
+.sticker-drop-panel-heading {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 48px minmax(0, 1fr);
+}
+
+.sticker-drop-panel-heading > span {
+  align-items: center;
+  background: linear-gradient(145deg, #d90b51, #ff6c29);
+  border-radius: 13px;
+  display: flex;
+  height: 48px;
+  justify-content: center;
+}
+
+.sticker-drop-panel--exchange .sticker-drop-panel-heading > span {
+  background: linear-gradient(145deg, #1645be, #0872fa);
+}
+
+.sticker-drop-panel-heading h2 {
+  font-size: 1rem;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.sticker-drop-panel-heading p {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  margin: 5px 0 0;
+}
+
+.sticker-drop-zone {
+  align-items: center;
+  background: rgba(2, 14, 48, 0.55);
+  border: 2px dashed rgba(255, 255, 255, 0.26);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 185px;
+  padding: 14px;
+  text-align: center;
+}
+
+.sticker-drop-zone > svg {
+  color: rgba(255, 255, 255, 0.48);
+  height: 52px;
+  width: 52px;
+}
+
+.sticker-drop-zone > strong {
+  font-size: 0.85rem;
+  margin-top: 10px;
+}
+
+.sticker-drop-zone > small {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.68rem;
+  line-height: 1.4;
+  margin-top: 5px;
+}
+
+.sticker-drop-panel > button {
+  background: linear-gradient(90deg, #c40b48, #e91254);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 900;
+  min-height: 43px;
+  padding: 0 14px;
+  text-transform: uppercase;
+}
+
+.sticker-drop-panel--exchange > button {
+  background: linear-gradient(90deg, #123dac, #0868ec);
+}
+
+.sticker-drag-preview {
+  background: linear-gradient(145deg, #244b7d, #071a43);
+  border: 3px solid #d8e0ec;
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  display: flex;
+  height: 145px;
+  justify-content: center;
+  overflow: hidden;
+  width: 104px;
+}
+
+.sticker-drag-preview img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.sticker-drag-preview strong {
+  align-self: center;
+  color: #ffffff;
+}
+
+.exchange-sticker-tray {
+  display: grid;
+  gap: 9px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-height: 135px;
+}
+
+.exchange-sticker-item {
+  min-width: 0;
+  position: relative;
+}
+
+.exchange-sticker-item .sticker-drag-preview {
+  height: 132px;
+  width: 100%;
+}
+
+.exchange-sticker-item > button {
+  align-items: center;
+  background: #db0a4e;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  font-size: 1rem;
+  height: 25px;
+  justify-content: center;
+  padding: 0 0 2px;
+  position: absolute;
+  right: -5px;
+  top: -5px;
+  width: 25px;
+}
+
+.exchange-sticker-empty {
+  align-items: center;
+  border: 2px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.36);
+  display: flex;
+  font-size: 1.1rem;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 132px;
+}
+
+.sticker-library-empty {
+  align-items: center;
+  background: rgba(4, 20, 61, 0.72);
+  border: 1px solid rgba(59, 96, 180, 0.36);
+  border-radius: 20px;
+  display: grid;
+  justify-items: center;
+  min-height: 320px;
+  padding: 30px;
+  text-align: center;
+}
+
+.sticker-library-empty strong {
+  font-size: 1.5rem;
+}
+
+.sticker-library-empty span {
+  color: rgba(255, 255, 255, 0.66);
+  margin-top: 8px;
+}
+
+.sticker-library-skeleton {
+  display: grid;
+  gap: 14px;
+}
+
+.sticker-library-skeleton-summary {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sticker-library-skeleton-summary span,
+.sticker-library-skeleton-body > aside span,
+.sticker-library-skeleton-body > div span {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  display: block;
+}
+
+.sticker-library-skeleton-summary span {
+  min-height: 96px;
+}
+
+.sticker-library-skeleton-body {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 350px);
+}
+
+.sticker-library-skeleton-body > div {
+  display: grid;
+  gap: 13px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.sticker-library-skeleton-body > div span {
+  aspect-ratio: 0.73;
+}
+
+.sticker-library-skeleton-body > aside {
+  display: grid;
+  gap: 14px;
+}
+
+.sticker-library-skeleton-body > aside span {
+  min-height: 270px;
+}
+
+.album-game-screen .album-slot--focused {
+  box-shadow:
+    0 0 0 4px #f20d4f,
+    0 0 0 8px rgba(7, 89, 242, 0.42),
+    0 16px 34px rgba(0, 0, 0, 0.32);
+  position: relative;
+  z-index: 5;
+}
+
+.album-game-screen .album-slot--focused::after {
+  background: #f20d4f;
+  border-radius: 999px;
+  color: #ffffff;
+  content: "Tu figurita";
+  font-size: 0.55rem;
+  font-weight: 1000;
+  left: 50%;
+  padding: 5px 8px;
+  position: absolute;
+  text-transform: uppercase;
+  top: -12px;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 7;
+}
+
+@media (max-width: 980px) {
+  .sticker-library-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sticker-library-workspace,
+  .sticker-library-skeleton-body {
+    grid-template-columns: 1fr;
+  }
+
+  .sticker-inventory-grid {
+    max-height: none;
+  }
+
+  .sticker-library-sidebar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sticker-library-skeleton-body > aside {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .sticker-library-page {
+    padding: 0;
+  }
+
+  .sticker-library-shell {
+    border: 0;
+    border-radius: 0;
+    min-height: 100dvh;
+    padding: 16px 13px 24px;
+  }
+
+  .sticker-library-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .sticker-library-heading h1 {
+    font-size: 3rem;
+  }
+
+  .sticker-library-refresh {
+    width: 100%;
+  }
+
+  .sticker-library-summary {
+    gap: 9px;
+  }
+
+  .sticker-library-summary article {
+    gap: 9px;
+    grid-template-columns: 44px minmax(0, 1fr);
+    min-height: 80px;
+    padding: 9px;
+  }
+
+  .sticker-library-summary article > span {
+    height: 44px;
+  }
+
+  .sticker-library-summary svg {
+    height: 24px;
+    width: 24px;
+  }
+
+  .sticker-library-summary strong {
+    font-size: 1.5rem;
+  }
+
+  .sticker-library-workspace {
+    padding: 8px;
+  }
+
+  .sticker-inventory-panel {
+    padding: 11px;
+  }
+
+  .sticker-inventory-grid {
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-right: 3px;
+  }
+
+  .sticker-inventory-card {
+    min-height: 225px;
+  }
+
+  .sticker-library-sidebar,
+  .sticker-library-skeleton-body > aside {
+    grid-template-columns: 1fr;
+  }
+
+  .sticker-drop-panel {
+    padding: 15px;
+  }
+
+  .sticker-library-skeleton-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sticker-library-skeleton-body > div {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* Inicio desktop: hero y accesos completos dentro del viewport. */
 @media (min-width: 861px) {
   .app-experience-shell {
@@ -7174,5 +8575,185 @@ a {
 
   .skeleton-detail-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Album reference grid: numbered rows/columns with San Lorenzo placeholder marks. */
+.album-game-screen .album-magazine-content,
+.album-game-screen .album-magazine-page--right .album-magazine-content {
+  grid-template-columns: 1fr;
+}
+
+.album-game-screen .album-magazine-info-card {
+  display: none;
+}
+
+.album-game-screen .album-magazine-slots,
+.album-game-screen .album-magazine-page--right .album-magazine-slots {
+  grid-template-areas: none;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+}
+
+.album-game-screen .album-magazine-page .album-sticker-slot,
+.album-game-screen .album-magazine-page--right .album-sticker-slot,
+.album-game-screen .album-magazine-page .album-slot-position-1,
+.album-game-screen .album-magazine-page--right .album-slot-position-1,
+.album-game-screen .album-magazine-page--right .album-slot-position-6 {
+  grid-area: auto;
+  transform: none;
+}
+
+.album-game-screen .album-sticker-slot {
+  background:
+    linear-gradient(180deg, rgba(18, 30, 54, 0.96), rgba(9, 18, 34, 0.96)),
+    repeating-linear-gradient(45deg, transparent 0 10px, rgba(255, 255, 255, 0.035) 10px 12px);
+  border: 1px dashed rgba(148, 163, 184, 0.32);
+  border-radius: 6px;
+}
+
+.album-game-screen .album-sticker-slot .album-slot-art {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(220, 38, 38, 0.18), transparent 34%),
+    linear-gradient(135deg, rgba(7, 26, 67, 0.82), rgba(15, 23, 42, 0.92));
+  margin: 0;
+}
+
+.album-game-screen .album-slot-body {
+  display: none;
+}
+
+.album-slot-empty-mark {
+  align-items: center;
+  color: rgba(226, 232, 240, 0.74);
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.album-slot-empty-mark-main {
+  font-size: clamp(1rem, 1.7vw, 1.6rem);
+  font-weight: 1000;
+  letter-spacing: 0.14em;
+}
+
+.album-slot-empty-mark-line {
+  background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.7), transparent);
+  height: 2px;
+  width: 70%;
+}
+
+.album-slot-empty-mark-detail {
+  font-size: clamp(0.48rem, 0.7vw, 0.66rem);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.album-slot-empty-mark .album-slot-empty-number {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: clamp(0.58rem, 0.82vw, 0.76rem);
+  letter-spacing: 0.08em;
+  opacity: 1;
+}
+
+@media (max-width: 760px) {
+  .album-game-screen .album-magazine-slots,
+  .album-game-screen .album-magazine-page--right .album-magazine-slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
+}
+
+/* Album cleanup: one clean title, no duplicate labels, fixed placeholder typography. */
+.album-game-screen .album-magazine-header {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.album-game-screen .album-magazine-header h3,
+.album-game-screen .album-magazine-header > span,
+.album-game-screen .album-magazine-footer,
+.album-game-screen .album-slot-number,
+.album-game-screen .album-slot-repeat-badge {
+  display: none;
+}
+
+.album-game-screen .album-magazine-header p {
+  margin: 0;
+}
+
+.album-game-screen .album-slot-empty-mark-main {
+  font-size: 1.28rem;
+}
+
+.album-game-screen .album-slot-empty-mark-detail {
+  font-size: 0.62rem;
+}
+
+.album-game-screen .album-slot-empty-mark .album-slot-empty-number {
+  font-size: 0.76rem;
+}
+
+/* Album nav polish: larger modern arrows and page wording. */
+.album-game-screen .album-page-nav {
+  gap: 14px;
+  grid-template-columns: 54px auto 54px;
+  margin-top: 8px;
+}
+
+.album-game-screen .album-page-arrow {
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06)),
+    rgba(5, 7, 13, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 18px;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 2.45rem;
+  height: 54px;
+  justify-content: center;
+  line-height: 0.8;
+  width: 54px;
+}
+
+.album-game-screen .album-page-arrow:not(:disabled):hover {
+  background:
+    linear-gradient(135deg, rgba(7, 26, 67, 0.98), rgba(220, 38, 38, 0.9));
+  transform: translateY(-1px);
+}
+
+.album-game-screen .album-page-nav span {
+  background: rgba(5, 7, 13, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  color: #ffffff;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  min-width: 176px;
+  padding: 12px 18px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  .album-game-screen .album-page-nav {
+    grid-template-columns: 48px auto 48px;
+  }
+
+  .album-game-screen .album-page-arrow {
+    border-radius: 16px;
+    font-size: 2.1rem;
+    height: 48px;
+    width: 48px;
+  }
+
+  .album-game-screen .album-page-nav span {
+    min-width: 144px;
   }
 }

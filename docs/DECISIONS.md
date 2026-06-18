@@ -289,3 +289,33 @@ Motivo: El proyecto ya tiene guias locales para ese flujo y conviene dejar la de
 Alternativas consideradas: Integrarlo al runtime, al package.json o al pipeline de deploy.
 Impacto: La adopcion queda optativa y acotada a herramientas locales y documentacion.
 Riesgos: Si no se mantiene claro el alcance, puede confundirse con una dependencia obligatoria del proyecto.
+
+## DEC-030 - Usar drag and drop local para Mis cromos
+
+Fecha: 2026-06-10
+Estado: Aprobada
+Decision: Implementar `Mis cromos` como inventario React real con drag and drop hacia la hoja
+correspondiente del album y hacia una bandeja local de hasta tres repetidas.
+Motivo: La experiencia debe permitir organizar cromos visualmente sin inventar todavia un flujo de
+intercambio entre usuarios ni mover logica sensible al frontend.
+Alternativas consideradas: Navegar a una pantalla de intercambio, usar filtros y buscador, o pegar
+directamente desde la grilla de cromos.
+Impacto: `/duplicates` muestra la coleccion conseguida, `/album?sticker={id}` abre la hoja exacta y
+la bandeja de intercambio permanece en memoria de la pantalla.
+Riesgos: La bandeja no persiste al recargar y no representa una solicitud de intercambio real.
+
+## DEC-031 - Separar pegado de copias repetidas
+
+Fecha: 2026-06-17
+Estado: Aprobada
+Decision: Modelar el estado de album con `placementState` (`MISSING`, `UNPASTED`, `PASTED`) y las
+copias repetidas con `duplicateQuantity = max(quantity - 1, 0)`, manteniendo `repeatedQuantity`
+como alias temporal de compatibilidad.
+Motivo: Una figurita puede estar pegada y tener copias repetidas al mismo tiempo; tratar
+"repetida" como estado mutuamente excluyente confunde filtros, intercambio y detalle.
+Alternativas consideradas: Mantener `repeatedQuantity = quantity - pastedQuantity` o usar solo el
+status visual `REPEATED`.
+Impacto: `pasteSticker` setea `pastedQuantity = 1`, los sobres devuelven `acquisitionState`,
+`duplicateQuantityAfter` y `canPaste`, y la UI filtra repetidas por `duplicateQuantity`.
+Riesgos: Hay consumidores legacy de `repeatedQuantity`; debe removerse cuando todos migren a
+`duplicateQuantity`.

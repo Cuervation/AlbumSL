@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { UserSticker } from "../entities";
 import {
   canPasteSticker,
+  getDuplicateQuantity,
   getRepeatedQuantity,
   isStickerCollected,
   isStickerPasted,
@@ -29,17 +30,19 @@ describe("user sticker helpers", () => {
     expect(isStickerPasted(userSticker(1, 1))).toBe(true);
   });
 
-  it("calculates repeated quantity without returning negative values", () => {
+  it("calculates duplicate quantity from copies beyond the album slot", () => {
     expect(getRepeatedQuantity(userSticker(0, 0))).toBe(0);
-    expect(getRepeatedQuantity(userSticker(1, 0))).toBe(1);
+    expect(getRepeatedQuantity(userSticker(1, 0))).toBe(0);
     expect(getRepeatedQuantity(userSticker(1, 1))).toBe(0);
-    expect(getRepeatedQuantity(userSticker(1, 2))).toBe(0);
+    expect(getRepeatedQuantity(userSticker(3, 1))).toBe(2);
+    expect(getDuplicateQuantity(userSticker(3, 0))).toBe(2);
   });
 
-  it("allows pasting only when there is unpasted quantity", () => {
+  it("allows pasting only when the album slot is not pasted yet", () => {
     expect(canPasteSticker(userSticker(0, 0))).toBe(false);
     expect(canPasteSticker(userSticker(1, 0))).toBe(true);
     expect(canPasteSticker(userSticker(1, 1))).toBe(false);
+    expect(canPasteSticker(userSticker(3, 1))).toBe(false);
   });
 
   it("pastes one sticker at a time", () => {
@@ -54,6 +57,7 @@ describe("user sticker helpers", () => {
     const validation = validateUserSticker(userSticker(1, 2));
 
     expect(validation.isValid).toBe(false);
+    expect(validation.errors).toContain("pastedQuantity cannot be greater than 1");
     expect(validation.errors).toContain("pastedQuantity cannot be greater than quantity");
     expect(() => pasteSticker(userSticker(1, 2))).toThrow("Invalid user sticker");
   });

@@ -38,6 +38,8 @@ describe("album.service pasteSticker", () => {
         stickerId: "sticker-1",
         quantity: 2,
         pastedQuantity: 1,
+        placementState: "PASTED",
+        duplicateQuantity: 1,
         repeatedQuantity: 1,
         albumProgress: {
           totalStickers: 33,

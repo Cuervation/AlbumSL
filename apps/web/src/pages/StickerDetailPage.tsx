@@ -171,7 +171,7 @@ function StickerDetailStats({
       </div>
       <div>
         <dt>Repetidas</dt>
-        <dd>{albumSticker.repeatedQuantity}</dd>
+        <dd>{albumSticker.duplicateQuantity}</dd>
       </div>
     </dl>
   );

@@ -15,6 +15,7 @@ import {
   openPackUseCase,
   pasteStickerUseCase,
 } from "@albumsl/application";
+import { getDuplicateQuantity, getStickerPlacementState } from "@albumsl/domain";
 import { createFirebaseInfrastructure } from "@albumsl/infra-firebase";
 import { HttpsError, onCall, onRequest } from "firebase-functions/v2/https";
 
@@ -142,7 +143,10 @@ export const openPack = onCall<OpenPackRequestDto>(
           category: stickerResult.sticker.category,
           tags: stickerResult.sticker.tags,
           isNew: stickerResult.isNew,
+          acquisitionState: stickerResult.acquisitionState,
           quantityAfter: stickerResult.quantityAfter,
+          duplicateQuantityAfter: stickerResult.duplicateQuantityAfter,
+          canPaste: stickerResult.canPaste,
         })),
         newCount: result.newCount,
         repeatedCount: result.repeatedCount,
@@ -193,10 +197,9 @@ export const pasteSticker = onCall<PasteStickerRequestDto>(
         stickerId: result.userSticker.stickerId,
         quantity: result.userSticker.quantity,
         pastedQuantity: result.userSticker.pastedQuantity,
-        repeatedQuantity: Math.max(
-          result.userSticker.quantity - result.userSticker.pastedQuantity,
-          0,
-        ),
+        placementState: getStickerPlacementState(result.userSticker),
+        duplicateQuantity: getDuplicateQuantity(result.userSticker),
+        repeatedQuantity: getDuplicateQuantity(result.userSticker),
         albumProgress: {
           totalStickers: result.albumProgress.totalStickers,
           collectedStickers: result.albumProgress.collectedStickers,

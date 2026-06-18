@@ -12,14 +12,14 @@ const stickers: readonly UserSticker[] = [
   { stickerId: "sticker-1", quantity: 0, pastedQuantity: 0 },
   { stickerId: "sticker-2", quantity: 1, pastedQuantity: 0 },
   { stickerId: "sticker-3", quantity: 2, pastedQuantity: 1 },
-  { stickerId: "sticker-4", quantity: 3, pastedQuantity: 3 },
+  { stickerId: "sticker-4", quantity: 3, pastedQuantity: 1 },
 ];
 
 describe("album progress helpers", () => {
   it("counts collected, pasted and repeated stickers", () => {
     expect(countCollectedStickers(stickers)).toBe(3);
     expect(countPastedStickers(stickers)).toBe(2);
-    expect(countRepeatedStickers(stickers)).toBe(2);
+    expect(countRepeatedStickers(stickers)).toBe(3);
   });
 
   it("calculates progress from unique pasted stickers", () => {
@@ -27,7 +27,7 @@ describe("album progress helpers", () => {
       totalStickers: 4,
       collectedStickers: 3,
       pastedStickers: 2,
-      repeatedStickers: 2,
+      repeatedStickers: 3,
       completionPercentage: 50,
     });
   });
